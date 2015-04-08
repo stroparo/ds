@@ -2,7 +2,8 @@
 
 # DS - Daily Shells Library
 # License:
-#  See README.md document in stroparo/ds project at github.
+#  See README.md document in projects page at
+#  https://github.com/stroparo/ds
 
 # ##############################################################################
 # DS setup
