@@ -6,151 +6,96 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
-# DS setup
+# DS reserved objects
 
-# Params
+export DS_HOME="${1:-${HOME}/.ds}"
+export DS_VERBOSE
+export DS_VERSION='DS version 0.1.0 - 2016-01-18 22:30'
 
-export DS_HOME="${1:-${HOME}/bin}"
-export DS_VERSION='ver. 0.0.1 - 2015-04-08 01:25'
+# Function dsversion: displays the Daily Shells header and version.
+#  Stdout is fully redirected to stderr.
+dsversion () {
+    echo "Daily Shells - ${DS_VERSION}" 1>&2
+}
 
-# Aliases
-
-alias envinfo='_env_info'
-
-# Functions
-
+# Function dshelp: displays the Daily Shells help information.
+#  Stdout is fully redirected to stderr.
 dshelp () {
     echo 'DS - Daily Shells Library - Help
 
 Commands:
 
 dshelp:     displays this help messsage.
-dsversion:  displays version for this DS instance.
-envinfo:    displays environment information (_env_info private function).
+dsinfo:     displays environment information.
+dsversion:  displays the version of this Daily Shells instance.
 ' 1>&2
 }
 
-dsversion () {
-    echo "Daily Shells - ${DS_VERSION}" 1>&2
-}
-
-# This is standard and shall be overriden by your own fork:
-_env_info () {
+# Function dsinfo: this displays DS environment information.
+#  It might be overriden by your own fork.
+#  Stdout is fully redirected to stderr.
+dsinfo () {
     dsversion
-    echo "DS_HOME='${DS_HOME}'"
-}
-
-# Functions - private
-
-_alias_no_sh_ext () {
-    cd "${1:-${HOME}/bin}" && \
-    ls -1 *sh | \
-    while read script ; do
-        if [ -x "${script}" ] ; then
-            eval alias "${script%.*}=${script}"
-        fi
-    done
-}
-
-_src_profiles () {
-
-    typeset profilelist="$(cat "${1}"/*profilelist* 2>/dev/null)"
-
-    for profile in ${profilelist} ; do
-        echo "Sourcing '$(eval echo ${profile})'..." 1>&2
-        . "$(eval echo ${profile})" 1>&2
-    done
-
-}
-
-_src_utils () {
-
-    typeset utilslist="$(ls -1 "${1}"/*utilslist* 2>/dev/null)"
-
-    for utils_file in ${utilslist} ; do
-        echo "Sourcing '$(eval echo ${utils_file})'..." 1>&2
-        . "$(eval echo ${utils_file})" 1>&2
-    done
-
+    echo "DS_HOME='${DS_HOME}'" 1>&2
 }
 
 # ##############################################################################
-# General goodies
+# Basic functions
 
+# Function aliasnoext: pick {argument}/*sh and yield aliases without extension.
+# Syntax: {directory}1+
+unset aliasnoext
+aliasnoext () {
 
-# Shell setup
+    typeset verbose
 
-# Source default bashrc in etc when available:
-#[ -f /etc/bashrc ] && . /etc/bashrc
+    # Options:
+    while getopts ':v' opt ; do
+        case "${opt}" in
+        v) verbose=true;;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND=1
 
-# Turn on Vi Mode, which allows for command line editing with vi-like commands:
-set -o vi
+    for dir in "$@" ; do
+        [ -d "${dir}" ] && \
+        while read script ; do
+            if [ -x "${script}" ] ; then
+                aliasname="${script##*/}"
+                aliasname="${aliasname%%.*}"
+                eval unalias "${aliasname}" 2>/dev/null
+                eval alias "${aliasname}=${script}"
+                if [ -n "${verbose}" ] ; then
+                    eval type "${aliasname}"
+                fi
+            fi
+        done <<EOF
+$(ls -1 "${dir}"/*sh 2>/dev/null)
+EOF
+    done
+}
 
-
-# Params
-
-export PATH="${HOME}/bin${PATH:+:${PATH}}"
-
-# PS1
-if [ -n "${BASH_VERSION}" ] ; then
-    #export PS1='[\u@\h \t \$?=$? \W]\$ '
-    # Highlight user@host:
-    export PS1='[\[\e[32m\]\u@\h\[\e[0m\] \t \$?=$? \W]\$ '
-elif [[ $0 = *ksh* ]] && [[ ${SHELL} = *ksh ]] ; then
-    export PS1='[${USER}@$(hostname) $(date '+%OH:%OM:%OS') \$=$? ${PWD##*/}]\$ '
-fi
-
-
-# Aliases
-
-alias l='ls -Fl'
-alias ll='ls -FlA'
-alias lt='ls -Fltr'
-alias xcd="alias | egrep \"'c?d \""
-alias xhome='cd ~/bin && chmod 740 *sh'
-
-# Specific for GNU environments:
-if (ls --version 2>/dev/null | grep -q GNU) ; then
-    alias grep='grep --color=auto'
-    alias egrep='egrep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias ls='ls --color=auto'
-
-    alias l='ls -Fhl'
-    alias ll='ls -FhlA'
-fi
-
-# Specific for IBM AIX:
-if [[ $(uname) = *AIX* ]] ; then
-    alias pst1='ps -fT1'
-    alias pstu='ps -fT1|awk "\$1 ~ /^$USER$/"'
-    alias topu='topas -U "$USER" -P'
-fi
-
-
-# Functions
-
-# cyg - (available only in cygwin) goes to the given disk drive letter.
+# Function cyg - cd to the disk drive letter argument; fails if not in cygwin.
 # Syntax: cyg {a|b|c|d|e|f|...}
-if (uname -a | grep -i -q cygwin) ; then
-    unset cyg 2>/dev/null
-    cyg () {
-        d /cygdrive/"${1:-c}" -Ah
-    }
-fi
+unset cyg 2>/dev/null
+cyg () {
+    [[ "$(uname -a)" = *ygwin* ]] || return 1
+    d /cygdrive/"${1:-c}" -Ah
+}
 
-# ckenv - check environment function
-#  Checks no. of arguments, plus
-#  sets hasgnu (stands for "has GNU?")
+# Function ckenv - check number of arguments and sets hasgnu ("GNU is not Unix").
+# Syntax: {min-args} [max-args=min-args]
+unset ckenv
 ckenv () {
     typeset args_slice_min="${1}"
     typeset args_slice_max="${2:-1}"
     shift 2
 
-    if ! [ "${#}" -ge "${args_slice_min:-0}" -a "${#}" -le "${args_slice_max:-1}" ] ; then
-        echo "Bad arguments.."
-        echo "${usage:-There was no 'usage' variable set.}"
-        exit 1
+    if ! [ "${#}" -ge "${args_slice_min:-0}" -a \
+           "${#}" -le "${args_slice_max:-1}" ] ; then
+        echo "Bad arguments.." 1>&2
+        echo "${usage:-There was no 'usage' variable set.}" 1>&2
+        return 1
     fi
 
     # hasgnu - "has GNU?" portability indicator
@@ -160,46 +105,54 @@ ckenv () {
     fi
 }
 
-# d - Convenient change directory command (changes dir and performs an ls).
+# Function d - change directory and execute pwd followed by an ls.
+# Syntax: {directory}
+unalias d 2>/dev/null
 unset d
 d () {
     dir="${1}"
     shift
 
-    cd "${dir}"
-    pwd
-    ls -Fl "$@"
+    cd "${dir}" || return 1
+    pwd 1>&2
+    ls -Fl "$@" 1>&2
 }
 
-# dos2unix - remove CR (0x0d) characters from Windows end-of-line sequences (CR+LF), yielding Unix EOL (LF).
-# Syntax: dos2unix file
-unset dos2unix
-dos2unix () {
-    for i in "$@" ; do
-        echo "Delete '${i}' CR chars; write to '${i}.u' the rename it to original '${i}'..."
-        tr -d '\r' < "${i}" > "${i}.u"
-        mv "${i}.u" "${i}"
-    done
+# Function echoe - echoes a string to standard error.
+unset echoe
+echoe () {
+    echo "$@" 1>&2
 }
 
-# loop - pass it a command and run it every t seconds (override with the '-d t' option).
-# Syntax: loop command
+# Function getnow: setup NOW* and TODAY* environment variables.
+unset getnow
+getnow () {
+    export NOW_HMS="$(date '+%OH%OM%OS')"
+    export NOW_YMDHM="$(date '+%Y%m%d%OH%OM')"
+    export NOW_YMDHMS="$(date '+%Y%m%d%OH%OM%OS')"
+    export TODAY="$(date '+%Y%m%d')"
+    export TODAY_ISO="$(date '+%Y-%m-%d')"
+}
+
+# Function loop - pass a command to be executed every secs seconds.
+# Syntax: [-d secs] command
 unset loop
 loop () {
     typeset interval=10
+
     while getopts ':d:' opt ; do
         case "${opt}" in
-            d)
-                interval="${OPTARG}"
-                ;;
+        d)
+            interval="${OPTARG}"
+            ;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
     while true ; do
-        clear 2>/dev/null || echo ''
-        echo "Looping thru every ${interval} seconds.."
-        echo "Command:" "$@"
+        clear 2>/dev/null || echo '' 1>&2
+        echo "Looping thru every ${interval} seconds.." 1>&2
+        echo "Command:" "$@" 1>&2
         $@
         sleep "${interval}" 2>/dev/null \
         || sleep 10 \
@@ -207,141 +160,97 @@ loop () {
     done
 }
 
-# mucat - cat multiple files.
-# Syntax: mucat file1[ file2[ file3 ...]]
-unset mucat
-mucat () {
-    typeset first=true
-
-    for f in "$@" ; do
-        ${first} || echo ''
-
-        echo "==> ${f} <=="
-        cat "${f}"
-
-        first=false
+# Function pathmunge: prepend (-a causes to append) directory to PATH global.
+# Syntax: {path}1+
+unset pathmunge
+pathmunge () {
+    typeset pathmunge_after
+  
+    while getopts ':a' opt ; do
+        case "${opt}" in
+        a) pathmunge_after=1 ;;
+        esac
     done
+    shift $((OPTIND-1)) ; OPTIND=1
+  
+    for i in "$@" ; do
+        if [ -n "${pathmunge_after}" ] ; then
+            PATH="${PATH}:${i}"
+        else
+            PATH="${i}:${PATH}"
+        fi
+    done
+    PATH="${PATH#:}"
+    PATH="${PATH%:}"
+  
+    unset opt pathmunge_after
 }
 
-# mutail - tail multiple files.
-# Syntax: mutail [-l lines] file1[ file2[ file3 ...]]
-unset mutail
-mutail () {
-    typeset first=true
-    typeset lines=10
+# Function sourcefiles: each arg is a glob; source all glob expanded paths.
+#  Tilde paths are accepted, as the expansion is yielded
+#  via eval. Expanded directories are ignored.
+#  Stdout is fully redirected to stderr.
+sourcefiles () {
 
-    while getopts ':l:' opt ; do
+    typeset name
+    typeset tolerant
+    typeset verbose
+
+    # Options:
+    while getopts ':n:tv' opt ; do
         case "${opt}" in
-            l)
-                lines="${OPTARG}"
-                ;;
+        n) name="${OPTARG}";;
+        t) tolerant=true;;
+        v) verbose=true;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
-    for f in "$@" ; do
-        ${first} || echo ''
+    for globpattern in "$@" ; do
 
-        echo "==> ${f} <=="
-        tail -n ${lines:-10} "${f}"
+        if ! ls -1d ${globpattern} >/dev/null 2>&1 ; then
+            echo "Ignored bad listing for glob '${globpattern}'." 1>&2
+        fi
 
-        first=false
+        exec 4<&0
+
+        while read src; do
+            if [ -z "${src}" -o -d "${src}" ] ; then
+                continue
+            fi
+
+            if [ -n "${verbose}" ] ; then
+                echo "=> Sourcing ${name:+${name} - }'${src}' ..." 1>&2
+            fi
+
+            # Source op:
+            if [ -r "${src}" ] ; then
+                . "${src}" 1>&2
+            fi
+
+            if [ -z "${tolerant}" -a "$?" -ne 0 ] ; then
+                echo "Aborted non-tolerant sourcing attempt${name:+ for ${name}}." 1>&2
+                return 1
+            elif [ -n "${verbose}" ] ; then
+                echo "=> Source finished${name:+ for ${name}}." 1>&2
+            fi
+        done <<EOF
+$(eval ls -1d ${globpattern} 2>/dev/null)
+EOF
+
     done
 }
 
-# pgr - pgrep emulator.
-unset pgr
-pgr () {
-    ps -ef \
-    | egrep -i "${1}" \
-    | egrep -v "grep.*(${1})"
-}
-
-
-# Functions - agg:
-
-# Usage: getmax sep field files...
-getmax () {
-
-    typeset sep="${1}"
-    typeset field="${2}"
-    shift 2
-
-    awk -F"${sep}" -vfield="${field}" '
-        BEGIN {
-            max = 0;
-        }
-
-        {
-            if (max < $field) max = $field;
-        }
-
-        END {
-            print max;
-        }
-    ' "$@"
-
-}
-
-# Usage: getmin sep field files...
-getmin () {
-
-    typeset sep="${1}"
-    typeset field="${2}"
-    shift 2
-
-    awk -F"${sep}" -vfield="${field}" '
-        BEGIN {
-            min = 2147483648;
-        }
-
-        {
-            if (min > $field) min = $field;
-        }
-
-        END {
-            print min;
-        }
-    ' "$@"
-
-}
-
-# Usage: getsum sep field files...
-getsum () {
-
-    typeset sep="${1}"
-    typeset field="${2}"
-    shift 2
-
-    awk -F"${sep}" -vfield="${field}" '
-        BEGIN {
-            sum = 0;
-        }
-
-        {
-            sum += $field;
-        }
-
-        END {
-            print sum;
-        }
-    ' "$@"
-
-}
-
-
 # ##############################################################################
-# Specific routines for this DS variant
+# Calls to routines
 
-# YOUR CUSTOM ROUTINES HERE
+# Initialize DS:
+[ -n "${DS_VERBOSE}" ] && dsinfo
+sourcefiles -t ${DS_VERBOSE:+-v} "${DS_HOME}/aliases*sh" "${DS_HOME}/f*sh"
+sourcefiles -t ${DS_VERBOSE:+-v} "${DS_HOME}/ds-post.sh"
+aliasnoext "${DS_HOME}/scripts"
 
-# ##############################################################################
-# Main
-
-_alias_no_sh_ext "${DS_HOME}"
-_src_profiles "${DS_HOME}"
-_src_utils "${DS_HOME}"
-_env_info
-
-# Specific calls for this DS variant:
-# YOUR CUSTOM CALLS HERE
+# Etcetera
+if [ -r "${DS_HOME}/sshagent.sh" ] ; then
+    sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/sshagent.sh"
+fi
