@@ -1,2 +1,5 @@
-/.project
+*.pyc
 *.sublime-workspace
+*.zip
+input*
+result*
