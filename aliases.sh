@@ -9,9 +9,13 @@
 alias xcd="alias | egrep \"'c?d \""
 alias xhome='cd ~/bin && chmod 740 *sh'
 
-# DS private:
+# DS change directory aliases:
 alias cdbak='d "${BACKUP_DIRECTORY}" -A'
 alias cde='d "${DS_ENV}" -A'
+alias cdl='cd "${DS_ENV_LOG}" && (ls -AFlrt | tail -n 64)'
+alias cdll='d "${DS_ENV_LOG}" -Art'
+alias cdlgt='cd "${DS_ENV_LOG}" && (ls -AFlrt | grep "$(date +"%b %d")")'
+alias cdlt='cd "${DS_ENV_LOG}" && d "$(date "+%Y%m%d")" -ARrt'
 alias t='d "${TEMP_DIRECTORY}" -A'
 
 # Aliases - admin:
