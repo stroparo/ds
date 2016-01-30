@@ -38,7 +38,7 @@ m3uzer () {
 }
 
 # Function screenshot: take a screenshot of the desktop, by default after 5 seconds.
-# Syntax: [after-seconds=5]
+# Syntax: [secondsToWait=5]
 screenshot () {
     typeset date_ymd_hms=$(date '+%Y%m%d-%H%M%S')
 
