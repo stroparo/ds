@@ -6,15 +6,15 @@
 # ##############################################################################
 # Devel functions
 
-# Function gitfindexec: exec git for all repos descending of current directory.
+# Function gg: exec git for all repos descending of current directory.
 # Syntax: [-c command] [command subcommands arguments etc.]
-gitfindexec () {
+gg () {
   typeset gitcmd='git'
 
   while getopts ':c:h' opt ; do
     case "${opt}" in
       c) gitcmd="${OPTARG}" ;;
-      h) echo 'gg [-c newCommandInsteadOfGit] [options] [args]' ; OPTIND=1 ; return ;;
+      h) echo "${0} [-c newCommandInsteadOfGit] [options] [args]" ; OPTIND=1 ; return ;;
     esac
   done
   shift $((OPTIND-1)) ; OPTIND=1
