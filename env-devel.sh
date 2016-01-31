@@ -39,6 +39,7 @@ EOF
 # Function gitclones - Clones the repos passed as the first argument, one per
 #  line in that argument (use quotes).
 # Syntax: {repositories-one-per-line}
+unset gitclones
 gitclones () {
     while read repo ; do
         if [ ! -d "$(basename "${repo%.git}")" ] && ! git clone "${repo}" ; then
@@ -54,6 +55,7 @@ EOF
 # Function gitconfig - Configures ssh key if there is none, and setup git config.
 # Syntax: {email} {name} [other git config --global options]
 # Example: gitconfig "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
+unset gitconfig
 gitconfig () {
     typeset email="${1}"
     typeset name="${2}"
@@ -73,7 +75,7 @@ gitconfig () {
     done
 }
 
-# Function gpall: pushes current directory repo to all of its remotes.
+# Function gpall - pushes current directory repo to all of its remotes.
 unset gpall
 gpall () {
     for i in $(git remote); do
@@ -85,8 +87,9 @@ gpall () {
 # ##############################################################################
 # PostgreSQL
 
-# Function supg: call psql via su - postgres, at the given port and user.
+# Function supg - call psql via su - postgres, at the given port and user.
 # Syntax: [port=5432] [user=postgres]
+unset supg
 supg () {
     sudo su - postgres -c "psql -p ${1:-5432} -U ${2:-postgres}"
 }
