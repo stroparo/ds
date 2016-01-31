@@ -59,7 +59,7 @@ gitconfig () {
     typeset name="${2}"
     shift 2
 
-    [ -z "${email}" -o "${name}" ] && 'Aborted. Must pass email and name.' 1>&2 && return 1
+    [ -z "${email}" -o -z "${name}" ] && 'Aborted. Must pass email and name.' 1>&2 && return 1
 
     # Create an ssh key if there is none:
     [ ! -e "${HOME}"/.ssh/id_rsa ] && ssh-keygen -t rsa -b 4096 -C "${email}"
