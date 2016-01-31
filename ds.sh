@@ -14,12 +14,14 @@ export DS_VERSION='DS version 0.1.0 - 2016-01-18 22:30'
 
 # Function dsversion - displays the Daily Shells header and version.
 #  Stdout is fully redirected to stderr.
+unset dsversion
 dsversion () {
     echo "Daily Shells - ${DS_VERSION}" 1>&2
 }
 
 # Function dshelp - displays the Daily Shells help information.
 #  Stdout is fully redirected to stderr.
+unset dshelp
 dshelp () {
     echo 'DS - Daily Shells Library - Help
 
@@ -34,6 +36,7 @@ dsversion:  displays the version of this Daily Shells instance.
 # Function dsinfo - this displays DS environment information.
 #  It might be overriden by your own fork.
 #  Stdout is fully redirected to stderr.
+unset dsinfo
 dsinfo () {
     dsversion
     echo "DS_HOME='${DS_HOME}'" 1>&2
@@ -190,6 +193,7 @@ pathmunge () {
 #  Tilde paths are accepted, as the expansion is yielded
 #  via eval. Expanded directories are ignored.
 #  Stdout is fully redirected to stderr.
+unset sourcefiles
 sourcefiles () {
 
     typeset name
