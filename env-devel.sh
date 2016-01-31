@@ -33,9 +33,9 @@ EOF
     unset gitcmd
 }
 
-# Function gitpush2all: pushes current directory repo to all of its remotes.
-unset gitpush2all
-gitpush2all () {
+# Function gpushall: pushes current directory repo to all of its remotes.
+unset gpushall
+gpushall () {
     for i in $(git remote); do
         echo "=> Pushing to remote ${i}.."
         git push "${i}" && echo "=> Pushed to remote ${i}."
