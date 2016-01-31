@@ -12,13 +12,13 @@ export DS_HOME="${1:-${HOME}/.ds}"
 export DS_VERBOSE
 export DS_VERSION='DS version 0.1.0 - 2016-01-18 22:30'
 
-# Function dsversion: displays the Daily Shells header and version.
+# Function dsversion - displays the Daily Shells header and version.
 #  Stdout is fully redirected to stderr.
 dsversion () {
     echo "Daily Shells - ${DS_VERSION}" 1>&2
 }
 
-# Function dshelp: displays the Daily Shells help information.
+# Function dshelp - displays the Daily Shells help information.
 #  Stdout is fully redirected to stderr.
 dshelp () {
     echo 'DS - Daily Shells Library - Help
@@ -31,7 +31,7 @@ dsversion:  displays the version of this Daily Shells instance.
 ' 1>&2
 }
 
-# Function dsinfo: this displays DS environment information.
+# Function dsinfo - this displays DS environment information.
 #  It might be overriden by your own fork.
 #  Stdout is fully redirected to stderr.
 dsinfo () {
@@ -42,7 +42,7 @@ dsinfo () {
 # ##############################################################################
 # Basic functions
 
-# Function aliasnoext: pick {argument}/*sh and yield aliases without extension.
+# Function aliasnoext - pick {argument}/*sh and yield aliases without extension.
 # Syntax: {directory}1+
 unset aliasnoext
 aliasnoext () {
@@ -124,7 +124,7 @@ echoe () {
     echo "$@" 1>&2
 }
 
-# Function getnow: setup NOW* and TODAY* environment variables.
+# Function getnow - setup NOW* and TODAY* environment variables.
 unset getnow
 getnow () {
     export NOW_HMS="$(date '+%OH%OM%OS')"
@@ -160,7 +160,7 @@ loop () {
     done
 }
 
-# Function pathmunge: prepend (-a causes to append) directory to PATH global.
+# Function pathmunge - prepend (-a causes to append) directory to PATH global.
 # Syntax: {path}1+
 unset pathmunge
 pathmunge () {
@@ -186,7 +186,7 @@ pathmunge () {
     unset opt pathmunge_after
 }
 
-# Function sourcefiles: each arg is a glob; source all glob expanded paths.
+# Function sourcefiles - each arg is a glob; source all glob expanded paths.
 #  Tilde paths are accepted, as the expansion is yielded
 #  via eval. Expanded directories are ignored.
 #  Stdout is fully redirected to stderr.
