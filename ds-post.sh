@@ -7,3 +7,5 @@
 # Post file
 
 unalias d 2>/dev/null
+
+DS_LOADED=true
