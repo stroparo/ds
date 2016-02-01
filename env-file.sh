@@ -165,7 +165,7 @@ unarchive () {
         
         *.7z)
             if which 7z 2>/dev/null ; then
-                which 7z && 7z x -o"${outputdir}" "${f}"
+                7z x -o"${outputdir}" "${f}"
             else
                 echoe "WARNING: skipped '${f}' because 7z utility is not available."
                 continue
