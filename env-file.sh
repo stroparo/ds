@@ -152,7 +152,7 @@ unarchive () {
 
     # Check output directory is writable:
     if [ ! -d "${outputdir}" -o ! -w "${outputdir}" ] ; then
-        echoe "FATAL: Output directory  is not writable."
+        echoe "FATAL: Output directory '${outputdir}' is not writable."
         return 1
     fi
 
