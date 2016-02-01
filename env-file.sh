@@ -159,6 +159,8 @@ unarchive () {
     for f in "$@" ; do
         export f
         
+        ${verbose:-false} && echoe "INFO: unarchiving '${f}'.."
+
         case "${f}" in
         
         *.7z)
