@@ -250,11 +250,10 @@ EOF
 
 # Initialize DS:
 [ -n "${DS_VERBOSE}" ] && dsinfo
-sourcefiles -t ${DS_VERBOSE:+-v} "${DS_HOME}/aliases*sh" "${DS_HOME}/env*sh"
-sourcefiles -t ${DS_VERBOSE:+-v} "${DS_HOME}/ds-post.sh"
+sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/aliases*sh" "${DS_HOME}/env*sh" "${DS_HOME}/ds-post.sh"
 aliasnoext "${DS_HOME}/scripts"
 
 # Etcetera
 if [ -r "${DS_HOME}/sshagent.sh" ] ; then
-    sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/sshagent.sh"
+    sourcefiles -t ${DS_VERBOSE:+-v} "${DS_HOME}/sshagent.sh"
 fi
