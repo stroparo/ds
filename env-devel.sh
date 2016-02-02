@@ -36,17 +36,24 @@ EOF
     unset gitcmd
 }
 
-# Function gitclones - Clones the repos passed as the first argument, one per
-#  line in that argument (use quotes).
+# Function gitclones - Clone repos passed in the argument, one per line (quote it).
 # Syntax: {repositories-one-per-line}
 unset gitclones
 gitclones () {
+
     while read repo ; do
-        if [ ! -d "$(basename "${repo%.git}")" ] && ! git clone "${repo}" ; then
-            echo "Failed cloning '${repo}' repository. Aborted sequence." 1>&2
-            return 1
+
+        if [ ! -d "$(basename "${repo%.git}")" ] ; then
+            if ! git clone "${repo}" ; then
+                echo "Failed cloning '${repo}' repository. Aborted sequence." 1>&2
+                return 1
+            fi
+        else
+            echo "SKIP: '$(basename "${repo%.git}")' repository already exists." 1>&2
         fi
+
         echo '' 1>&2
+
     done <<EOF
 ${1}
 EOF
