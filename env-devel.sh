@@ -16,8 +16,8 @@ gg () {
 
     while getopts ':c:h' opt ; do
         case "${opt}" in
-            c) gitcmd="${OPTARG}" ;;
-            h) echo "${0} [-c newCommandInsteadOfGit] [options] [args]" ; OPTIND=1 ; return ;;
+        c) gitcmd="${OPTARG}" ;;
+        h) echo "${0} [-c newCommandInsteadOfGit] [options] [args]" ; OPTIND=1 ; return ;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND=1
@@ -64,22 +64,44 @@ EOF
 # Example: gitconfig "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
 unset gitconfig
 gitconfig () {
+
+    typeset gitfile=''
+
+    # Parse options:
+    while getopts ':f:' opt ; do
+        case "${opt}" in
+        f) gitfile="${OPTARG}" ;;
+        esac
+    done
+    shift $((OPTIND-1)) ; OPTIND=1
+
     typeset email="${1}"
     typeset name="${2}"
     shift 2
 
-    [ -z "${email}" -o -z "${name}" ] && 'Aborted. Must pass email and name.' 1>&2 && return 1
+    # Verify arguments:
+    if [ -z "${email}" -o -z "${name}" ] ; then
+        echo 'FATAL: Must pass an email and a name.' 1>&2
+        return 1
+    fi
+
+    if [ -n "${gitfile}" -a ! -w "${gitfile}" ] ; then
+        echo 'FATAL: Must pass writeable git config file to -f option.' 1>&2
+        return 1
+    fi
 
     # Create an ssh key if there is none:
     [ ! -e "${HOME}"/.ssh/id_rsa ] && ssh-keygen -t rsa -b 4096 -C "${email}"
 
-    git config --global user.name "${name}"
-    git config --global user.email "${email}"
-
-    for i in "$@" ; do
-        git config --global ${1}
-        shift
-    done
+    if [ -n "${gitfile}" ] ; then
+        git config -f "${gitfile}" user.name "${name}"
+        git config -f "${gitfile}" user.email "${email}"
+        for i in "$@" ; do git config -f "${gitfile}" ${1} ; shift ; done
+    else
+        git config --global user.name "${name}"
+        git config --global user.email "${email}"
+        for i in "$@" ; do git config --global ${1} ; shift ; done
+    fi
 }
 
 # Function gpall - pushes current directory repo to all of its remotes.
