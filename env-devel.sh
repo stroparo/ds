@@ -6,6 +6,11 @@
 # ##############################################################################
 # Devel functions
 
+genssh () {
+    # Create an ssh key if there is none:
+    [ ! -e "${HOME}"/.ssh/id_rsa ] && ssh-keygen -t rsa -b 4096 -C "${email}"
+}
+
 # ##############################################################################
 # Git
 
@@ -59,13 +64,14 @@ ${1}
 EOF
 }
 
-# Function gitconfig - Configures ssh key if there is none, and setup git config.
+# Function gitconfig - configure git.
 # Syntax: {email} {name} [other git config --global options]
 # Example: gitconfig "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
 unset gitconfig
 gitconfig () {
 
     typeset gitfile=''
+    typeset name=gitconfig
 
     # Parse options:
     while getopts ':f:' opt ; do
@@ -79,21 +85,10 @@ gitconfig () {
     typeset name="${2}"
     shift 2
 
-    # Verify arguments:
-    if [ -z "${email}" -o -z "${name}" ] ; then
-        echo 'FATAL: Must pass an email and a name.' 1>&2
-        return 1
-    fi
+    _any_null "${1}" "${2}" && echoe "${name}:FATAL: Must pass an email and a name." && return 1
+    _any_not_w "${gitfile}" && echoe "${name}:FATAL: Must pass writeable file to -f option." && return 1
 
-    if [ -n "${gitfile}" -a ! -w "${gitfile}" ] ; then
-        echo 'FATAL: Must pass writeable git config file to -f option.' 1>&2
-        return 1
-    fi
-
-    # Create an ssh key if there is none:
-    [ ! -e "${HOME}"/.ssh/id_rsa ] && ssh-keygen -t rsa -b 4096 -C "${email}"
-
-    if [ -n "${gitfile}" ] ; then
+    if [ -w "${gitfile}" ] ; then
         git config -f "${gitfile}" user.name "${name}"
         git config -f "${gitfile}" user.email "${email}"
         for i in "$@" ; do git config -f "${gitfile}" ${1} ; shift ; done
