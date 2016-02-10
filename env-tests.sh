@@ -10,9 +10,9 @@
 # File tests
 
 _any_not_w () {
-    
+
     for i in "$@" ; do
-        [ -e "${1}" -a ! -w "${1}" ] && return 0
+        [ -n "${1}" -a ! -w "${1}" ] && return 0
     done
 
     return 1
@@ -30,7 +30,7 @@ _any_null () {
     return 1
 }
 
-_no_null () { 
+_all_not_null () { 
 
     for i in "$@" ; do
         [ -z "${i}" ] && return 1

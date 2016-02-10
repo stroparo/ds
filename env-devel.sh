@@ -6,6 +6,8 @@
 # ##############################################################################
 # Devel functions
 
+# Function genssh - generate id_rsa if none present for the current user.
+unset genssh
 genssh () {
     # Create an ssh key if there is none:
     [ ! -e "${HOME}"/.ssh/id_rsa ] && ssh-keygen -t rsa -b 4096 -C "${email}"
@@ -16,13 +18,17 @@ genssh () {
 
 # Function gg - exec git for all repos descending from current directory.
 # Syntax: [-c command] [command subcommands arguments etc.]
+unset gg
 gg () {
+
+    pname=gg
     typeset gitcmd='git'
+    typeset usage="Usage: [-c newCommandInsteadOfGit] [options] [args]"
 
     while getopts ':c:h' opt ; do
         case "${opt}" in
         c) gitcmd="${OPTARG}" ;;
-        h) echo "${0} [-c newCommandInsteadOfGit] [options] [args]" ; OPTIND=1 ; return ;;
+        h) elog -i "${usage}" ; OPTIND=1 ; return ;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND=1
@@ -38,7 +44,7 @@ gg () {
 $(find . -type d -name ".git" | sort)
 EOF
 
-    unset gitcmd
+    unset gitcmd pname
 }
 
 # Function gitclones - Clone repos passed in the argument, one per line (quote it).
@@ -46,15 +52,17 @@ EOF
 unset gitclones
 gitclones () {
 
+    pname=gitclones
+
     while read repo ; do
 
         if [ ! -d "$(basename "${repo%.git}")" ] ; then
             if ! git clone "${repo}" ; then
-                echo "Failed cloning '${repo}' repository. Aborted sequence." 1>&2
+                elog -f "Failed cloning '${repo}' repository."
                 return 1
             fi
         else
-            echo "SKIP: '$(basename "${repo%.git}")' repository already exists." 1>&2
+            elog -s "'$(basename "${repo%.git}")' repository already exists."
         fi
 
         echo '' 1>&2
@@ -62,6 +70,8 @@ gitclones () {
     done <<EOF
 ${1}
 EOF
+
+    unset pname
 }
 
 # Function gitconfig - configure git.
@@ -70,42 +80,47 @@ EOF
 unset gitconfig
 gitconfig () {
 
-    typeset gitfile=''
-    typeset name=gitconfig
+    pname=gitconfig
+    typeset email gitfile name
 
     # Parse options:
-    while getopts ':f:' opt ; do
+    while getopts ':e:f:n:' opt ; do
         case "${opt}" in
+        e) email="${OPTARG}" ;;
         f) gitfile="${OPTARG}" ;;
+        n) name="${OPTARG}" ;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND=1
 
-    typeset email="${1}"
-    typeset name="${2}"
-    shift 2
-
-    _any_null "${1}" "${2}" && echoe "${name}:FATAL: Must pass an email and a name." && return 1
-    _any_not_w "${gitfile}" && echoe "${name}:FATAL: Must pass writeable file to -f option." && return 1
+    _any_null "${email}" "${name}" && elog -f "Must pass an email and a name." && return 1
+    _any_not_w "${gitfile}" && elog -f "Must pass writeable file to -f option." && return 1
 
     if [ -w "${gitfile}" ] ; then
-        git config -f "${gitfile}" user.name "${name}"
-        git config -f "${gitfile}" user.email "${email}"
-        for i in "$@" ; do git config -f "${gitfile}" ${1} ; shift ; done
+        [ -n "${email}" ] && git config -f "${gitfile}" user.email "${email}"
+        [ -n "${name}" ] &&  git config -f "${gitfile}" user.name "${name}"
+        for i in "$@" ; do git config -f "${gitfile}" ${1} ; done
     else
-        git config --global user.name "${name}"
-        git config --global user.email "${email}"
-        for i in "$@" ; do git config --global ${1} ; shift ; done
+        [ -n "${email}" ] && git config --global user.email "${email}"
+        [ -n "${name}" ] &&  git config --global user.name "${name}"
+        for i in "$@" ; do git config --global ${1} ; done
     fi
+
+    unset pname
 }
 
 # Function gpall - pushes current directory repo to all of its remotes.
 unset gpall
 gpall () {
+
+    pname=gpall
+
     for i in $(git remote); do
-        echo "=> Pushing to remote ${i}.."
-        git push "${i}" && echo "=> Pushed to remote ${i}."
+        elog -i "Pushing to remote '${i}' .."
+        git push "${i}"
     done
+
+    unset pname
 }
 
 # ##############################################################################

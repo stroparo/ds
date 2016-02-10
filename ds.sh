@@ -121,10 +121,25 @@ d () {
     ls -Fl "$@" 1>&2
 }
 
-# Function echoe - echoes a string to standard error.
-unset echoe
-echoe () {
-    echo "$@" 1>&2
+# Function elog - echoes a string to standard error.
+unset elog
+elog () {
+
+    typeset msgtype="INFO"
+
+    # Options:
+    while getopts ':dfiw' opt ; do
+        case "${opt}" in
+        d) msgtype="DEBUG" ;;
+        f) msgtype="FATAL" ;;
+        i) msgtype="INFO" ;;
+        s) msgtype="SKIP" ;;
+        w) msgtype="WARNING" ;;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND=1
+
+    echo "${pname:+${pname}:}${msgtype:+${msgtype}:}" "$@" 1>&2
 }
 
 # Function getnow - setup NOW* and TODAY* environment variables.
