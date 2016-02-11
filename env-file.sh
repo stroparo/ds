@@ -152,21 +152,15 @@ unarchive () {
     # Option processing:
     while getopts ':o:v' opt ; do
         case "${opt}" in
-        o)
-            outputdir="${OPTARG:-.}"
-            ;;
-        v)
-            verbose=true
-            ;;
+        o) outputdir="${OPTARG:-.}" ;;
+        v) verbose=true ;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
     # Check output directory is writable:
-    if [ ! -d "${outputdir}" -o ! -w "${outputdir}" ] ; then
-        elog -f "Output directory '${outputdir}' is not writable."
-        return 1
-    fi
+    _any_dir_not_w "${outputdir}" && elog -f "'${outputdir}' must be a writable directory." \
+    && return 1
 
     for f in "$@" ; do
         export f
@@ -179,7 +173,7 @@ unarchive () {
             if which 7z 2>/dev/null ; then
                 7z x -o"${outputdir}" "${f}"
             else
-                elog -s "Skipped '${f}' because 7z utility is not available."
+                elog -s "'${f}'. 7z program not available."
                 continue
             fi
             ;;
