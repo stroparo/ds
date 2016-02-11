@@ -146,20 +146,20 @@ unarchive () {
 
     pnamesave
     pname=unarchive
-    typeset outputdir='.'
+    typeset outd='.'
     typeset verbose=''
 
     # Option processing:
     while getopts ':o:v' opt ; do
         case "${opt}" in
-        o) outputdir="${OPTARG:-.}" ;;
+        o) outd="${OPTARG:-.}" ;;
         v) verbose=true ;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
     # Check output directory is writable:
-    _any_dir_not_w "${outputdir}" && elog -f "'${outputdir}' must be a writable directory." \
+    _any_dir_not_w "${outd}" && elog -f "'${outd}' must be a writable directory." \
     && return 1
 
     for f in "$@" ; do
@@ -170,34 +170,22 @@ unarchive () {
         case "${f}" in
         
         *.7z)
-            if which 7z 2>/dev/null ; then
-                7z x -o"${outputdir}" "${f}"
-            else
-                elog -s "'${f}'. 7z program not available."
-                continue
-            fi
+            ! which 7z 2>/dev/null && elog -s "'${f}'. 7z program not available." && continue
+            7z x -o"${outd}" "${f}"
             ;;
         
         *.tar.bz2|*tbz2)
-            if which bunzip2 2>/dev/null ; then
-                bunzip2 -c "${f}" | tar -x${verbose:+v}f - -C "${outputdir}"
-            else
-                elog -s "Skipped '${f}' because bunzip2 utility is not available."
-                continue
-            fi
+            ! which bunzip2 2>/dev/null && elog -s "'${f}'. bunzip2 program not available." && continue
+            bunzip2 -c "${f}" | tar -x${verbose:+v}f - -C "${outd}"
             ;;
         
         *.tar.gz|*tgz)
-            gunzip -c "${f}" | tar -x${verbose:+v}f - -C "${outputdir}"
+            gunzip -c "${f}" | tar -x${verbose:+v}f - -C "${outd}"
             ;;
         
         *.zip)
-            if which unzip 2>/dev/null ; then
-                unzip "${f}" -d "${outputdir}"
-            else
-                elog -s "Skipped '${f}' because unzip utility is not available."
-                continue
-            fi
+            ! which unzip 2>/dev/null && elog -s "'${f}'. unzip program not available." && continue
+            unzip "${f}" -d "${outd}"
             ;;
         
         esac
