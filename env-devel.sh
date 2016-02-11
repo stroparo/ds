@@ -21,6 +21,7 @@ genssh () {
 unset gg
 gg () {
 
+    pnamesave
     pname=gg
     typeset gitcmd='git'
     typeset usage="Usage: [-c newCommandInsteadOfGit] [options] [args]"
@@ -44,7 +45,8 @@ gg () {
 $(find . -type d -name ".git" | sort)
 EOF
 
-    unset gitcmd pname
+    unset gitcmd
+    pnamerestore
 }
 
 # Function gitclones - Clone repos passed in the argument, one per line (quote it).
@@ -52,6 +54,7 @@ EOF
 unset gitclones
 gitclones () {
 
+    pnamesave
     pname=gitclones
 
     while read repo ; do
@@ -71,7 +74,7 @@ gitclones () {
 ${1}
 EOF
 
-    unset pname
+    pnamerestore
 }
 
 # Function gitconfig - configure git.
@@ -80,6 +83,7 @@ EOF
 unset gitconfig
 gitconfig () {
 
+    pnamesave
     pname=gitconfig
     typeset email gitfile name
 
@@ -106,13 +110,14 @@ gitconfig () {
         for i in "$@" ; do git config --global ${1} ; done
     fi
 
-    unset pname
+    pnamerestore
 }
 
 # Function gpall - pushes current directory repo to all of its remotes.
 unset gpall
 gpall () {
 
+    pnamesave
     pname=gpall
 
     for i in $(git remote); do
@@ -120,7 +125,7 @@ gpall () {
         git push "${i}"
     done
 
-    unset pname
+    pnamerestore
 }
 
 # ##############################################################################

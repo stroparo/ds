@@ -204,6 +204,13 @@ pathmunge () {
     unset opt pathmunge_after
 }
 
+# Functions pnamesave and pnamerestore  - handle pname param backup and restore.
+#  Used at the beginning and end of routines such as functions.
+#  Also the pname param is used by some functions like elog.
+unset pnamesave pnamerestore
+pnamesave () { oldpname="$pname" ; }
+pnamerestore () { pname="$oldpname" ; }
+
 # Function sourcefiles - each arg is a glob; source all glob expanded paths.
 #  Tilde paths are accepted, as the expansion is yielded
 #  via eval. Expanded directories are ignored.

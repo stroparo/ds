@@ -11,6 +11,7 @@
 unset archive
 archive () {
 
+    pnamesave
     pname=archive
     typeset extension='zip'
     typeset prefix='bak'
@@ -91,7 +92,7 @@ archive () {
 
     done
 
-    unset pname
+    pnamerestore
 }
 
 # Function chmodr - Recursively change file mode/permissions. 
@@ -99,6 +100,7 @@ archive () {
 unset chmodr
 chmodr () {
 
+    pnamesave
     pname=chmodr
     typeset mode
     
@@ -109,7 +111,7 @@ chmodr () {
   
     find "${1}" -type f -name "${2}" -exec chmod "${3:-600}" {} \;
 
-    unset pname
+    pnamerestore
 }
 
 unset lstgz
@@ -142,6 +144,7 @@ mv2ymd () {
 unset unarchive
 unarchive () {
 
+    pnamesave
     pname=unarchive
     typeset outputdir='.'
     typeset verbose=''
@@ -206,7 +209,7 @@ unarchive () {
         esac
     done
 
-    unset pname
+    pnamerestore
 }
 
 unset untgz
