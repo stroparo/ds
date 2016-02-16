@@ -140,7 +140,7 @@ unarchive () {
 
     typeset pname=unarchive
     typeset outd='.'
-    typeset verbose=''
+    typeset verbose
 
     # Option processing:
     while getopts ':o:v' opt ; do
@@ -158,17 +158,17 @@ unarchive () {
     for f in "$@" ; do
         export f
         
-        ${verbose:-false} && elog -n "$pname" -i "Unarchiving '${f}'.."
+        [ -n "${verbose:-}" ] && elog -n "$pname" -i "Unarchiving '${f}'.."
 
         case "${f}" in
         
         *.7z)
-            ! which 7z 2>/dev/null && elog -n "$pname" -s "'${f}'. 7z program not available." && continue
+            ! which 7z >/dev/null 2>&1 && elog -n "$pname" -s "'${f}'. 7z program not available." && continue
             7z x -o"${outd}" "${f}"
             ;;
         
         *.tar.bz2|*tbz2)
-            ! which bunzip2 2>/dev/null && elog -n "$pname" -s "'${f}'. bunzip2 program not available." && continue
+            ! which bunzip2 >/dev/null 2>&1 && elog -n "$pname" -s "'${f}'. bunzip2 program not available." && continue
             bunzip2 -c "${f}" | tar -x${verbose:+v}f - -C "${outd}"
             ;;
         
@@ -177,7 +177,7 @@ unarchive () {
             ;;
         
         *.zip)
-            ! which unzip 2>/dev/null && elog -n "$pname" -s "'${f}'. unzip program not available." && continue
+            ! which unzip >/dev/null 2>&1 && elog -n "$pname" -s "'${f}'. unzip program not available." && continue
             unzip "${f}" -d "${outd}"
             ;;
         
