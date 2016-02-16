@@ -10,7 +10,7 @@
 unset genssh
 genssh () {
     # Create an ssh key if there is none:
-    [ ! -e "${HOME}"/.ssh/id_rsa ] && ssh-keygen -t rsa -b 4096 -C "${email}"
+    [ ! -e "${HOME}"/.ssh/id_rsa ] && ssh-keygen -t rsa -b 4096 -C "${1:-mykey}"
 }
 
 # ##############################################################################
