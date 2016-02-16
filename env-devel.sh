@@ -17,6 +17,7 @@ genssh () {
 # Git
 
 # Function gg - exec git for all repos descending from current directory.
+# Remark: GGIGNORE global can have an egrep regex for git repos to be ignored.
 # Syntax: [-c command] [command subcommands arguments etc.]
 unset gg
 gg () {
@@ -35,8 +36,16 @@ gg () {
     shift $((OPTIND-1)) ; OPTIND=1
 
     while read gitdir; do
-        echo ''
         cd "${gitdir%/.git}"
+
+        # Ignore:
+        if egrep -q "${GGIGNORE:-}" ; then
+            cd - >/dev/null
+            continue
+        fi <<EOF
+${gitdir%/.git}
+EOF
+        echo ''
         echo "#### For git repo '${PWD}', execute:"
         echo '$' "${gitcmd}" "$@"
         eval ${gitcmd} "$@"
