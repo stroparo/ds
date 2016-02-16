@@ -126,13 +126,15 @@ unset elog
 elog () {
 
     typeset msgtype="INFO"
+    typeset pname
 
     # Options:
-    while getopts ':dfiw' opt ; do
+    while getopts ':dfin:w' opt ; do
         case "${opt}" in
         d) msgtype="DEBUG" ;;
         f) msgtype="FATAL" ;;
         i) msgtype="INFO" ;;
+        n) pname="${OPTARG}" ;;
         s) msgtype="SKIP" ;;
         w) msgtype="WARNING" ;;
         esac
