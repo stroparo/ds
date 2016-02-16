@@ -129,7 +129,7 @@ elog () {
     typeset pname
 
     # Options:
-    while getopts ':dfin:w' opt ; do
+    while getopts ':dfin:sw' opt ; do
         case "${opt}" in
         d) msgtype="DEBUG" ;;
         f) msgtype="FATAL" ;;
