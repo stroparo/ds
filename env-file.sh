@@ -11,8 +11,7 @@
 unset archive
 archive () {
 
-    pnamesave
-    pname=archive
+    typeset pname=archive
     typeset extension='zip'
     typeset prefix='bak'
     typeset sep='-'
@@ -33,7 +32,7 @@ archive () {
     shift $((OPTIND - 1)) ; OPTIND=1
 
     if [ "$#" -lt 2 ] ; then
-        elog -f "At least 2 args must be given (destination and at least one source)."
+        elog -n "$pname" -f "At least 2 args must be given (destination and at least one source)."
         return 1
     fi
 
@@ -48,7 +47,7 @@ archive () {
             typeset srcpath="${src}"
         else
             if ! (set | egrep -q "^${src}=") ; then
-                elog -s "There must be a variable named '${src}'"
+                elog -n "$pname" -s "There must be a variable named '${src}'"
                 continue
             fi
 
@@ -56,7 +55,7 @@ archive () {
             typeset srcpath="$(eval echo "\$${src}")"
 
             if [ ! -r "${srcpath}" ] ; then
-                elog -s "The path pointed to by ${src}='${srcpath}' is not accessible."
+                elog -n "$pname" -s "The path pointed to by ${src}='${srcpath}' is not accessible."
                 continue
             fi
         fi
@@ -86,13 +85,11 @@ archive () {
         if [ "$?" -eq 0 ] ; then
             echo "OK - '${bakpath}' <= '${srcpath}'"
         else
-            elog -f "'${bakpath}' <= '${srcpath}'"
+            elog -n "$pname" -f "'${bakpath}' <= '${srcpath}'"
             return 1
         fi
 
     done
-
-    pnamerestore
 }
 
 # Function chmodr - Recursively change file mode/permissions. 
@@ -100,18 +97,15 @@ archive () {
 unset chmodr
 chmodr () {
 
-    pnamesave
-    pname=chmodr
+    typeset pname=chmodr
     typeset mode
     
     [ -z "${1}" -o -z "$2" ] && return 1
   
     mode="${3:-600}"
-    [ -z "$3" ] && elog -i "mode=${mode}"
+    [ -z "$3" ] && elog -n "$pname" -i "mode=${mode}"
   
     find "${1}" -type f -name "${2}" -exec chmod "${3:-600}" {} \;
-
-    pnamerestore
 }
 
 unset lstgz
@@ -144,8 +138,7 @@ mv2ymd () {
 unset unarchive
 unarchive () {
 
-    pnamesave
-    pname=unarchive
+    typeset pname=unarchive
     typeset outd='.'
     typeset verbose=''
 
@@ -159,23 +152,23 @@ unarchive () {
     shift $((OPTIND - 1)) ; OPTIND=1
 
     # Check output directory is writable:
-    _any_dir_not_w "${outd}" && elog -f "'${outd}' must be a writable directory." \
+    _any_dir_not_w "${outd}" && elog -n "$pname" -f "'${outd}' must be a writable directory." \
     && return 1
 
     for f in "$@" ; do
         export f
         
-        ${verbose:-false} && elog -i "Unarchiving '${f}'.."
+        ${verbose:-false} && elog -n "$pname" -i "Unarchiving '${f}'.."
 
         case "${f}" in
         
         *.7z)
-            ! which 7z 2>/dev/null && elog -s "'${f}'. 7z program not available." && continue
+            ! which 7z 2>/dev/null && elog -n "$pname" -s "'${f}'. 7z program not available." && continue
             7z x -o"${outd}" "${f}"
             ;;
         
         *.tar.bz2|*tbz2)
-            ! which bunzip2 2>/dev/null && elog -s "'${f}'. bunzip2 program not available." && continue
+            ! which bunzip2 2>/dev/null && elog -n "$pname" -s "'${f}'. bunzip2 program not available." && continue
             bunzip2 -c "${f}" | tar -x${verbose:+v}f - -C "${outd}"
             ;;
         
@@ -184,14 +177,12 @@ unarchive () {
             ;;
         
         *.zip)
-            ! which unzip 2>/dev/null && elog -s "'${f}'. unzip program not available." && continue
+            ! which unzip 2>/dev/null && elog -n "$pname" -s "'${f}'. unzip program not available." && continue
             unzip "${f}" -d "${outd}"
             ;;
         
         esac
     done
-
-    pnamerestore
 }
 
 unset untgz
