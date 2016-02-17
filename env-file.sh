@@ -182,6 +182,8 @@ unarchive () {
             ;;
         
         esac
+
+        [ "$?" -eq 0 ] && [ -n "${verbose:-}" ] && elog -n "$pname" -i "Success for '${f}'"
     done
 }
 
