@@ -8,7 +8,7 @@
 # ##############################################################################
 # DS reserved objects
 
-export DS_HOME="${1:-${HOME}/.ds}"
+export DS_HOME="${1:-${HOME%/}/.ds}"
 export DS_VERBOSE
 export DS_VERSION='DS version 0.1.0 - 2016-01-18 22:30'
 
