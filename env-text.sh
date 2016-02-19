@@ -110,7 +110,8 @@ EOF
     done
 }
 
-# Function gettimes: log times for every *.log file inside the current directory tree.
+# Function gettimes: get log times for every *.log file inside the current directory tree.
+unset gettimes
 gettimes () {
     for i in $(find . -name '*.log') ; do
         # Job name:
