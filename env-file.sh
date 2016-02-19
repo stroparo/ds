@@ -169,11 +169,11 @@ unarchive () {
         
         *.tar.bz2|*tbz2)
             ! which bunzip2 >/dev/null 2>&1 && elog -n "$pname" -s "'${f}'. bunzip2 program not available." && continue
-            bunzip2 -c "${f}" | tar -x${verbose:+v}f - -C "${outd}"
+            (cd "${outd}" ; bunzip2 -c "${f}" | tar -x${verbose:+v}f -)
             ;;
         
         *.tar.gz|*tgz)
-            gunzip -c "${f}" | tar -x${verbose:+v}f - -C "${outd}"
+            (cd "${outd}" ; gunzip -c "${f}" | tar -x${verbose:+v}f -)
             ;;
         
         *.zip)
