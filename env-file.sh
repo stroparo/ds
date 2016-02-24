@@ -92,6 +92,44 @@ archive () {
     done
 }
 
+# Function childrentgz - archives all srcdir children into destdir/children.tar.gz,
+#  via paralleljobs function.
+# Remark: abort if destdir already exists.
+# Syntax: srcdir destdir
+unset childrentgz
+childrentgz () {
+    typeset srcdir="${1}"
+    typeset destdir="${2}"
+    mkdir -p "${destdir}" || return 1
+    [ -r "${srcdir}" ] || return 1
+    [ -w "${destdir}" ] || return 1
+
+    cd "${srcdir}" || return 1
+
+    paralleljobs "tar -cf - '{}' | gunzip -c - > '${destdir}/{}.tar.gz' ; echo \$?" <<EOF
+$(ls -1d *)
+EOF
+}
+
+# Function childrentgunz - restores all srcdir/*gz children into destdir,
+#  via paralleljobs function.
+# Remark: abort if destdir already exists.
+# Syntax: srcdir destdir
+unset childrentgunz
+childrentgunz () {
+    typeset srcdir="${1}"
+    typeset destdir="${2}"
+    mkdir -p "${destdir}" || return 1
+    [ -r "${srcdir}" ] || return 1
+    [ -w "${destdir}" ] || return 1
+
+    cd "${destdir}" || return 1
+
+    paralleljobs "gunzip -c '{}' | tar -xf - ; echo \$?" <<EOF
+$(ls -1 "${srcdir}"/*gz | xargs du -sm | sort -rn | dufile)
+EOF
+}
+
 # Function chmodr - Recursively change file mode/permissions. 
 # Syntax: dir name_pattern [mode]
 unset chmodr
