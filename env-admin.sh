@@ -186,6 +186,44 @@ mountvboxsf () {
     fi
 }
 
+# Function paralleljobs - Fires parallel processes, entries read from stdin and
+#  replaced by {} expressions of the command specified passed into first argument.
+# Syntax: {command-template-with-{}-pairs}
+# Example: "gzip '{}'"
+unset paralleljobs
+paralleljobs () {
+    typeset cmd="${1}"
+    typeset cmdzero="${1%% *}"
+    typeset count=0
+    typeset maxprocs=128
+
+    typeset cmdentry
+    typeset flatentry
+
+    mkdir -p "${DS_ENV_LOG}/para" || return 1
+
+    while read entry ; do
+        [ -z "${entry}" ] && continue
+
+        while [ `jobs -r | wc -l` -ge ${maxprocs} ] ; do
+            # sleep 1
+            true
+        done
+
+        cmdentry="$(echo "${cmd}" | sed -e "s#[{][}]#${entry}#")" || return 1
+        flatentry="$(echo "${entry}" | sed -e 's#/#_#g')" || return 1
+
+        count=$((count+1))
+        echo "Launching process #${count}.." 1>&2
+        echo bash -c "\"${cmdentry}\"" '>' "\"${DS_ENV_LOG}/para/${cmdzero}_${flatentry}.log\"" '2>&1 &'
+        nohup bash -c "${cmdentry}" > "${DS_ENV_LOG}/para/${cmdzero}_${flatentry}.log" 2>&1 &
+    done
+
+    [ "${count}" -gt 0 ] && echo "Processing last batch of `jobs -p | wc -l` jobs.." 1>&2
+    while [ `jobs -r | wc -l` -gt 0 ] ; do sleep 1 ; done
+    [ "${count}" -gt 0 ] && echo "Finished processing a total of ${count} entries." 1>&2
+}
+
 # Function pgr - pgrep emulator.
 # Syntax: [egrep-pattern]
 unset pgr
