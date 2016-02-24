@@ -21,16 +21,14 @@ genssh () {
 # Syntax: [-c command] [command subcommands arguments etc.]
 unset gg
 gg () {
-
-    pnamesave
-    pname=gg
+    typeset pname=gg
     typeset gitcmd='git'
     typeset usage="Usage: [-c newCommandInsteadOfGit] [options] [args]"
 
     while getopts ':c:h' opt ; do
         case "${opt}" in
         c) gitcmd="${OPTARG}" ;;
-        h) elog -i "${usage}" ; OPTIND=1 ; return ;;
+        h) elog -i -n "${pname}" "${usage}" ; OPTIND=1 ; return ;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND=1
@@ -55,26 +53,23 @@ $(find . -type d -name ".git" | sort)
 EOF
 
     unset gitcmd
-    pnamerestore
 }
 
 # Function gitclones - Clone repos passed in the argument, one per line (quote it).
 # Syntax: {repositories-one-per-line}
 unset gitclones
 gitclones () {
-
-    pnamesave
-    pname=gitclones
+    typeset pname=gitclones
 
     while read repo ; do
 
         if [ ! -d "$(basename "${repo%.git}")" ] ; then
             if ! git clone "${repo}" ; then
-                elog -f "Failed cloning '${repo}' repository."
+                elog -f -n "${pname}" "Failed cloning '${repo}' repository."
                 return 1
             fi
         else
-            elog -s "'$(basename "${repo%.git}")' repository already exists."
+            elog -s -n "${pname}" "'$(basename "${repo%.git}")' repository already exists."
         fi
 
         echo '' 1>&2
@@ -82,8 +77,6 @@ gitclones () {
     done <<EOF
 ${1}
 EOF
-
-    pnamerestore
 }
 
 # Function gitconfig - configure git.
@@ -91,9 +84,7 @@ EOF
 # Example: gitconfig "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
 unset gitconfig
 gitconfig () {
-
-    pnamesave
-    pname=gitconfig
+    typeset pname=gitconfig
     typeset email gitfile name
 
     # Parse options:
@@ -106,8 +97,8 @@ gitconfig () {
     done
     shift $((OPTIND-1)) ; OPTIND=1
 
-    _any_null "${email}" "${name}" && elog -f "Must pass an email and a name." && return 1
-    _any_not_w "${gitfile}" && elog -f "Must pass writeable file to -f option." && return 1
+    _any_null "${email}" "${name}" && elog -f -n "${pname}" "Must pass an email and a name." && return 1
+    _any_not_w "${gitfile}" && elog -f -n "${pname}" "Must pass writeable file to -f option." && return 1
 
     if [ -w "${gitfile}" ] ; then
         [ -n "${email}" ] && git config -f "${gitfile}" user.email "${email}"
@@ -118,8 +109,6 @@ gitconfig () {
         [ -n "${name}" ] &&  git config --global user.name "${name}"
         for i in "$@" ; do git config --global ${1} ; done
     fi
-
-    pnamerestore
 }
 
 # Function gpall - pushes current directory repo to all of its remotes.
