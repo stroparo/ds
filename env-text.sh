@@ -175,3 +175,27 @@ mutail () {
     done
 }
 
+# Function printawk - Prints fields as read by awk.
+unset printawk
+printawk () {
+    typeset fieldsep
+    typeset printargs
+
+    while getopts ':F:O:' opt ; do
+        case "${opt}" in
+        F) fieldsep="${OPTARG}" ;;
+        O) outsep="${OPTARG}" ;;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND=1
+
+    printargs="\$${1}"
+    shift
+
+    for i in "$@" ; do
+        printargs="${printargs}, \$${i}"
+    done
+
+    awk ${fieldsep:+-F${fieldsep}} ${outsep:+-vOFS=${outsep}} "{print ${printargs};}"
+}
+
