@@ -43,168 +43,7 @@ dsinfo () {
 }
 
 # ##############################################################################
-# Basic functions
-
-# Function aliasnoext - pick {argument}/*sh and yield aliases without extension.
-# Syntax: {directory}1+
-unset aliasnoext
-aliasnoext () {
-
-    typeset verbose
-
-    # Options:
-    while getopts ':v' opt ; do
-        case "${opt}" in
-        v) verbose=true;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND=1
-
-    for dir in "$@" ; do
-        [ -d "${dir}" ] && \
-        while read script ; do
-            if [ -x "${script}" ] ; then
-                aliasname="${script##*/}"
-                aliasname="${aliasname%%.*}"
-                eval unalias "${aliasname}" 2>/dev/null
-                eval alias "${aliasname}=${script}"
-                if [ -n "${verbose}" ] ; then
-                    eval type "${aliasname}"
-                fi
-            fi
-        done <<EOF
-$(ls -1 "${dir}"/*sh 2>/dev/null)
-EOF
-    done
-}
-
-# Function cyg - cd to the disk drive letter argument; fails if not in cygwin.
-# Syntax: cyg {a|b|c|d|e|f|...}
-unset cyg 2>/dev/null
-cyg () {
-    [[ "$(uname -a)" = *ygwin* ]] || return 1
-    d /cygdrive/"${1:-c}" -Ah
-}
-
-# Function ckenv - check number of arguments and sets hasgnu ("GNU is not Unix").
-# Syntax: {min-args} [max-args=min-args]
-unset ckenv
-ckenv () {
-    typeset args_slice_min="${1}"
-    typeset args_slice_max="${2:-1}"
-    shift 2
-
-    if ! [ "${#}" -ge "${args_slice_min:-0}" -a \
-           "${#}" -le "${args_slice_max:-1}" ] ; then
-        echo "Bad arguments.." 1>&2
-        echo "${usage:-There was no 'usage' variable set.}" 1>&2
-        return 1
-    fi
-
-    # hasgnu - "has GNU?" portability indicator
-    find --version 2> /dev/null | grep -i -q 'gnu'
-    if [ "$?" -eq 0 ] ; then
-        export hasgnu=true
-    fi
-}
-
-# Function d - change directory and execute pwd followed by an ls.
-# Syntax: {directory}
-unalias d 2>/dev/null
-unset d
-d () {
-    dir="${1}"
-    shift
-
-    cd "${dir}" || return 1
-    pwd 1>&2
-    ls -Fl "$@" 1>&2
-}
-
-# Function elog - echoes a string to standard error.
-unset elog
-elog () {
-
-    typeset msgtype="INFO"
-    typeset pname
-
-    # Options:
-    while getopts ':dfin:sw' opt ; do
-        case "${opt}" in
-        d) msgtype="DEBUG" ;;
-        f) msgtype="FATAL" ;;
-        i) msgtype="INFO" ;;
-        n) pname="${OPTARG}" ;;
-        s) msgtype="SKIP" ;;
-        w) msgtype="WARNING" ;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND=1
-
-    echo "${pname:+${pname}:}${msgtype:+${msgtype}:}" "$@" 1>&2
-}
-
-# Function getnow - setup NOW* and TODAY* environment variables.
-unset getnow
-getnow () {
-    export NOW_HMS="$(date '+%OH%OM%OS')"
-    export NOW_YMDHM="$(date '+%Y%m%d%OH%OM')"
-    export NOW_YMDHMS="$(date '+%Y%m%d%OH%OM%OS')"
-    export TODAY="$(date '+%Y%m%d')"
-    export TODAY_ISO="$(date '+%Y-%m-%d')"
-}
-
-# Function loop - pass a command to be executed every secs seconds.
-# Syntax: [-d secs] command
-unset loop
-loop () {
-    typeset interval=10
-
-    while getopts ':d:' opt ; do
-        case "${opt}" in
-        d)
-            interval="${OPTARG}"
-            ;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND=1
-
-    while true ; do
-        clear 2>/dev/null || echo '' 1>&2
-        echo "Looping thru every ${interval} seconds.." 1>&2
-        echo "Command:" "$@" 1>&2
-        $@
-        sleep "${interval}" 2>/dev/null \
-        || sleep 10 \
-        || break
-    done
-}
-
-# Function pathmunge - prepend (-a causes to append) directory to PATH global.
-# Syntax: {path}1+
-unset pathmunge
-pathmunge () {
-    typeset pathmunge_after
-  
-    while getopts ':a' opt ; do
-        case "${opt}" in
-        a) pathmunge_after=1 ;;
-        esac
-    done
-    shift $((OPTIND-1)) ; OPTIND=1
-  
-    for i in "$@" ; do
-        if [ -n "${pathmunge_after}" ] ; then
-            PATH="${PATH}:${i}"
-        else
-            PATH="${i}:${PATH}"
-        fi
-    done
-    PATH="${PATH#:}"
-    PATH="${PATH%:}"
-  
-    unset opt pathmunge_after
-}
+# Stage for removal
 
 # Functions pnamesave and pnamerestore  - handle pname param backup and restore.
 #  Used at the beginning and end of routines such as functions.
@@ -213,71 +52,23 @@ unset pnamesave pnamerestore
 pnamesave () { oldpname="$pname" ; }
 pnamerestore () { pname="$oldpname" ; }
 
-# Function sourcefiles - each arg is a glob; source all glob expanded paths.
-#  Tilde paths are accepted, as the expansion is yielded
-#  via eval. Expanded directories are ignored.
-#  Stdout is fully redirected to stderr.
-unset sourcefiles
-sourcefiles () {
-
-    typeset name
-    typeset tolerant
-    typeset verbose
-
-    # Options:
-    while getopts ':n:tv' opt ; do
-        case "${opt}" in
-        n) name="${OPTARG}";;
-        t) tolerant=true;;
-        v) verbose=true;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND=1
-
-    for globpattern in "$@" ; do
-
-        if ! ls -1d ${globpattern} >/dev/null 2>&1 ; then
-            echo "Ignored bad listing for glob '${globpattern}'." 1>&2
-        fi
-
-        exec 4<&0
-
-        while read src; do
-            if [ -z "${src}" -o -d "${src}" ] ; then
-                continue
-            fi
-
-            if [ -n "${verbose}" ] ; then
-                echo "=> Sourcing ${name:+${name} - }'${src}' ..." 1>&2
-            fi
-
-            # Source op:
-            if [ -r "${src}" ] ; then
-                . "${src}" 1>&2
-            fi
-
-            if [ -z "${tolerant}" -a "$?" -ne 0 ] ; then
-                echo "Aborted non-tolerant sourcing attempt${name:+ for ${name}}." 1>&2
-                return 1
-            elif [ -n "${verbose}" ] ; then
-                echo "=> Source finished${name:+ for ${name}}." 1>&2
-            fi
-        done <<EOF
-$(eval ls -1d ${globpattern} 2>/dev/null)
-EOF
-
-    done
-}
-
 # ##############################################################################
-# Calls to routines
+# Main
 
-# Initialize DS:
-[ -n "${DS_VERBOSE}" ] && dsinfo
-sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/aliases*sh" "${DS_HOME}/env*sh" "${DS_HOME}/ds-post.sh"
+# DS init:
+. "${DS_HOME}/dsbase.sh" || return 10
+[ -n "${DS_VERBOSE}" ] && dsinfo 1>&2
+sourcefiles "${DS_HOME}/aliases*sh" || return 20
 aliasnoext "${DS_HOME}/scripts"
+sourcefiles ${DS_VERBOSE:+-v} -t -n 'DS specialized' "${DS_HOME}/ds4[a-z]*sh"
+elog -v 'DONE'
 
-# Etcetera
-if [ -r "${DS_HOME}/sshagent.sh" ] ; then
-    sourcefiles -t ${DS_VERBOSE:+-v} "${DS_HOME}/sshagent.sh"
-fi
+# Enhancing profiles:
+sourcefiles ${DS_VERBOSE:+-v} -t -n 'Custom environments' "${DS_HOME}/env*sh"
+elog -v 'DONE'
+sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/sshagent.sh"
+elog -v 'DONE'
+
+# DS init post-routines:
+sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/dspost.sh"
+elog -v 'DONE'

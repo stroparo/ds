@@ -6,6 +6,11 @@
 # ##############################################################################
 # Post file
 
+# Params:
+DS_LOADED=true
+
+# Aliases:
 unalias d 2>/dev/null
 
-DS_LOADED=true
+# Calls:
+runcommands "${DS_POST_CALLS}"

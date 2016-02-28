@@ -6,19 +6,22 @@
 # ##############################################################################
 # Aliases
 
+# CD & HOME:
 alias xcd="alias | egrep \"'c?d \""
 alias xhome='cd ~/bin && chmod 740 *sh'
 
-# DS change directory aliases:
-alias cdbak='d "${BACKUP_DIRECTORY}" -A'
-alias cde='d "${DS_ENV}" -A'
-alias cdl='cd "${DS_ENV_LOG}" && (ls -AFlrt | tail -n 64)'
-alias cdll='d "${DS_ENV_LOG}" -Art'
-alias cdlgt='cd "${DS_ENV_LOG}" && (ls -AFlrt | grep "$(date +"%b %d")")'
-alias cdlt='cd "${DS_ENV_LOG}" && d "$(date "+%Y%m%d")" -ARrt'
-alias t='d "${TEMP_DIRECTORY}" -A'
+# Common:
+alias cls='clear'
+alias dfg='df -gP'
+alias dfh='df -hP'
+alias dums='du -ma | sort -n'
+alias dumg='du -ma | sort -rn'
+alias findd='find . -type d'
+alias findf='find . -type f'
 
-# Aliases - admin:
+# ##############################################################################
+# Admin:
+
 alias psfe='ps -fe'
 alias psfens='ps -fe | grep -v bash | grep -v sshd'
 alias psfu='ps -fu "${UID:-$(id -u)}" -U "${UID:-$(id -u)}"'
@@ -28,20 +31,16 @@ alias psuu='ps -u "${UID:-$(id -u)}" -U "${UID:-$(id -u)}" u'
 alias psuuns='ps -u "${UID:-$(id -u)}" -U "${UID:-$(id -u)}" u | grep -v bash | grep -v sshd'
 
 # Aliases - admin - Linux & Cygwin:
-if [[ "$(uname -a)" = *inux* ]] || [[ "$(uname -a)" = *ygwin* ]] ; then
-    alias cls='clear'
+if [[ "$(uname -a)" = *[Ll]inux* ]] || [[ "$(uname -a)" = *[Cc]ygwin* ]] ; then
+    echo '' > /dev/null
 # Aliases - admin - IBM AIX platform:
-elif [[ $(uname) = *AIX* ]] ; then
+elif [[ $(uname) = *[Aa][Ii][Xx]* ]] ; then
     alias psft='ps -fT1'
     alias psftu='ps -fT1|awk "\$1 ~ /^$USER$/"'
 fi
 
-# Aliases - apps:
-alias dfg='df -gP'
-alias dfh='df -hP'
-alias dums='du -ma | sort -rn'
-alias findd='find . -type d'
-alias findf='find . -type f'
+# ##############################################################################
+# Common & their GNU specializations:
 
 # Aliases - apps - GNU vs non-GNU:
 if [[ $(grep --version 2>/dev/null) = *GNU* ]] ; then

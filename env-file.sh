@@ -95,18 +95,31 @@ archive () {
 # Function childrentgz - archives all srcdir children into destdir/children.tar.gz,
 #  via paralleljobs function.
 # Remark: abort if destdir already exists.
-# Syntax: srcdir destdir
+# Syntax: [-p maxprocesses] srcdir destdir
 unset childrentgz
 childrentgz () {
-    typeset srcdir="${1}"
-    typeset destdir="${2}"
-    mkdir -p "${destdir}" || return 1
-    [ -r "${srcdir}" ] || return 1
-    [ -w "${destdir}" ] || return 1
+    typeset srcdir
+    typeset destdir
+    typeset maxprocs
 
-    cd "${srcdir}" || return 1
+    # Options:
+    while getopts ':p:' opt ; do
+        case "${opt}" in
+        p) maxprocs="${OPTARG}";;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND=1
 
-    paralleljobs "tar -cf - '{}' | gunzip -c - > '${destdir}/{}.tar.gz' ; echo \$?" <<EOF
+    srcdir="${1}"
+    destdir="${2}"
+
+    mkdir -p "${destdir}" || return 10
+    [ -r "${srcdir}" ] || return 20
+    [ -w "${destdir}" ] || return 30
+
+    cd "${srcdir}" || return 99
+
+    paralleljobs ${maxprocs:+-p ${maxprocs}} "tar -cf - {} | gunzip -c - > '${destdir}/{}.tar.gz' ; echo \$?" <<EOF
 $(ls -1d *)
 EOF
 }
@@ -114,19 +127,39 @@ EOF
 # Function childrentgunz - restores all srcdir/*gz children into destdir,
 #  via paralleljobs function.
 # Remark: abort if destdir already exists.
-# Syntax: srcdir destdir
+# Syntax: [-p maxprocesses] srcdir destdir
 unset childrentgunz
 childrentgunz () {
-    typeset srcdir="${1}"
-    typeset destdir="${2}"
-    mkdir -p "${destdir}" || return 1
-    [ -r "${srcdir}" ] || return 1
-    [ -w "${destdir}" ] || return 1
+    typeset srcdir
+    typeset destdir
+    typeset maxprocs
 
-    cd "${destdir}" || return 1
+    # Options:
+    while getopts ':p:' opt ; do
+        case "${opt}" in
+        p) maxprocs="${OPTARG}";;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND=1
 
-    paralleljobs "gunzip -c '{}' | tar -xf - ; echo \$?" <<EOF
-$(ls -1 "${srcdir}"/*gz | xargs du -sm | sort -rn | dufile)
+    srcdir="${1}"
+    destdir="${2}"
+
+    # Checks:
+    mkdir -p "${destdir}" || return 10
+    [ -r "${srcdir}" ] || return 20
+    [ -w "${destdir}" ] || return 30
+
+    if ! ls -1 "${srcdir}"/*.tgz > /dev/null \
+    && ! ls -1 "${srcdir}"/*.tar.gz > /dev/null ; then
+        elog -w -n "${pname}" "No .tar.gz nor .tgz children to be uncompressed."
+        return
+    fi
+
+    cd "${destdir}" || return 99
+
+    paralleljobs ${maxprocs:+-p ${maxprocs}} "gunzip -c {} | tar -xf - ; echo \$?" <<EOF
+$(ls -1 "${srcdir}"/*.tgz "${srcdir}"/*.tar.gz 2>/dev/null | xargs du -sm | sort -rn | dufile)
 EOF
 }
 

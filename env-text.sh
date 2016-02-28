@@ -179,12 +179,15 @@ mutail () {
 unset printawk
 printawk () {
     typeset fieldsep
+    typeset outsep
+    typeset pattern
     typeset printargs
 
-    while getopts ':F:O:' opt ; do
+    while getopts ':F:O:p:' opt ; do
         case "${opt}" in
         F) fieldsep="${OPTARG}" ;;
         O) outsep="${OPTARG}" ;;
+        p) pattern="${OPTARG}" ;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND=1
@@ -196,6 +199,8 @@ printawk () {
         printargs="${printargs}, \$${i}"
     done
 
-    awk ${fieldsep:+-F${fieldsep}} ${outsep:+-vOFS=${outsep}} "{print ${printargs};}"
+    awk ${fieldsep:+-F${fieldsep}} \
+        ${outsep:+-vOFS=${outsep}} \
+        "${pattern}${pattern:+ }{print ${printargs};}"
 }
 
