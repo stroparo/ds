@@ -113,6 +113,8 @@ childrentgz () {
     srcdir="${1}"
     destdir="${2}"
 
+    # Checks:
+    [ -e "${destdir}" ] && elog -f "Target '${destdir}' already exists." && return 1
     mkdir -p "${destdir}" || return 10
     [ -r "${srcdir}" ] || return 20
     [ -w "${destdir}" ] || return 30
@@ -146,12 +148,13 @@ childrentgunz () {
     destdir="${2}"
 
     # Checks:
+    [ -e "${destdir}" ] && elog -f "Target '${destdir}' already exists." && return 1
     mkdir -p "${destdir}" || return 10
     [ -r "${srcdir}" ] || return 20
     [ -w "${destdir}" ] || return 30
 
-    if ! ls -1 "${srcdir}"/*.tgz > /dev/null \
-    && ! ls -1 "${srcdir}"/*.tar.gz > /dev/null ; then
+    if ! ls -1 "${srcdir}"/*.tgz > /dev/null 2>&1 \
+    && ! ls -1 "${srcdir}"/*.tar.gz > /dev/null 2>&1 ; then
         elog -w -n "${pname}" "No .tar.gz nor .tgz children to be uncompressed."
         return
     fi
