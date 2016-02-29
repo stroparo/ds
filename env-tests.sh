@@ -18,6 +18,15 @@ _any_dir_not_w () {
     return 1
 }
 
+_any_exists () {
+
+    for i in "$@" ; do
+        [ -e "${1}" ] && return 0
+    done
+
+    return 1
+}
+
 _any_not_w () {
 
     for i in "$@" ; do
