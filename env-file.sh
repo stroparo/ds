@@ -94,6 +94,7 @@ archive () {
 
 # Function childrentgz - archives all srcdir children into destdir/children.tar.gz,
 #  via paralleljobs function.
+# Deps: elog, paralleljobs.
 # Remark: abort if destdir already exists.
 # Syntax: [-p maxprocesses] srcdir destdir
 unset childrentgz
@@ -101,6 +102,7 @@ childrentgz () {
     typeset srcdir
     typeset destdir
     typeset maxprocs
+    typeset paracmd="tar -cf - {} | gzip -c - > '${destdir}/{}.tar.gz' ; echo \$?"
 
     # Options:
     while getopts ':p:' opt ; do
@@ -121,13 +123,14 @@ childrentgz () {
 
     cd "${srcdir}" || return 99
 
-    paralleljobs ${maxprocs:+-p ${maxprocs}} "tar -cf - {} | gunzip -c - > '${destdir}/{}.tar.gz' ; echo \$?" <<EOF
+    paralleljobs -l "${destdir}" ${maxprocs:+-p ${maxprocs}} "${paracmd}" <<EOF
 $(ls -1d *)
 EOF
 }
 
 # Function childrentgunz - restores all srcdir/*gz children into destdir,
 #  via paralleljobs function.
+# Deps: dudesc, dufile, elog, paralleljobs.
 # Remark: abort if destdir already exists.
 # Syntax: [-p maxprocesses] srcdir destdir
 unset childrentgunz
@@ -135,6 +138,7 @@ childrentgunz () {
     typeset srcdir
     typeset destdir
     typeset maxprocs
+    typeset paracmd="gunzip -c {} | tar -xf - ; echo \$?"
 
     # Options:
     while getopts ':p:' opt ; do
@@ -161,8 +165,8 @@ childrentgunz () {
 
     cd "${destdir}" || return 99
 
-    paralleljobs ${maxprocs:+-p ${maxprocs}} "gunzip -c {} | tar -xf - ; echo \$?" <<EOF
-$(ls -1 "${srcdir}"/*.tgz "${srcdir}"/*.tar.gz 2>/dev/null | xargs du -sm | sort -rn | dufile)
+    paralleljobs -l "${destdir}" ${maxprocs:+-p ${maxprocs}} "${paracmd}" <<EOF
+$(ls -1 "${srcdir}"/*.tgz "${srcdir}"/*.tar.gz 2>/dev/null | dudesc | dufile)
 EOF
 }
 
