@@ -12,32 +12,31 @@ unset archive
 archive () {
 
     typeset pname=archive
-    typeset extension='zip'
+    typeset dest
+    typeset extension='tgz'
     typeset prefix='bak'
     typeset sep='-'
     typeset timestamp="$(date '+%Y%m%d-%OH%OM%OS')"
 
-    if ! which zip >/dev/null 2>&1 ; then
-        extension='tgz'
-    fi
-
-    # Option processing:
-    while getopts ':p:' opt ; do
+    # Options:
+    while getopts ':p:z' opt ; do
         case "${opt}" in
-        p)
-            prefix="${OPTARG:-${prefix}}"
+        p) prefix="${OPTARG:-${prefix}}" ;;
+        z)
+            if which zip >/dev/null 2>&1 ; then
+                extension=zip
+            else
+                elog -w -n "${pname}" "zip not available so falling back to tgz."
+            fi
             ;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
-    if [ "$#" -lt 2 ] ; then
-        elog -n "$pname" -f "At least 2 args must be given (destination and at least one source)."
-        return 1
-    fi
-
+    [ "$#" -lt 2 ] && elog -f -n "$pname" "Min 2 args: destination and sources." && return 10
     typeset dest="${1}"
     shift
+    [ ! -d "${dest}" ] && elog -f -n "$pname" "Unavailable destination: ${dest}" && return 20
 
     for src in "$@" ; do
 
@@ -47,7 +46,7 @@ archive () {
             typeset srcpath="${src}"
         else
             if ! (set | egrep -q "^${src}=") ; then
-                elog -n "$pname" -s "There must be a variable named '${src}'"
+                elog -s -n "$pname" "No file nor variable named '${src}'"
                 continue
             fi
 
@@ -55,7 +54,7 @@ archive () {
             typeset srcpath="$(eval echo "\$${src}")"
 
             if [ ! -r "${srcpath}" ] ; then
-                elog -n "$pname" -s "The path pointed to by ${src}='${srcpath}' is not accessible."
+                elog -s -n "$pname" "${src}='${srcpath}' is not a readable path."
                 continue
             fi
         fi
@@ -74,21 +73,19 @@ archive () {
         fi
 
         case "${extension#.}" in
-            zip)
-                zip -q -r "${bakpath}" "${srcpath}"
-                ;;
-            tar.gz|tgz)
-                tar -cf - -C $(dirname "${srcpath}") $(basename "${srcpath}") | gzip -c - > "${bakpath}"
+            zip) zip -q -r "${bakpath}" "${srcpath}" ;;
+            *)
+                tar -cf - -C $(dirname "${srcpath}") $(basename "${srcpath}") \
+                | gzip -c - > "${bakpath}"
                 ;;
         esac
 
         if [ "$?" -eq 0 ] ; then
-            echo "OK - '${bakpath}' <= '${srcpath}'"
+            elog -n "$pname" "OK - '${bakpath}' <= '${srcpath}'"
         else
-            elog -n "$pname" -f "'${bakpath}' <= '${srcpath}'"
-            return 1
+            elog -f -n "$pname" "'${bakpath}' <= '${srcpath}'"
+            return 90
         fi
-
     done
 }
 
