@@ -94,26 +94,39 @@ archive () {
 
 # Function childrentgz - archives all srcdir children into destdir/children.tar.gz,
 #  via paralleljobs function.
-# Deps: elog, paralleljobs.
+# Deps: dudesc, dufile, elog, paralleljobs.
 # Remark: abort if destdir already exists.
 # Syntax: [-p maxprocesses] srcdir destdir
 unset childrentgz
 childrentgz () {
     typeset srcdir
     typeset destdir
+    typeset gziplevel=1
     typeset maxprocs
-    typeset paracmd="tar -cf - {} | gzip -c - > '${destdir}/{}.tar.gz' ; echo \$?"
+    typeset paracmd=false
+    typeset uncompressed=false
 
     # Options:
-    while getopts ':p:' opt ; do
+    while getopts ':c:p:u' opt ; do
         case "${opt}" in
+        c) gziplevel="${OPTARG}";;
         p) maxprocs="${OPTARG}";;
+        u) uncompressed=true;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
     srcdir="${1}"
     destdir="${2}"
+
+    # Gzip compression:
+    if ! {uncompressed} ; then
+        if ! [[ $gziplevel = [1-9] ]] ; then
+            elog -f "'$gziplevel' not a valid gzip compression level (must be 1..9)."
+            return 20
+        fi
+        elog "Compression level is ${gziplevel}"
+    fi
 
     # Checks:
     [ -e "${destdir}" ] && elog -f "Target '${destdir}' already exists." && return 1
@@ -123,8 +136,16 @@ childrentgz () {
 
     cd "${srcdir}" || return 99
 
+    if ${uncompressed} ; then
+        paracmd="tar -cf '${destdir}'/{}.tar {} ; echo \$?"
+    else
+        paracmd="tar -cf - {} | gzip -${gziplevel:-1} -c - > '${destdir}'/{}.tar.gz ; echo \$?"
+    fi
+
+    elog "Started."
+    elog "Initial delay may ocurr whilst sorting file list by size (desc).."
     paralleljobs -l "${destdir}" ${maxprocs:+-p ${maxprocs}} "${paracmd}" <<EOF
-$(ls -1d *)
+$(ls -1 -d * | dudesc | dufile)
 EOF
 }
 
@@ -139,11 +160,13 @@ childrentgunz () {
     typeset destdir
     typeset maxprocs
     typeset paracmd="gunzip -c {} | tar -xf - ; echo \$?"
+    typeset uncompressed=false
 
     # Options:
-    while getopts ':p:' opt ; do
+    while getopts ':p:u' opt ; do
         case "${opt}" in
         p) maxprocs="${OPTARG}";;
+        u) uncompressed=true;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND=1
@@ -165,6 +188,12 @@ childrentgunz () {
 
     cd "${destdir}" || return 99
 
+    if ${uncompressed} ; then
+        paracmd="tar -xf {} ; echo \$?"
+    fi
+
+    elog "Started."
+    elog "Initial delay may ocurr whilst sorting file list by size (desc).."
     paralleljobs -l "${destdir}" ${maxprocs:+-p ${maxprocs}} "${paracmd}" <<EOF
 $(ls -1 "${srcdir}"/*.tgz "${srcdir}"/*.tar.gz 2>/dev/null | dudesc | dufile)
 EOF
