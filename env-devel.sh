@@ -51,8 +51,6 @@ EOF
     done <<EOF
 $(find . -type d -name ".git" | sort)
 EOF
-
-    unset gitcmd
 }
 
 # Function gitclones - Clone repos passed in the argument, one per line (quote it).
