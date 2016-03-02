@@ -18,6 +18,12 @@ appendunique () {
     fi
 }
 
+# Function catnum - Cat files and greps the catenated content for number-only lines.
+unset catnum
+catnum () {
+    mutail -n1 "$@" | grep '^[0-9][0-9]*$'
+}
+
 # Function ckwineol - check whether any file has windows end-of-line.
 # Syntax: [file-or-dir1 [file-or-dir2...]]
 unset ckwineol
