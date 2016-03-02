@@ -19,6 +19,7 @@ appendunique () {
 }
 
 # Function catnum - Cat files and greps the catenated content for number-only lines.
+# See also: greperr
 unset catnum
 catnum () {
     mutail -n1 "$@" | grep '^[0-9][0-9]*$'
@@ -137,11 +138,20 @@ gettimes () {
     done
 }
 
+# Function greperr - Checks files' last line is a sole zero.
+# Remark: Common case scenario, an exit status $? logged last by a command.
+unset greperr
+greperr () {
+    for f in "$@" ; do
+        echo "==> ${f} <=="
+        tail -n 1 "${f}" | grep -v '^0$'
+    done
+}
+
 # Function mucat - cat multiple files.
 # Syntax: mucat file1[ file2[ file3 ...]]
 unset mucat
 mucat () {
-
     typeset first=true
 
     for f in "$@" ; do
@@ -158,7 +168,6 @@ mucat () {
 # Syntax: mutail [-n lines] file1[ file2[ file3 ...]]
 unset mutail
 mutail () {
-
     typeset first=true
     typeset lines=10
 
