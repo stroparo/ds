@@ -100,8 +100,15 @@ dpkgstat () {
 # Function dfgb - displays free disk space in GB.
 unset dfgb
 dfgb () {
-    [ -d "$1" ] || return 1
-    df -gP "$1" | fgrep "$1" | awk '{print $4}' | cut -d. -f1
+    typeset dfdir="${1:-.}"
+    typeset freegb
+
+    [ -d "${dfdir}" ] || return 10
+
+    freegb=$(df -gP "${dfdir}" | tail -n +2 | tail -n 1 | awk '{print $4}' | cut -d'.' -f1) \
+    || return 20
+
+    echo "${freegb}"
 }
 
 # Function dubulk - Displays disk usage of filenames read from stdin.
