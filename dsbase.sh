@@ -111,6 +111,21 @@ d () {
     ls -Fl "$@" 1>&2
 }
 
+# Function echodots - Echoes dots between 200s or number of seconds in arg1.
+unset echodots
+echodots () {
+    trap return SIGPIPE
+    while sleep "${1:-200}" ; do
+        if [ -n "${BASH_VERSION}" ] ; then
+            echo -n '.' 1>&2
+        elif [[ ${SHELL} = *ksh ]] ; then
+            echo '.\c' 1>&2
+        else
+            echo '.'
+        fi
+    done
+}
+
 # Function elog - echoes a string to standard error.
 unset elog
 elog () {
@@ -306,6 +321,16 @@ pathmunge () {
 unset pgr
 pgr () {
     ps -ef | egrep -i "${1}" | egrep -v "grep.*(${1})"
+}
+
+# Function ps1enhance - make PS1 better, displaying user, host, time, $? and the current directory.
+unset ps1enhance
+ps1enhance () {
+    if [ -n "${BASH_VERSION}" ] ; then
+        export PS1='[\[\e[32m\]\u@\h\[\e[0m\] \t \$?=$? \W]\$ '
+    elif [[ $0 = *ksh* ]] && [[ ${SHELL} = *ksh ]] ; then
+        export PS1='[${USER}@$(hostname) $(date '+%OH:%OM:%OS') \$=$? ${PWD##*/}]\$ '
+    fi
 }
 
 # Function runcommands - calls commands in the argument (most be one per line), in order.
