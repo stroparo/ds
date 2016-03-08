@@ -96,11 +96,8 @@ archive () {
 # Syntax: [-p maxprocesses] srcdir destdir
 unset childrentgz
 childrentgz () {
-    typeset srcdir
-    typeset destdir
+    typeset srcdir destdir maxprocs paracmd
     typeset gziplevel=1
-    typeset maxprocs
-    typeset paracmd=false
     typeset uncompressed=false
 
     # Options:
@@ -117,7 +114,7 @@ childrentgz () {
     destdir="${2}"
 
     # Gzip compression:
-    if ! {uncompressed} ; then
+    if ! ${uncompressed} ; then
         if ! [[ $gziplevel = [1-9] ]] ; then
             elog -f "'$gziplevel' not a valid gzip compression level (must be 1..9)."
             return 20
@@ -153,9 +150,7 @@ EOF
 # Syntax: [-p maxprocesses] srcdir destdir
 unset childrentgunz
 childrentgunz () {
-    typeset srcdir
-    typeset destdir
-    typeset maxprocs
+    typeset srcdir destdir maxprocs
     typeset paracmd="gunzip -c {} | tar -xf - ; echo \$?"
     typeset uncompressed=false
 
