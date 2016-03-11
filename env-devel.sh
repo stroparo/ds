@@ -60,6 +60,7 @@ gitclones () {
     typeset pname=gitclones
 
     while read repo ; do
+        [ -z "${repo}" ] && continue
 
         if [ ! -d "$(basename "${repo%.git}")" ] ; then
             if ! git clone "${repo}" ; then
@@ -71,7 +72,6 @@ gitclones () {
         fi
 
         echo '' 1>&2
-
     done <<EOF
 ${1}
 EOF
@@ -112,16 +112,12 @@ gitconfig () {
 # Function gpall - pushes current directory repo to all of its remotes.
 unset gpall
 gpall () {
-
-    pnamesave
-    pname=gpall
+    typeset pname=gpall
 
     for i in $(git remote); do
         elog -i "Pushing to remote '${i}' .."
         git push "${i}"
     done
-
-    pnamerestore
 }
 
 # ##############################################################################
