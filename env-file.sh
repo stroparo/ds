@@ -10,9 +10,8 @@
 # Syntax: [-p prefix] {destination-dir} {src-paths|src-path-variable-names}1+
 unset archive
 archive () {
-
+    typeset bakpath dest src srcident srcpath
     typeset pname=archive
-    typeset dest
     typeset extension='tgz'
     typeset prefix='bak'
     typeset sep='-'

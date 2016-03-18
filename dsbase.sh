@@ -375,13 +375,9 @@ setlogdir () {
 #  Stdout is fully redirected to stderr.
 unset sourcefiles
 sourcefiles () {
-
-    typeset name
+    typeset name src srcresult tolerant verbose
     typeset nta='Non-tolerant abort.'
     typeset pname='sourcefiles'
-    typeset srcresult
-    typeset tolerant
-    typeset verbose
 
     # Options:
     while getopts ':n:tv' opt ; do
