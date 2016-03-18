@@ -320,7 +320,15 @@ pathmunge () {
 # Syntax: [egrep-pattern]
 unset pgr
 pgr () {
-    ps -ef | egrep -i "${1}" | egrep -v "grep.*(${1})"
+    typeset options
+
+    # Options:
+    while getopts ':' opt ; do
+        options="${options} -${opt} ${OPTARG:-'${OPTARG}'}"
+    done
+    shift $((OPTIND - 1)) ; OPTIND=1
+
+    ps -ef | egrep -i ${options} "$@" | egrep -v "grep.*(${1})"
 }
 
 # Function ps1enhance - make PS1 better, displaying user, host, time, $? and the current directory.
