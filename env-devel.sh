@@ -10,7 +10,12 @@
 unset genssh
 genssh () {
     # Create an ssh key if there is none:
-    [ ! -e "${HOME}"/.ssh/id_rsa ] && ssh-keygen -t rsa -b 4096 -C "${1:-mykey}"
+    if [ ! -e "${HOME}"/.ssh/id_rsa ] ; then
+        ssh-keygen -t rsa -b 4096 -C "${1:-mykey}"
+
+        # Call the agent to add the newly generated key:
+        sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/sshagent.sh"
+    fi
 }
 
 # ##############################################################################
