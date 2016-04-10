@@ -236,13 +236,14 @@ mv2ymd () {
 unset unarchive
 unarchive () {
 
+    typeset force verbose
     typeset pname=unarchive
     typeset outd='.'
-    typeset verbose
 
     # Option processing:
-    while getopts ':o:v' opt ; do
+    while getopts ':fo:v' opt ; do
         case "${opt}" in
+        f) force=true;;
         o) outd="${OPTARG:-.}" ;;
         v) verbose=true ;;
         esac
@@ -250,8 +251,10 @@ unarchive () {
     shift $((OPTIND - 1)) ; OPTIND=1
 
     # Check output directory is writable:
-    _any_dir_not_w "${outd}" && elog -n "$pname" -f "'${outd}' must be a writable directory." \
-    && return 1
+    if _any_dir_not_w "${outd}" ; then
+        elog -n "$pname" -f "'${outd}' must be a writable directory."
+        return 1
+    fi
 
     for f in "$@" ; do
         export f
