@@ -168,7 +168,7 @@ dugt10desc () {
 
 # Function loadjava - load environment variables based on JAVA_HOME path.
 #  Option -v displays JAVA_HOME.
-# Syntax: [-v]
+# Syntax: [-v] [JAVA_HOME override]
 unset loadjava
 loadjava () {
 
