@@ -207,7 +207,7 @@ loadjava () {
     LD_LIBRARY_PATH="${JAVA_HOME}/${isjdk:+jre/}bin/client:${LD_LIBRARY_PATH}"
     PATH="${JAVA_HOME}/${isjdk:+jre/}lib:${PATH}"
     PATH="${JAVA_HOME}/${isjdk:+jre/}lib/amd64/server:${PATH}"
-    PATH="${JAVA_HOME}/${isjdk:+jre/}bin:${PATH}"
+    PATH="${JAVA_HOME}/${isjdk:+bin:${JAVA_HOME}/jre/}bin:${PATH}"
     PATH="${JAVA_HOME}/${isjdk:+jre/}bin/client:${PATH}"
     export CLASSPATH="${CLASSPATH%:}"
     export LD_LIBRARY_PATH="${LD_LIBRARY_PATH%:}"
