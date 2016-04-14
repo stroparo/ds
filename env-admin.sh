@@ -263,6 +263,47 @@ EOF
 }
 
 # ##############################################################################
+# Ubuntu
+
+# Function cleanubuntu - clean up ubuntu packages and unwanted files.
+# Rmk - this also installs localepurge, but it must be executed separately (in that
+#   package you will choose only the locales you use and/or want to keep).
+unset cleanubuntu
+cleanubuntu () {
+    typeset pname=cleanubuntu
+    typeset rmorphan
+
+    elog -n "$pname" 'Started.'
+
+    if _is_ubuntu ; then
+        sudo apt-get update
+
+        sudo apt-get install -y deborphan localepurge
+
+        # Remove bulky stock packages:
+        sudo apt-get purge --auto-remove oxygen-icon-theme
+
+        # Remove caches:
+        sudo apt-get autoclean -y
+        sudo apt-get clean -y
+
+        # Remove orphaned packages:
+        elog -n "$pname" '...'
+        elog -n "$pname" 'Orphaned packages:'
+        sudo deborphan
+        elog -n "$pname" 'Remove? (y|n) '
+        read rmorphan
+        if [[ ${rmorphan} = y* ]] ; then
+            sudo deborphan | xargs sudo apt-get purge -y
+        fi
+    else
+        elog -n "$pname" -s "Not in Ubuntu."
+        return 1
+    fi
+    elog -n "$pname" 'Completed.'
+}
+
+# ##############################################################################
 # Virtualbox
 
 # Function mountvboxsf - Mount virtualbox shared folder.
