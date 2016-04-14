@@ -59,7 +59,7 @@ ckaptitude () {
         && sudo apt-get install -y aptitude 
 
         if ! which aptitude > /dev/null 2>&1 ; then
-            elog -n "$pname" -f 'Failed installing aptitude. Aborted'
+            elog -n "$pname" -f 'Failed installing aptitude. Aborted.'
             return 1
         fi
         elog -n "$pname" 'Done installing aptitude.'
