@@ -231,6 +231,15 @@ dugt10desc () {
 }
 
 # ##############################################################################
+# Installations from the Internet
+
+# Function netinstomzsh - Install Oh My ZSH.
+unset netinstomzsh
+netinstomzsh () {
+    sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+}
+
+# ##############################################################################
 # Java
 
 # Function loadjava - load environment variables based on JAVA_HOME path.
