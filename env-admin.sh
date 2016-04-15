@@ -233,9 +233,9 @@ dugt10desc () {
 # ##############################################################################
 # Installations from the Internet
 
-# Function netinstomzsh - Install Oh My ZSH.
-unset netinstomzsh
-netinstomzsh () {
+# Function installomzsh - Install Oh My ZSH.
+unset installomzsh
+installomzsh () {
     sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
 }
 
