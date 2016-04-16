@@ -393,7 +393,7 @@ sourcefiles () {
 
     for globpattern in "$@" ; do
 
-        if ! ls -1d ${globpattern} >/dev/null 2>&1 ; then
+        if ! eval ls -1d ${globpattern} >/dev/null 2>&1 ; then
             elog -s -n "${pname}" "Glob '${globpattern}' had no matches."
             [ -z "${tolerant}" ] && elog -f -n "${name}" "${nta} Bad glob." && return 1
             continue
