@@ -6,9 +6,9 @@
 # ##############################################################################
 # Devel functions
 
-# Function genssh - generate id_rsa if none present for the current user.
-unset genssh
-genssh () {
+# Function sshkeygenrsa - generate id_rsa if none present for the current user.
+unset sshkeygenrsa
+sshkeygenrsa () {
     # Create an ssh key if there is none:
     if [ ! -e "${HOME}"/.ssh/id_rsa ] ; then
         ssh-keygen -t rsa -b 4096 -C "${1:-mykey}"
