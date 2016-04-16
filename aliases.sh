@@ -7,7 +7,7 @@
 # Aliases
 
 # CD & HOME:
-alias xcd="alias | egrep \"'c?d \""
+alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
 alias xhome='cd ~/bin && chmod 740 *sh'
 
 # Common:
