@@ -8,6 +8,7 @@
 
 # CD & HOME:
 alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
+alias xgit="alias | grep 'git '"
 alias xhome='cd ~/bin && chmod 740 *sh'
 
 # Common:
