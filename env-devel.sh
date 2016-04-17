@@ -21,13 +21,14 @@ sshkeygenrsa () {
 # ##############################################################################
 # Git
 
-# Function gg - exec git for all repos descending from current directory.
+# Function gitr - exec git for all repos descending from current directory.
 # Remark: GGIGNORE global can have an egrep regex for git repos to be ignored.
 # Syntax: [-c command] [command subcommands arguments etc.]
-unset gg
-gg () {
-    typeset pname=gg
+unset gitr
+gitr () {
+    typeset pname=gitr
     typeset gitcmd='git'
+    typeset gitout
     typeset usage="Usage: [-c newCommandInsteadOfGit] [options] [args]"
 
     while getopts ':c:h' opt ; do
@@ -48,10 +49,16 @@ gg () {
         fi <<EOF
 ${gitdir%/.git}
 EOF
-        echo ''
-        echo "#### For git repo '${PWD}', execute:"
-        echo '$' "${gitcmd}" "$@"
-        eval ${gitcmd} "$@"
+        gitout="
+#### For git repo '${PWD}', execute:
+\$ ${gitcmd} $@
+$(eval ${gitcmd} "$@" 2>&1)"
+
+        if ! grep -q 'nothing to commit, working directory clean' ; then
+            echo "${gitout}"
+        fi <<EOF
+${gitout}
+EOF
         cd - >/dev/null
     done <<EOF
 $(find . -type d -name ".git" | sort)
