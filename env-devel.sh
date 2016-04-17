@@ -114,17 +114,6 @@ gitconfig () {
     fi
 }
 
-# Function gpall - pushes current directory repo to all of its remotes.
-unset gpall
-gpall () {
-    typeset pname=gpall
-
-    for i in $(git remote); do
-        elog -i "Pushing to remote '${i}' .."
-        git push "${i}"
-    done
-}
-
 # ##############################################################################
 # PostgreSQL
 
