@@ -49,8 +49,7 @@ gitr () {
         fi <<EOF
 ${gitdir%/.git}
 EOF
-        gitout="
-#### For git repo '${PWD}', execute:
+        gitout="#### For git repo '${PWD}', execute:
 \$ ${gitcmd} $@
 $(eval ${gitcmd} "$@" 2>&1)"
 
