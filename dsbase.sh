@@ -69,10 +69,10 @@ ${2}\""
     fi
 }
 
-# Function cyg - cd to the disk drive letter argument; fails if not in cygwin.
-# Syntax: cyg {a|b|c|d|e|f|...}
+# Function cyd - cd to the disk drive letter argument; fails if not in cygwin.
+# Syntax: cyd {a|b|c|d|e|f|...}
 unset cyd 2>/dev/null
-cyg () {
+cyd () {
     _is_cygwin && d /cygdrive/"${1:-c}" -Ah
 }
 
