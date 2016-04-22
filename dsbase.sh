@@ -71,7 +71,7 @@ ${2}\""
 
 # Function cyg - cd to the disk drive letter argument; fails if not in cygwin.
 # Syntax: cyg {a|b|c|d|e|f|...}
-unset cyg 2>/dev/null
+unset cyd 2>/dev/null
 cyg () {
     _is_cygwin && d /cygdrive/"${1:-c}" -Ah
 }
