@@ -49,15 +49,10 @@ gitr () {
         fi <<EOF
 ${gitdir%/.git}
 EOF
-        gitout="#### For git repo '${PWD}', execute:
-\$ ${gitcmd} $@
-$(eval ${gitcmd} "$@" 2>&1)"
+        echo "#### For git repo '${PWD}', execute:"
+        echo "\$ ${gitcmd} $@"
+        eval ${gitcmd} "$@" 2>&1
 
-        if ! grep -q 'nothing to commit, working directory clean' ; then
-            echo "${gitout}"
-        fi <<EOF
-${gitout}
-EOF
         cd - >/dev/null
     done <<EOF
 $(find . -type d -name ".git" | sort)
