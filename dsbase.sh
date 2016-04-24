@@ -22,7 +22,7 @@ alias t='d "${TEMP_DIRECTORY}" -A'
 _is_aix () { [[ $(uname -a) = *[Aa][Ii][Xx]* ]] ; }
 _is_cygwin () { [[ "$(uname -a)" = *[Cc]ygwin* ]] ; }
 _is_debian () { [[ "$(uname -a)" = *[Db]ebian* ]] ; }
-_is_linux () { [[ "$(uname -a)" = *[Ll]inux* ]] ; }
+_is_linux () { [[ "$(uname -a)" = *[Ll]inux* ]] || _is_debian || _is_ubuntu ; }
 _is_ubuntu () { [[ "$(uname -a)" = *[Uu]buntu* ]] ; }
 
 # Function aliasnoext - pick {argument}/*sh and yield aliases without extension.
