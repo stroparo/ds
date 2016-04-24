@@ -110,6 +110,8 @@ unset aptinstall
 aptinstall () {
     typeset assumeyes doupgrade pkgslist
 
+    [[ $SHELL = *zsh* ]] && set -o shwordsplit
+
     while getopts ':uy' option ; do
         case "${option}" in
         u) doupgrade=true;;
@@ -131,6 +133,8 @@ aptinstall () {
         sudo aptitude upgrade ${assumeyes} || return 11
     fi
     sudo aptitude install ${assumeyes} -Z ${pkgslist} || return 21
+
+    [[ $SHELL = *zsh* ]] && set +o shwordsplit
 }
 
 # Function dpkgstat: View installation status of given package names.
