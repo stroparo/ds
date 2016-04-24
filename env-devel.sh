@@ -26,15 +26,16 @@ sshkeygenrsa () {
 # Syntax: [-c command] [command subcommands arguments etc.]
 unset gitr
 gitr () {
+    typeset gitcmdmsg statusopt
     typeset pname=gitr
     typeset gitcmd='git'
-    typeset gitout
     typeset usage="Usage: [-c newCommandInsteadOfGit] [options] [args]"
 
-    while getopts ':c:h' opt ; do
+    while getopts ':c:hs' opt ; do
         case "${opt}" in
         c) gitcmd="${OPTARG}" ;;
         h) elog -i -n "${pname}" "${usage}" ; OPTIND=1 ; return ;;
+        s) statusopt=true ;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND=1
@@ -49,9 +50,18 @@ gitr () {
         fi <<EOF
 ${gitdir%/.git}
 EOF
-        echo "#### For git repo '${PWD}', execute:"
-        echo "\$ ${gitcmd} $@"
-        eval ${gitcmd} "$@" 2>&1
+        gitcmdmsg="#### For git repo '${PWD}', execute:
+\$ ${gitcmd} $@"
+
+        if [ -n "${statusopt}" ] ; then
+            if [ -n "$(eval ${gitcmd} "$@" 2>&1)" ] ; then
+                echo "${gitcmdmsg}"
+                eval ${gitcmd} "$@" 2>&1
+            fi
+        else
+            echo "${gitcmdmsg}"
+            eval ${gitcmd} "$@" 2>&1
+        fi
 
         cd - >/dev/null
     done <<EOF
