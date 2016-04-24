@@ -220,13 +220,41 @@ lstxz () {
     done
 }
 
-# Function mv2ymd - Rename a file by appending Ymd of current date as a suffix.
+# Function renymd - Rename a file by appending Ymd of current date as a suffix.
 #  Second argument yield one more string before the extension.
 # Syntax: filename [additional-suffix]
-unset mv2ymd
-mv2ymd () {
+unset renymd
+renymd () {
     [ -e "${1}" ] || return 1
     mv "${1}" "${1%.*}_$(date '+%Y%m%d')${2}.${1##*.}"
+}
+
+# Function rentidy - Renames files and directories recursively at the root given by
+#  the argument. The new file is as per the function regex.
+unset rentidy
+rentidy () {
+    typeset pname=rentidy
+
+    if [[ $(sed --version) != *GNU* ]] ; then
+        elog -f -n "${pname}" "This will only run with GNU sed."
+        return 1
+    fi
+
+    while read i ; do
+        [[ ${i} = ${1:-.} ]] && continue
+
+        new_filename="$(echo "${i}" | \
+            sed -e 's/\([a-z]\)\([A-Z]\)/\1-\2/g' | \
+            tr '[[:upper:]]' '[[:lower:]]' | \
+            sed -e 's/[][ ~_@#()-]\+/-/g' -e "s/['\"!！]//g")"
+
+        if [ "${i}" != "${new_filename}" ] ; then
+            echo "'${i}' -> '${new_filename}'"
+            mv "${i}" "${new_filename}"
+        fi
+    done <<EOF
+$(find "${1:-.}" -depth)
+EOF
 }
 
 # Function unarchive - Given a list of archives use the appropriate
