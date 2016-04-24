@@ -413,13 +413,23 @@ sourcefiles () {
             srcresult=$?
 
             if [ "${srcresult}" -ne 0 ] ; then
-                [ -z "${tolerant}" ] && elog -f -n "${pname}" "${nta} Sourcing '${src}'." && return 1
+                [ -z "${tolerant}" ] \
+                && elog -f -n "${pname}" "${nta} Sourcing '${src}'." \
+                && return 1
+
                 elog -w -n "${pname}" "Tolerant fail for '${src}'."
+            else
+                if [ -n "${verbose}" ] ; then
+                    elog -n "${pname}" "=> '${src}' completed successfully."
+                fi
             fi
         done <<EOF
 $(eval ls -1d ${globpattern} 2>/dev/null)
 EOF
     done
+    if [ -n "${verbose}" -a -n "${name}" ] ; then
+        elog -n "${pname}" "GROUP COMPLETE."
+    fi
 }
 
 # Function topu - top user processes, or topas when working in AIX.

@@ -57,18 +57,11 @@ pnamerestore () { pname="$oldpname" ; }
 
 # DS init:
 . "${DS_HOME}/dsbase.sh" || return 10
-[ -n "${DS_VERBOSE}" ] && dsinfo 1>&2
-sourcefiles "${DS_HOME}/aliases*sh" || return 20
 aliasnoext "${DS_HOME}/scripts"
-sourcefiles ${DS_VERBOSE:+-v} -t -n 'DS specialized' "${DS_HOME}/ds4[a-z]*sh"
-elog -v 'DONE'
+[ -n "${DS_VERBOSE}" ] && dsinfo 1>&2
 
-# Enhancing profiles:
-sourcefiles ${DS_VERBOSE:+-v} -t -n 'Custom environments' "${DS_HOME}/env*sh"
-elog -v 'DONE'
+sourcefiles "${DS_HOME}/aliases*sh" || return 20
+sourcefiles ${DS_VERBOSE:+-v} -t -n 'DS specialized (ds4[a-z]*sh)' "${DS_HOME}/ds4[a-z]*sh"
+sourcefiles ${DS_VERBOSE:+-v} -t -n 'Custom environments (env*sh)' "${DS_HOME}/env*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/sshagent.sh"
-elog -v 'DONE'
-
-# DS init post-routines:
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/dspost.sh"
-elog -v 'DONE'
