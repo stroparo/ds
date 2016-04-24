@@ -206,6 +206,32 @@ chmodr () {
     find "${1}" -type f -name "${2}" -exec chmod "${3:-600}" {} \;
 }
 
+# Function getmp3 - Extracts argument file mp3 to arg.mp3 via avconv utility.
+unset getmp3
+getmp3 () {
+    typeset removal
+
+    # Options:
+    while getopts ':r' opt ; do
+        case "${opt}" in
+        r) removal=true;;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND=1
+
+    for i in "$@" ; do
+        mp3file="${i%.*}".mp3
+
+        if [ ! -e "${mp3file}" ] ; then
+            avconv -i "${i}" -threads 3 -acodec libmp3lame -b 128k -vn -f mp3 "${mp3file}"
+        fi
+
+        if [ -n "${removal}" ] ; then
+            rm -f "${i}"
+        fi
+    done
+}
+
 unset lstgz
 lstgz () {
     for f in "$@" ; do
