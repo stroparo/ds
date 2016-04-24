@@ -61,7 +61,6 @@ aliasnoext "${DS_HOME}/scripts"
 [ -n "${DS_VERBOSE}" ] && dsinfo 1>&2
 
 sourcefiles "${DS_HOME}/aliases*sh" || return 20
-sourcefiles ${DS_VERBOSE:+-v} -t -n 'DS specialized (ds4[a-z]*sh)' "${DS_HOME}/ds4[a-z]*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t -n 'Custom environments (env*sh)' "${DS_HOME}/env*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/sshagent.sh"
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/dspost.sh"
