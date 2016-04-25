@@ -283,6 +283,26 @@ $(find "${1:-.}" -depth)
 EOF
 }
 
+# Function rm1minus2 - Remove arg1's files that are in arg2 (a set op like A1 = A1 - A2).
+unset rm1minus2
+rm1minus2 () {
+    while read i ; do
+        [ -d "${1}/$i" ] && echo "Ignored directory '${1}/$i'." 1>&2 && continue
+        [ -d "${2}/$i" ] && echo "Ignored directory '${2}/$i'." 1>&2 && continue
+
+        sum1=$(md5sum -b "${1}/$i" | cut -d' ' -f1)
+        sum2=$(md5sum -b "${2}/$i" | cut -d' ' -f1)
+
+        if [ "${sum1}" = "${sum2}" ] ; then
+            rm "${1}/$i"
+        else
+            echo "Sums do not match so ignored '${1}/${i}'." 1>&2
+        fi
+    done <<EOF
+$(ls -1 "${1}" | grep -f <(ls -1 "${2}"))
+EOF
+}
+
 # Function unarchive - Given a list of archives use the appropriate
 #  uncompress command for each. The current directory is the default
 #  output directory.
