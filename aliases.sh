@@ -18,8 +18,9 @@ alias dums='du -ma | sort -n'
 alias dumg='du -ma | sort -rn'
 alias findd='find . -type d'
 alias findf='find . -type f'
-alias ya='youtube-dl -x'
+alias ya='youtube-dl -f "bestaudio"'
 alias yd='youtube-dl'
+alias yx='youtube-dl -x'
 
 # Grep color:
 if [[ $(grep --version 2>/dev/null) = *GNU* ]] ; then
