@@ -272,7 +272,7 @@ rentidy () {
         new_filename="$(echo "${i}" | \
             sed -e 's/\([a-z]\)\([A-Z]\)/\1-\2/g' | \
             tr '[[:upper:]]' '[[:lower:]]' | \
-            sed -e 's/[][ ~_@#()-]\+/-/g' -e "s/['\"!！]//g")"
+            sed -e 's/[][ ~_@#(),-]\+/-/g' -e "s/['\"!！]//g")"
 
         if [ "${i}" != "${new_filename}" ] ; then
             echo "'${i}' -> '${new_filename}'"
