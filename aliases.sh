@@ -8,7 +8,7 @@
 
 alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
 alias xgit="alias | grep 'git '"
-alias xhome='cd ~/bin && chmod 740 *sh'
+alias xhome='[ -w ~/bin ] && chmod 740 ~/bin/*sh'
 
 # Common:
 alias cls='clear'
@@ -83,7 +83,7 @@ alias psfu='ps -fu "${UID:-$(id -u)}" -U "${UID:-$(id -u)}"'
 alias psfuns='ps -fu "${UID:-$(id -u)}" -U "${UID:-$(id -u)}" | grep -v bash | grep -v sshd'
 alias psu='ps -ef|grep "${USER}"'
 alias psuu='ps -u "${UID:-$(id -u)}" -U "${UID:-$(id -u)}" u'
-alias psuuns='ps -u "${UID:-$(id -u)}" -U "${UID:-$(id -u)}" u | grep -v bash | grep -v sshd'
+alias psuunosh='ps -u "${UID:-$(id -u)}" -U "${UID:-$(id -u)}" u | grep -v bash | grep -v sshd'
 
 # Aliases - admin - Linux & Cygwin:
 if [[ "$(uname -a)" = *[Ll]inux* ]] || [[ "$(uname -a)" = *[Cc]ygwin* ]] ; then
