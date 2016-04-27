@@ -583,7 +583,7 @@ unset greperr
 greperr () {
     for f in "$@" ; do
         echo "==> ${f} <=="
-        tail -n 1 "${f}" | grep -v '^0$'
+        tail -n 1 "${f}" | grep -v '[[:space:]]*0$'
     done
 }
 
