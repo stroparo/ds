@@ -248,11 +248,24 @@ lstxz () {
 
 # Function renymd - Rename a file by appending Ymd of current date as a suffix.
 #  Second argument yield one more string before the extension.
-# Syntax: filename [additional-suffix]
+# Syntax: filenames
 unset renymd
 renymd () {
-    [ -e "${1}" ] || return 1
-    mv "${1}" "${1%.*}_$(date '+%Y%m%d')${2}.${1##*.}"
+    typeset pname=renymd
+    typeset ymdname
+
+    for i in "$@" ; do
+        if [ ! -e "${i}" ] ; then
+            elog -n "${pname}" -s "Skipped as file is not present: '${i}'"
+        else
+            ymdname="${i%.*}_$(date '+%Y%m%d').${i##*.}"
+            if [ ! -e "${ymdname}" ] ; then
+                mv "${i}" "${ymdname}"
+            else
+                elog -n "${pname}" -s "Skipped as there is '${ymdname}' already."
+            fi
+        fi
+    done
 }
 
 # Function rentidy - Renames files and directories recursively at the root given by
