@@ -275,8 +275,12 @@ rentidy () {
             sed -e 's/[][ ~_@#(),-]\+/-/g' -e "s/['\"!！]//g")"
 
         if [ "${i}" != "${new_filename}" ] ; then
-            echo "'${i}' -> '${new_filename}'"
-            mv "${i}" "${new_filename}"
+            if [ ! -e "${new_filename}" ] ; then
+                echo "'${i}' -> '${new_filename}'"
+                mv "${i}" "${new_filename}"
+            else
+                elog -s -n "${pname}" "No-op for '${i}' because '${new_filename}' already exists."
+            fi
         fi
     done <<EOF
 $(find "${1:-.}" -depth)
