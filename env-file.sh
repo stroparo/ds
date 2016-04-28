@@ -288,6 +288,7 @@ EOF
 }
 
 # Function rm1minus2 - Remove arg1's files that are in arg2 (a set op like A1 = A1 - A2).
+# Remark: "<(command)" inline file redirection must be available to your shell.
 unset rm1minus2
 rm1minus2 () {
     while read i ; do
@@ -300,7 +301,7 @@ rm1minus2 () {
         if [ "${sum1}" = "${sum2}" ] ; then
             rm "${1}/$i"
         else
-            echo "Sums do not match so ignored '${1}/${i}'." 1>&2
+            echo "Sums differ, thus ignored '${1}/${i}'." 1>&2
         fi
     done <<EOF
 $(ls -1 "${1}" | grep -f <(ls -1 "${2}"))
