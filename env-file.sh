@@ -25,17 +25,17 @@ archive () {
             if which zip >/dev/null 2>&1 ; then
                 extension=zip
             else
-                elog -w -n "${pname}" "zip not available so falling back to tgz."
+                echo "WARN: zip not available so falling back to tgz." 1>&2
             fi
             ;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
-    [ "$#" -lt 2 ] && elog -f -n "$pname" "Min 2 args: destination and sources." && return 10
+    [ "$#" -lt 2 ] && echo "FAIL: Min 2 args: destination and sources." 1>&2 && return 10
     typeset dest="${1}"
     shift
-    [ ! -d "${dest}" ] && elog -f -n "$pname" "Unavailable destination: ${dest}" && return 20
+    [ ! -d "${dest}" ] && echo "FAIL: Unavailable destination: ${dest}" 1>&2 && return 20
 
     for src in "$@" ; do
 
@@ -45,7 +45,7 @@ archive () {
             typeset srcpath="${src}"
         else
             if ! (set | egrep -q "^${src}=") ; then
-                elog -s -n "$pname" "No file nor variable named '${src}'"
+                echo "SKIP: No file nor variable named '${src}'" 1>&2
                 continue
             fi
 
@@ -53,7 +53,7 @@ archive () {
             typeset srcpath="$(eval echo "\$${src}")"
 
             if [ ! -r "${srcpath}" ] ; then
-                elog -s -n "$pname" "${src}='${srcpath}' is not a readable path."
+                echo "SKIP: ${src}='${srcpath}' is not a readable path." 1>&2
                 continue
             fi
         fi
@@ -80,9 +80,9 @@ archive () {
         esac
 
         if [ "$?" -eq 0 ] ; then
-            elog -n "$pname" "OK - '${bakpath}' <= '${srcpath}'"
+            echo "OK: '${bakpath}' <= '${srcpath}'" 1>&2
         else
-            elog -f -n "$pname" "'${bakpath}' <= '${srcpath}'"
+            echo "FAIL: '${bakpath}' <= '${srcpath}'" 1>&2
             return 90
         fi
     done
@@ -90,7 +90,7 @@ archive () {
 
 # Function childrentgz - archives all srcdir children into destdir/children.tar.gz,
 #  via paralleljobs function.
-# Deps: dudesc, dufile, elog, paralleljobs.
+# Deps: dudesc, dufile, paralleljobs.
 # Remark: abort if destdir already exists.
 # Syntax: [-p maxprocesses] srcdir destdir
 unset childrentgz
@@ -115,14 +115,14 @@ childrentgz () {
     # Gzip compression:
     if ! ${uncompressed} ; then
         if ! [[ $gziplevel = [1-9] ]] ; then
-            elog -f "'$gziplevel' not a valid gzip compression level (must be 1..9)."
+            echo "FAIL: '$gziplevel' not a valid gzip compression level (must be 1..9)." 1>&2
             return 20
         fi
-        elog "Compression level is ${gziplevel}"
+        echo "INFO: Compression level is ${gziplevel}" 1>&2
     fi
 
     # Checks:
-    [ -e "${destdir}" ] && elog -f "Target '${destdir}' already exists." && return 1
+    [ -e "${destdir}" ] && echo "FAIL: Target '${destdir}' already exists." 1>&2 && return 1
     mkdir -p "${destdir}" || return 10
     [ -r "${srcdir}" ] || return 20
     [ -w "${destdir}" ] || return 30
@@ -135,8 +135,8 @@ childrentgz () {
         paracmd="tar -cf - {} | gzip -${gziplevel:-1} -c - > '${destdir}'/{}.tar.gz ; echo \$?"
     fi
 
-    elog "Started."
-    elog "Initial delay may ocurr whilst sorting file list by size (desc).."
+    echo "INFO: Started." 1>&2
+    echo "INFO: Initial delay may ocurr whilst sorting file list by size (desc).." 1>&2
     paralleljobs -l "${destdir}" ${maxprocs:+-p ${maxprocs}} "${paracmd}" <<EOF
 $(ls -1 -d * | dudesc | dufile)
 EOF
@@ -144,7 +144,7 @@ EOF
 
 # Function childrentgunz - restores all srcdir/*gz children into destdir,
 #  via paralleljobs function.
-# Deps: dudesc, dufile, elog, paralleljobs.
+# Deps: dudesc, dufile, paralleljobs.
 # Remark: abort if destdir already exists.
 # Syntax: [-p maxprocesses] srcdir destdir
 unset childrentgunz
@@ -166,14 +166,14 @@ childrentgunz () {
     destdir="${2}"
 
     # Checks:
-    [ -e "${destdir}" ] && elog -f "Target '${destdir}' already exists." && return 1
+    [ -e "${destdir}" ] && echo "FAIL: Target '${destdir}' already exists." 1>&2 && return 1
     mkdir -p "${destdir}" || return 10
     [ -r "${srcdir}" ] || return 20
     [ -w "${destdir}" ] || return 30
 
     if ! ls -1 "${srcdir}"/*.tgz > /dev/null 2>&1 \
     && ! ls -1 "${srcdir}"/*.tar.gz > /dev/null 2>&1 ; then
-        elog -w -n "${pname}" "No .tar.gz nor .tgz children to be uncompressed."
+        echo "WARN: No .tar.gz nor .tgz children to be uncompressed." 1>&2
         return
     fi
 
@@ -183,27 +183,27 @@ childrentgunz () {
         paracmd="tar -xf {} ; echo \$?"
     fi
 
-    elog "Started."
-    elog "Initial delay may ocurr whilst sorting file list by size (desc).."
+    echo "INFO: Started." 1>&2
+    echo "INFO: Initial delay may ocurr whilst sorting file list by size (desc).." 1>&2
     paralleljobs -l "${destdir}" ${maxprocs:+-p ${maxprocs}} "${paracmd}" <<EOF
 $(ls -1 "${srcdir}"/*.tgz "${srcdir}"/*.tar.gz 2>/dev/null | dudesc | dufile)
 EOF
 }
 
 # Function chmodr - Recursively change file mode/permissions. 
-# Syntax: dir name_pattern [mode]
+# Syntax: dir filename_glob [mode=600]
 unset chmodr
 chmodr () {
-
-    typeset pname=chmodr
-    typeset mode
+    typeset dir fglob mode
     
-    [ -z "${1}" -o -z "$2" ] && return 1
+    dir="${1}"
+    fglob="${2}"
+    [ ! -d "${dir}" -o -z "${fglob}" ] && return 1
   
     mode="${3:-600}"
-    [ -z "$3" ] && elog -n "$pname" -i "mode=${mode}"
-  
-    find "${1}" -type f -name "${2}" -exec chmod "${3:-600}" {} \;
+    [ -z "$3" ] && echo "Using default mode=${mode}"
+
+    find "${dir}" -type f -name "${fglob}" -exec chmod "${mode}" {} \;
 }
 
 # Function getmp3 - Extracts argument file mp3 to arg.mp3 via avconv utility.
@@ -220,14 +220,15 @@ getmp3 () {
     shift $((OPTIND - 1)) ; OPTIND=1
 
     for i in "$@" ; do
-        mp3file="${i%.*}".mp3
+        mp3filename="${i%.*}".mp3
 
-        if [ ! -e "${mp3file}" ] ; then
-            avconv -i "${i}" -threads 3 -acodec libmp3lame -b 128k -vn -f mp3 "${mp3file}"
-        fi
-
-        if [ -n "${removal}" ] ; then
-            rm -f "${i}"
+        if [ -f "${i}" ] && [ ! -e "${mp3filename}" ] ; then
+            if avconv -i "${i}" -threads 3 -acodec libmp3lame -b 128k -vn -f mp3 \
+                "${mp3filename}" \
+            && [ -n "${removal}" ]
+            then
+                rm -f "${i}"
+            fi
         fi
     done
 }
@@ -251,18 +252,18 @@ lstxz () {
 # Syntax: filenames
 unset renymd
 renymd () {
-    typeset pname=renymd
     typeset ymdname
 
     for i in "$@" ; do
         if [ ! -e "${i}" ] ; then
-            elog -n "${pname}" -s "Skipped as file is not present: '${i}'"
+            echo "Skipped abscent file: '${i}'" 1>&2
         else
             ymdname="${i%.*}_$(date '+%Y%m%d').${i##*.}"
+
             if [ ! -e "${ymdname}" ] ; then
                 mv "${i}" "${ymdname}"
             else
-                elog -n "${pname}" -s "Skipped as there is '${ymdname}' already."
+                echo "Skipped as already exists: '${ymdname}'" 1>&2
             fi
         fi
     done
@@ -272,27 +273,34 @@ renymd () {
 #  the argument. The new file is as per the function regex.
 unset rentidy
 rentidy () {
-    typeset pname=rentidy
+    typeset editspace newfilename prefixintact
 
     if [[ $(sed --version) != *GNU* ]] ; then
-        elog -f -n "${pname}" "This will only run with GNU sed."
+        echo "This will only run with GNU sed."
         return 1
     fi
 
     while read i ; do
-        [[ ${i} = ${1:-.} ]] && continue
+        if [[ $i = */* ]] ; then
+            prefixintact="${i%/*}"
+            editspace="${i##*/}"
+        else
+            prefixintact=""
+            editspace="${i}"
+        fi
 
-        new_filename="$(echo "${i}" | \
-            sed -e 's/\([a-z]\)\([A-Z]\)/\1-\2/g' | \
-            tr '[[:upper:]]' '[[:lower:]]' | \
-            sed -e 's/[][ ~_@#(),-]\+/-/g' -e "s/['\"!！]//g")"
+        newfilename="$(echo "${editspace}" | \
+                sed -e 's/\([a-z]\)\([A-Z]\)/\1-\2/g' | \
+                tr '[[:upper:]]' '[[:lower:]]' | \
+                sed -e 's/[][ ~_@#(),-]\+/-/g' -e "s/['\"!！]//g")"
+        newfilename="${prefixintact:+${prefixintact}/}${newfilename}"
 
-        if [ "${i}" != "${new_filename}" ] ; then
-            if [ ! -e "${new_filename}" ] ; then
-                echo "'${i}' -> '${new_filename}'"
-                mv "${i}" "${new_filename}"
+        if [ "${i}" != "${newfilename}" ] ; then
+            if [ ! -e "${newfilename}" ] ; then
+                echo "'${i}' -> '${newfilename}'"
+                mv "${i}" "${newfilename}"
             else
-                elog -s -n "${pname}" "No-op for '${i}' because '${new_filename}' already exists."
+                echo "SKIP as there is a file for '${newfilename}' already."
             fi
         fi
     done <<EOF
@@ -344,24 +352,24 @@ unarchive () {
 
     # Check output directory is writable:
     if _any_dir_not_w "${outd}" ; then
-        elog -n "$pname" -f "'${outd}' must be a writable directory."
+        echo "FAIL: '${outd}' must be a writable directory." 1>&2
         return 1
     fi
 
     for f in "$@" ; do
         export f
         
-        [ -n "${verbose:-}" ] && elog -n "$pname" -i "Unarchiving '${f}'.."
+        [ -n "${verbose:-}" ] && echo "INFO: Unarchiving '${f}'.." 1>&2
 
         case "${f}" in
         
         *.7z)
-            ! which 7z >/dev/null 2>&1 && elog -n "$pname" -s "'${f}'. 7z program not available." && continue
+            ! which 7z >/dev/null 2>&1 && echo "SKIP: '${f}'. 7z program not available." 1>&2 && continue
             7z x -o"${outd}" "${f}"
             ;;
         
         *.tar.bz2|*tbz2)
-            ! which bunzip2 >/dev/null 2>&1 && elog -n "$pname" -s "'${f}'. bunzip2 program not available." && continue
+            ! which bunzip2 >/dev/null 2>&1 && echo "SKIP: '${f}'. bunzip2 program not available." 1>&2 && continue
             (cd "${outd}" ; bunzip2 -c "${f}" | tar -x${verbose:+v}f -)
             ;;
         
@@ -370,13 +378,13 @@ unarchive () {
             ;;
         
         *.zip)
-            ! which unzip >/dev/null 2>&1 && elog -n "$pname" -s "'${f}'. unzip program not available." && continue
+            ! which unzip >/dev/null 2>&1 && echo "SKIP: '${f}'. unzip program not available." 1>&2 && continue
             unzip "${f}" -d "${outd}"
             ;;
         
         esac
 
-        [ "$?" -eq 0 ] && [ -n "${verbose:-}" ] && elog -n "$pname" -i "Success for '${f}'"
+        [ "$?" -eq 0 ] && [ -n "${verbose:-}" ] && echo "OK: '${f}'" 1>&2
     done
 }
 
