@@ -10,31 +10,36 @@
 # Syntax: {root-directory}
 unset m3uzer
 m3uzer () {
-  if [ ! -d "${1}" ] ; then
-    "Aborted because the argument is not a directory."
-  fi
+    typeset m3ufile mediafile
+    typeset rootdir="$(cd "${1}" ; echo "${PWD}")"
 
-  cd "${1}"
-
-  find . -type d | while read d ; do
-    echo '#EXTM3U' > "${d}/$(basename "${d}").m3u"
-    
-    (cd "${d}" ; ls -1) | \
-    egrep -i '[.]mp3|[.]flac|[.]wma|[.]ogg|[.]flv|[.]mp4' | \
-    while read f ; do
-      [ -f "${d}/${f}" ] || continue
-      echo "#EXTINF:0,${f%.*}" >> "${d}/$(basename "${d}").m3u"
-      echo "${f}" >> "${d}/$(basename "${d}").m3u"
-    done
-
-    if [ "$(cat "${d}/$(basename "${d}").m3u" | wc -l)" -gt 1 ] ; then
-      echo "Generated '${d}/$(basename "${d}").m3u'"
-    else
-      rm -f "${d}/$(basename "${d}").m3u"
+    if [ ! -d "${1}" ] ; then
+        echo "Aborted because the argument is not a directory." 1>&2
+        return 1
     fi
-  done
 
-  cd - >/dev/null 2>&1
+    while read d ; do
+        m3ufile="${d}/${d##*/}.m3u"
+
+        echo '#EXTM3U' > "${m3ufile}"
+
+        while read f ; do
+            [ -f "${f}" ] || continue
+            mediafile="${f##*/}"
+            echo "#EXTINF:0,${mediafile%.*}" >> "${m3ufile}"
+            echo "${mediafile}" >> "${m3ufile}"
+        done <<EOF
+$(ls -1d "${d}"/* | egrep -i '[.](mp[34]|flac|ogg|m4a|wm[av]|avi|flv|mkv)')
+EOF
+        if [ "$(cat "${m3ufile}" | wc -l)" -gt 1 ] ; then
+            echo "Generated '${m3ufile}'"
+        else
+            rm -f "${m3ufile}"
+        fi
+    done <<EOF
+$(find -H "${rootdir}" -type d)
+EOF
+    cd - >/dev/null 2>&1
 }
 
 # Function screenshot: take a screenshot of the desktop, by default after 5 seconds.
