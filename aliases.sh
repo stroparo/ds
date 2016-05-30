@@ -6,6 +6,8 @@
 # ##############################################################################
 # Aliases
 
+alias tpf='typeset -f'
+alias tps='typeset'
 alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
 alias xgit="alias | grep 'git '"
 alias xhome='[ -w ~/bin ] && chmod 740 ~/bin/*sh'
