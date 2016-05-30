@@ -13,4 +13,5 @@ DS_LOADED=true
 unalias d 2>/dev/null
 
 # Calls:
+aliasnoext "${DS_HOME}/scripts"
 runcommands "${DS_POST_CALLS}"
