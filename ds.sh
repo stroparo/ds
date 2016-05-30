@@ -56,11 +56,11 @@ pnamerestore () { pname="$oldpname" ; }
 # Main
 
 # DS init:
-. "${DS_HOME}/dsbase.sh" || return 10
+. "${DS_HOME}/ds00.sh" || return 10
 aliasnoext "${DS_HOME}/scripts"
 [ -n "${DS_VERBOSE}" ] && dsinfo 1>&2
 
 sourcefiles "${DS_HOME}/aliases*sh" || return 20
 sourcefiles ${DS_VERBOSE:+-v} -t -n 'Custom environments (env*sh)' "${DS_HOME}/env*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/sshagent.sh"
-sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/dspost.sh"
+sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds99post.sh"
