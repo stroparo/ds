@@ -298,18 +298,14 @@ EOF
             echo "${environ} => path is '${u}@${h}:${dest#/}'."
 
             if ${reset_files:-false} || ${purge_only:-false} ; then
-                lftp -e 'set sftp:auto-confirm yes ; mrm -f ds*sh '"${xglobs}"' env-*sh *custom* *profile* dsbase.sh dspost.sh ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}"
-
-                # Old stuff:
-                lftp -e 'set sftp:auto-confirm yes ; mrm -f ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}"
-
+                lftp -e 'set sftp:auto-confirm yes ; mrm -f '"${xglobs}"' ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}"
                 echo "${environ} => deleted files."
             fi
             ${purge_only:-false} && continue
 
             # Put files:
             cd "${srcdir:-err}" \
-            && lftp -e 'set sftp:auto-confirm yes ; '"${xglobs}"' ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}" \
+            && lftp -e 'set sftp:auto-confirm yes ; mput '"${xglobs}"' ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}" \
             && echo "${environ} => push complete."
 
             if [ "$?" != 0 ] ; then echo "${environ} => error"\! ; return 1 ; fi
