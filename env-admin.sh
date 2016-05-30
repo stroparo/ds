@@ -371,7 +371,23 @@ eel () {
         # Search for the entry in EEPATH ee.txt files and setup variables if found:
         while read eefile ; do
             echo "==> '${eefile}' <==" 1>&2
-            awk '/^ *\[.*\] *$/ { gsub(/[][]/, ""); print; }' "${eefile}"
+
+            awk '/^ *\[.*\] *$/ {
+                if (waitingdesc) {
+                    print name;
+                }
+                gsub(/[][]/, "")
+                name = $0;
+                waitingdesc = 1;
+            }
+
+            /^ *ee_desc *=/ {
+                gsub(/'"'"'| *ee_desc= */, "");
+                desc = $0;
+                print name ": " desc;
+                waitingdesc = 0;
+            }' \
+            "${eefile}"
         done <<EOF
 $(find "${eepath}" -type f -name 'ee.txt')
 EOF
