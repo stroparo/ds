@@ -244,6 +244,83 @@ installomzsh () {
 }
 
 # ##############################################################################
+# Networking facilities
+
+# Function pushl - push files to specific target environments. LFTP variant.
+#
+# Remarks:
+# 1) The environment list must be in the tgt{env} variable.
+#       Each entry in the env list must be formatted like this:
+#       {environment-name}:{user}:{pass}:{host}:{destination-path}
+# 2) tgtglob{env} variable might contain additional space-separated globs.
+#       Also, additional globs may be passed via the -f option (-f "glob1 glob2 ...").
+# 3) -r option
+#       Reset files, i.e. deletes them from destination before copying.
+# 4) -p option
+#       Causes pushl to only purge all files in the destination
+#       Usage of -r is redundant here.
+#
+# Syntax: [-e {env-regex}] [-f {local-globs}] [-p] [-r] {srcdir} {site} [site2 [site3 ...]]
+unset pushl
+pushl () {
+    typeset env_regex purge_only reset_files srcdir xglobs xglobsarg
+    which lftp >/dev/null 2>&1 || return 10
+
+    # Options:
+    while getopts ':e:f:pr' opt ; do
+        case ${opt} in
+        e) env_regex="${OPTARG}";;
+        f) xglobsarg="${OPTARG}";;
+        p) purge_only=true;;
+        r) reset_files=true;;
+        esac
+        options="${options} -${opt} ${OPTARG:-'${OPTARG}'}"
+    done
+    shift $((OPTIND - 1)) ; OPTIND=1
+
+    srcdir="$(cd ${1}; echo "$PWD")"
+    shift
+
+    for env in "$@" ; do
+        xglobs="${xglobsarg} $(eval echo "\${tgtglob${env}}")"
+
+        echo "==> Next environment group: '${env}' <=="
+
+        while IFS=':' read environ u pw h dest ; do
+            [[ -z "${u}" ]] && continue
+
+            # Filter host name:
+            if ! grep -q "${env_regex}" ; then
+                continue
+            fi <<EOF
+${environ}
+EOF
+            echo "${environ} => path is '${u}@${h}:${dest#/}'."
+
+            if ${reset_files:-false} || ${purge_only:-false} ; then
+                lftp -e 'set sftp:auto-confirm yes ; mrm -f ds*sh '"${xglobs}"' env-*sh *custom* *profile* dsbase.sh dspost.sh ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}"
+
+                # Old stuff:
+                lftp -e 'set sftp:auto-confirm yes ; mrm -f ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}"
+
+                echo "${environ} => deleted files."
+            fi
+            ${purge_only:-false} && continue
+
+            # Put files:
+            cd "${srcdir:-err}" \
+            && lftp -e 'set sftp:auto-confirm yes ; '"${xglobs}"' ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}" \
+            && echo "${environ} => push complete."
+
+            if [ "$?" != 0 ] ; then echo "${environ} => error"\! ; return 1 ; fi
+        done <<EOF
+$(eval echo "\"\${tgt${env}}\"")
+EOF
+    done
+    echo 'Pushing process complete.'
+}
+
+# ##############################################################################
 # Java
 
 # Function loadjava - load environment variables based on JAVA_HOME path.
@@ -430,8 +507,8 @@ ee () {
         return 1
     fi
 
+    # Search for the entry in EEPATH ee.txt files and setup variables if found:
     while IFS=: read eepath ; do
-        # Search for the entry in EEPATH ee.txt files and setup variables if found:
         while read eefile ; do
             eval "$(awk -vee_name_search="${ee_name_search}" '
 
