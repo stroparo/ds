@@ -33,7 +33,7 @@ archive () {
     shift $((OPTIND - 1)) ; OPTIND=1
 
     [ "$#" -lt 2 ] && echo "FAIL: Min 2 args: destination and sources." 1>&2 && return 10
-    typeset dest="${1}"
+    dest="${1}"
     shift
     [ ! -d "${dest}" ] && echo "FAIL: Unavailable destination: ${dest}" 1>&2 && return 20
 
@@ -41,16 +41,16 @@ archive () {
 
         # Resolving path versus variable indirection:
         if [ -r "${src}" ] ; then
-            typeset srcident=$(basename "${src}")
-            typeset srcpath="${src}"
+            srcident=$(basename "${src}")
+            srcpath="${src}"
         else
             if ! (set | egrep -q "^${src}=") ; then
                 echo "SKIP: No file nor variable named '${src}'" 1>&2
                 continue
             fi
 
-            typeset srcident="${src}"
-            typeset srcpath="$(eval echo "\$${src}")"
+            srcident="${src}"
+            srcpath="$(eval echo "\$${src}")"
 
             if [ ! -r "${srcpath}" ] ; then
                 echo "SKIP: ${src}='${srcpath}' is not a readable path." 1>&2
@@ -58,7 +58,7 @@ archive () {
             fi
         fi
 
-        typeset bakpath="${dest}/${prefix}${sep}${srcident}${sep}${timestamp}.${extension#.}"
+        bakpath="${dest}/${prefix}${sep}${srcident}${sep}${timestamp}.${extension#.}"
 
         # Identifying repeated files or variables to be backed up by using indices to tell them apart:
         if [ -e "${bakpath}" ] ; then
@@ -109,8 +109,8 @@ childrentgz () {
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
-    srcdir="${1}"
-    destdir="${2}"
+    srcdir="$(cd ${1}; echo "$PWD")"
+    destdir="$(cd ${2}; echo "$PWD")"
 
     # Gzip compression:
     if ! ${uncompressed} ; then
@@ -140,6 +140,7 @@ childrentgz () {
     paralleljobs -l "${destdir}" ${maxprocs:+-p ${maxprocs}} "${paracmd}" <<EOF
 $(ls -1 -d * | dudesc | dufile)
 EOF
+    cd - >/dev/null 2>&1
 }
 
 # Function childrentgunz - restores all srcdir/*gz children into destdir,
@@ -162,8 +163,8 @@ childrentgunz () {
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
-    srcdir="${1}"
-    destdir="${2}"
+    srcdir="$(cd ${1}; echo "$PWD")"
+    destdir="$(cd ${2}; echo "$PWD")"
 
     # Checks:
     [ -e "${destdir}" ] && echo "FAIL: Target '${destdir}' already exists." 1>&2 && return 1
@@ -188,6 +189,7 @@ childrentgunz () {
     paralleljobs -l "${destdir}" ${maxprocs:+-p ${maxprocs}} "${paracmd}" <<EOF
 $(ls -1 "${srcdir}"/*.tgz "${srcdir}"/*.tar.gz 2>/dev/null | dudesc | dufile)
 EOF
+    cd - >/dev/null 2>&1
 }
 
 # Function chmodr - Recursively change file mode/permissions. 
