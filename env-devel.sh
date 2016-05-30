@@ -6,6 +6,13 @@
 # ##############################################################################
 # Devel functions
 
+# Function findfunc - Greps list of functions in the current environment.
+unset findfunc
+findfunc () {
+    typeset -F | egrep -i "$@"
+}
+unalias ff ; alias ff='findfunc'
+
 # Function sshkeygenrsa - generate id_rsa if none present for the current user.
 unset sshkeygenrsa
 sshkeygenrsa () {
