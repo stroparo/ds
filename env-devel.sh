@@ -11,7 +11,7 @@ unset findfunc
 findfunc () {
     typeset -F | egrep -i "$@"
 }
-unalias ff ; alias ff='findfunc'
+unalias ff 2>/dev/null ; alias ff='findfunc'
 
 # Function sshkeygenrsa - generate id_rsa if none present for the current user.
 unset sshkeygenrsa
