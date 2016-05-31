@@ -109,8 +109,7 @@ childrentgz () {
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
-    srcdir="$(cd ${1}; echo "$PWD")"
-    destdir="$(cd ${2}; echo "$PWD")"
+    # Checks:
 
     # Gzip compression:
     if ! ${uncompressed} ; then
@@ -121,11 +120,16 @@ childrentgz () {
         echo "INFO: Compression level is ${gziplevel}" 1>&2
     fi
 
-    # Checks:
-    [ -e "${destdir}" ] && echo "FAIL: Target '${destdir}' already exists." 1>&2 && return 1
-    mkdir -p "${destdir}" || return 10
+    [ -e "${2}" ] && echo "FAIL: Target '${2}' already exists." 1>&2 && return 1
+    mkdir -p "${2}" || return 10
+
+    srcdir="$(cd "${1}"; echo "$PWD")"
+    destdir="$(cd "${2}"; echo "$PWD")"
+
     [ -r "${srcdir}" ] || return 20
     [ -w "${destdir}" ] || return 30
+
+    # Main:
 
     cd "${srcdir}" || return 99
 
@@ -163,12 +167,14 @@ childrentgunz () {
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
-    srcdir="$(cd ${1}; echo "$PWD")"
-    destdir="$(cd ${2}; echo "$PWD")"
-
     # Checks:
-    [ -e "${destdir}" ] && echo "FAIL: Target '${destdir}' already exists." 1>&2 && return 1
-    mkdir -p "${destdir}" || return 10
+
+    [ -e "${2}" ] && echo "FAIL: Target '${2}' already exists." 1>&2 && return 1
+    mkdir -p "${2}" || return 10
+
+    srcdir="$(cd "${1}"; echo "$PWD")"
+    destdir="$(cd "${2}"; echo "$PWD")"
+
     [ -r "${srcdir}" ] || return 20
     [ -w "${destdir}" ] || return 30
 
@@ -177,6 +183,8 @@ childrentgunz () {
         echo "WARN: No .tar.gz nor .tgz children to be uncompressed." 1>&2
         return
     fi
+
+    # Main:
 
     cd "${destdir}" || return 99
 
