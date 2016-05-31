@@ -253,7 +253,9 @@ installomzsh () {
 #       Each entry in the env list must be formatted like this:
 #       {environment-name}:{user}:{pass}:{host}:{destination-path}
 # 2) tgtglob{env} variable might contain additional space-separated globs.
-#       Also, additional globs may be passed via the -f option (-f "glob1 glob2 ...").
+#       But globs are passed via the -f option (-f "glob1 glob2 ...")
+#       so only those are going to be considered whereas tgtglob will
+#       only serve as the default/fallback.
 # 3) -r option
 #       Reset files, i.e. deletes them from destination before copying.
 # 4) -p option
@@ -270,7 +272,7 @@ pushl () {
     while getopts ':e:f:pr' opt ; do
         case ${opt} in
         e) env_regex="${OPTARG}";;
-        f) xglobsarg="${OPTARG}";;
+        f) xglobsarg="${OPTARG}" ; xglobs="${OPTARG}" ;;
         p) purge_only=true;;
         r) reset_files=true;;
         esac
@@ -282,9 +284,11 @@ pushl () {
     shift
 
     for env in "$@" ; do
-        xglobs="${xglobsarg} $(eval echo "\${tgtglob${env}}")"
+        if [ -z "${xglobsarg}" ] ; then
+            xglobs="${xglobsarg} $(eval echo "\"\${tgtglob${env}}\"")"
+        fi
 
-        echo "==> Next environment group: '${env}' <=="
+        echo "==> Env: '${env}'; Files: '${xglobs}' <=="
 
         while IFS=':' read environ u pw h dest ; do
             [[ -z "${u}" ]] && continue
@@ -299,7 +303,6 @@ EOF
 
             if ${reset_files:-false} || ${purge_only:-false} ; then
                 lftp -e 'set sftp:auto-confirm yes ; mrm -f '"${xglobs}"' ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}"
-                echo "${environ} => deleted files."
             fi
             ${purge_only:-false} && continue
 
