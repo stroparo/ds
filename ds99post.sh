@@ -7,6 +7,7 @@
 # Post file
 
 # Params:
+DS_GLOB="ds.sh ds[0-9]*sh aliases.sh sshagent.sh"
 DS_LOADED=true
 
 # Aliases:
