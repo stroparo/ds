@@ -39,7 +39,6 @@ EOF
     done <<EOF
 $(find -H "${rootdir}" -type d)
 EOF
-    cd - >/dev/null 2>&1
 }
 
 # Function screenshot: take a screenshot of the desktop, by default after 5 seconds.
