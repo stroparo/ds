@@ -237,9 +237,19 @@ dugt10desc () {
 # ##############################################################################
 # Installations from the Internet
 
-# Function installomzsh - Install Oh My ZSH.
-unset installomzsh
-installomzsh () {
+# Function setuppowerfonts - Install fonts.
+unset setuppowerfonts
+setuppowerfonts () {
+    if _is_linux ; then
+        wget https://github.com/powerline/fonts/archive/master.zip -O ~/powerline.zip
+        (cd ~ ; unzip powerline.zip)
+        ~/fonts-master/install.sh && rm -rf ~/fonts-master ~/powerline.zip
+    fi
+}
+
+# Function setupomzsh - Install Oh My ZSH.
+unset setupomzsh
+setupomzsh () {
     sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
 }
 
