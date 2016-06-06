@@ -105,20 +105,25 @@ aptclean () {
 }
 
 # Function aptinstall - Install packages listed in file.
-# Syntax: filename
+# Syntax: [-u] [-y] filename
+# Syntax description:
+# -u means do upgrade
+# -y means do assume yes (as per vanilla apt)
 unset aptinstall
 aptinstall () {
+    typeset oldind="${OPTIND}"
     typeset assumeyes doupgrade pkgslist
 
     [[ $SHELL = *zsh* ]] && set -o shwordsplit
 
+    OPTIND=1
     while getopts ':uy' option ; do
         case "${option}" in
         u) doupgrade=true;;
         y) assumeyes='-y';;
         esac
     done
-    shift $((OPTIND-1)) ; OPTIND=1
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
   
     if [ ! -r "${1}" ] ; then
         echo "A readable packagelist file must be passed as the first argument. Aborted." 1>&2
@@ -275,10 +280,11 @@ setupomzsh () {
 # Syntax: [-e {env-regex}] [-f {local-globs}] [-p] [-r] {srcdir} {site} [site2 [site3 ...]]
 unset pushl
 pushl () {
+    typeset oldind="${OPTIND}"
     typeset env_regex purge_only reset_files srcdir xglobs xglobsarg
     which lftp >/dev/null 2>&1 || return 10
 
-    # Options:
+    OPTIND=1
     while getopts ':e:f:pr' opt ; do
         case ${opt} in
         e) env_regex="${OPTARG}";;
@@ -288,7 +294,7 @@ pushl () {
         esac
         options="${options} -${opt} ${OPTARG:-'${OPTARG}'}"
     done
-    shift $((OPTIND - 1)) ; OPTIND=1
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     srcdir="$(cd ${1}; echo "$PWD")"
     shift
@@ -337,16 +343,17 @@ EOF
 # Syntax: [-v] [JAVA_HOME override]
 unset loadjava
 loadjava () {
-
+    typeset oldind="${OPTIND}"
     typeset doverbose
     typeset isjdk
-  
+
+    OPTIND=1
     while getopts ':v' opt ; do
         case "${opt}" in
         v) doverbose=true ;;
         esac
     done
-    shift $((OPTIND-1)) ; OPTIND=1
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
   
     if [ -x "${1}/bin/java" ] ; then
         export JAVA_HOME="${1}"
@@ -497,16 +504,17 @@ eex () {
 
 # Function ees - Enter-Environment select environment (sets up env. variables).
 ee () {
+    typeset oldind="${OPTIND}"
     typeset ee_name_search eefile eepath selectonly
     ee_name=""; ee_desc=""; ee_user=""; ee_host=""; ee_domain=""; ee_id=""; ee_cmd=""
 
-    # Option parsing:
+    OPTIND=1
     while getopts ':s' opt ; do
         case "${opt}" in
         s) selectonly=true ;;
         esac
     done
-    shift $((OPTIND-1)) ; OPTIND=1
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
     ee_name_search="$1"
     shift

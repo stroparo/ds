@@ -32,11 +32,13 @@ sshkeygenrsa () {
 # Syntax: [-c command] [command subcommands arguments etc.]
 unset gitr
 gitr () {
+    typeset oldind="${OPTIND}"
     typeset gitcmdmsg statusopt
     typeset pname=gitr
     typeset gitcmd='git'
     typeset usage="Usage: [-c newCommandInsteadOfGit] [options] [args]"
 
+    OPTIND=1
     while getopts ':c:hs' opt ; do
         case "${opt}" in
         c) gitcmd="${OPTARG}" ;;
@@ -44,7 +46,7 @@ gitr () {
         s) statusopt=true ;;
         esac
     done
-    shift $((OPTIND-1)) ; OPTIND=1
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
     while read gitdir; do
         cd "${gitdir%/.git}"
@@ -104,10 +106,11 @@ EOF
 # Example: gitconfig "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
 unset gitconfig
 gitconfig () {
+    typeset oldind="${OPTIND}"
     typeset pname=gitconfig
     typeset email gitfile name
 
-    # Parse options:
+    OPTIND=1
     while getopts ':e:f:n:' opt ; do
         case "${opt}" in
         e) email="${OPTARG}" ;;
@@ -115,7 +118,7 @@ gitconfig () {
         n) name="${OPTARG}" ;;
         esac
     done
-    shift $((OPTIND-1)) ; OPTIND=1
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
     _any_null "${email}" "${name}" && elog -f -n "${pname}" "Must pass an email and a name." && return 1
     _any_not_w "${gitfile}" && elog -f -n "${pname}" "Must pass writeable file to -f option." && return 1

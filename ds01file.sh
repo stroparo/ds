@@ -10,6 +10,7 @@
 # Syntax: [-p prefix] {destination-dir} {src-paths|src-path-variable-names}1+
 unset archive
 archive () {
+    typeset oldind="$OPTIND"
     typeset bakpath dest src srcident srcpath
     typeset pname=archive
     typeset extension='tgz'
@@ -17,7 +18,7 @@ archive () {
     typeset sep='-'
     typeset timestamp="$(date '+%Y%m%d-%OH%OM%OS')"
 
-    # Options:
+    OPTIND=1
     while getopts ':p:z' opt ; do
         case "${opt}" in
         p) prefix="${OPTARG:-${prefix}}" ;;
@@ -30,7 +31,7 @@ archive () {
             ;;
         esac
     done
-    shift $((OPTIND - 1)) ; OPTIND=1
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     [ "$#" -lt 2 ] && echo "FAIL: Min 2 args: destination and sources." 1>&2 && return 10
     dest="${1}"
@@ -95,11 +96,12 @@ archive () {
 # Syntax: [-p maxprocesses] srcdir destdir
 unset childrentgz
 childrentgz () {
+    typeset oldind="$OPTIND"
     typeset srcdir destdir maxprocs paracmd
     typeset gziplevel=1
     typeset uncompressed=false
 
-    # Options:
+    OPTIND=1
     while getopts ':c:p:u' opt ; do
         case "${opt}" in
         c) gziplevel="${OPTARG}";;
@@ -107,7 +109,7 @@ childrentgz () {
         u) uncompressed=true;;
         esac
     done
-    shift $((OPTIND - 1)) ; OPTIND=1
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     # Checks:
 
@@ -154,18 +156,19 @@ EOF
 # Syntax: [-p maxprocesses] srcdir destdir
 unset childrentgunz
 childrentgunz () {
+    typeset oldind="$OPTIND"
     typeset srcdir destdir maxprocs
     typeset paracmd="gunzip -c {} | tar -xf - ; echo \$?"
     typeset uncompressed=false
 
-    # Options:
+    OPTIND=1
     while getopts ':p:u' opt ; do
         case "${opt}" in
         p) maxprocs="${OPTARG}";;
         u) uncompressed=true;;
         esac
     done
-    shift $((OPTIND - 1)) ; OPTIND=1
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     # Checks:
 
@@ -219,15 +222,16 @@ chmodr () {
 # Function getmp3 - Extracts argument file mp3 to arg.mp3 via avconv utility.
 unset getmp3
 getmp3 () {
+    typeset oldind="$OPTIND"
     typeset removal
 
-    # Options:
+    OPTIND=1
     while getopts ':r' opt ; do
         case "${opt}" in
         r) removal=true;;
         esac
     done
-    shift $((OPTIND - 1)) ; OPTIND=1
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     for i in "$@" ; do
         mp3filename="${i%.*}".mp3
@@ -345,12 +349,12 @@ EOF
 # Syntax: [-o outputdir] [file1[ file2 ...]]
 unset unarchive
 unarchive () {
-
+    typeset oldind="$OPTIND"
     typeset force verbose
     typeset pname=unarchive
     typeset outd='.'
 
-    # Option processing:
+    OPTIND=1
     while getopts ':fo:v' opt ; do
         case "${opt}" in
         f) force=true;;
@@ -358,7 +362,7 @@ unarchive () {
         v) verbose=true ;;
         esac
     done
-    shift $((OPTIND - 1)) ; OPTIND=1
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     # Check output directory is writable:
     if _any_dir_not_w "${outd}" ; then
