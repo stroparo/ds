@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # DS - Daily Shells Library
 # License:
 #  See README.md document in projects page at
