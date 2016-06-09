@@ -402,7 +402,7 @@ pushl () {
             fi <<EOF
 ${environ}
 EOF
-            echo "${environ} => path is '${u}@${h}:${dest#/}'."
+            echo "${environ} => ${purge_only:+rm in }path: '${u}@${h}:${dest#/}'."
 
             if ${reset_files:-false} || ${purge_only:-false} ; then
                 lftp -e 'set sftp:auto-confirm yes ; mrm -f '"${xglobs}"' ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}"
@@ -411,8 +411,7 @@ EOF
 
             # Put files:
             cd "${srcdir:-err}" \
-            && lftp -e 'set sftp:auto-confirm yes ; mput '"${xglobs}"' ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}" \
-            && echo "${environ} => push complete."
+            && lftp -e 'set sftp:auto-confirm yes ; mput '"${xglobs}"' ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}"
 
             if [ "$?" != 0 ] ; then echo "${environ} => error"\! ; return 1 ; fi
         done <<EOF
