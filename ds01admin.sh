@@ -380,7 +380,6 @@ pushl () {
         p) purge_only=true;;
         r) reset_files=true;;
         esac
-        options="${options} -${opt} ${OPTARG:-'${OPTARG}'}"
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
