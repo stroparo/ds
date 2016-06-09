@@ -73,7 +73,7 @@ ${2}\""
 # Syntax: cyd {a|b|c|d|e|f|...}
 unset cyd 2>/dev/null
 cyd () {
-    _is_cygwin && d /cygdrive/"${1:-c}" -Ah
+    _is_cygwin && cd /cygdrive/"${1:-c}" && ls -AFhl 1>&2
 }
 
 # Function ckenv - check number of arguments and sets hasgnu ("GNU is not Unix").
