@@ -78,14 +78,13 @@ cyd () {
 # Syntax: {min-args} [max-args=min-args]
 unset ckenv
 ckenv () {
-    typeset args_slice_min="${1}"
-    typeset args_slice_max="${2:-1}"
+    typeset args_slice_min="${1:-0}"
+    typeset args_slice_max="${2:-0}"
     shift 2
 
-    if ! [ "${#}" -ge "${args_slice_min:-0}" -a \
-           "${#}" -le "${args_slice_max:-1}" ] ; then
-        echo "Bad arguments.." 1>&2
-        echo "${usage:-There was no 'usage' variable set.}" 1>&2
+    if ! [ "${#}" -ge "${args_slice_min}" -a \
+           "${#}" -le "${args_slice_max}" ] ; then
+        echo "Bad arguments:" "$@" 1>&2
         return 1
     fi
 
