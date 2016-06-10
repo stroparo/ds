@@ -41,7 +41,7 @@ EOF
 
             elog -n "$pname" 'Completed.'
         else
-            elog -s -n "$pname" 'It was installed already.' 1>&2
+            elog -s -n "$pname" 'It was installed already.'
         fi
     else
         elog -s -n "$pname" 'Not in Linux, so nothing done.'
@@ -58,14 +58,17 @@ installinputfont () {
     typeset font_dir="$HOME/.local/share/fonts"
     typeset inputfontpackage="$1"
 
-    if ! _is_linux ; then
-        elog -f -n $pname 'Only Linux supported.'
-        return 1
-    fi
+    echo '==> Installing input font..' 1>&2
 
-    if [ ! -e  "$inputfontpackage" ] ; then
-        elog -f -n $pname 'Invalid input font package location (first argument).'
+    if ! _is_linux ; then
+        elog -s -n "$pname" 'Only Linux supported.'
+        return
+    elif [ ! -e "$inputfontpackage" ] ; then
+        elog -f -n "$pname" 'Invalid input font package location (first argument).'
         return 1
+    elif [ -e "$font_dir/InputMono-Regular.ttf" ] ; then
+        elog -s -n "$pname" 'It was installed already.'
+        return
     fi
 
     unzip -d "$HOME" "$inputfontpackage" 'Input_Fonts/*'
@@ -75,11 +78,11 @@ installinputfont () {
 
     # Reset font cache on Linux
     if command -v fc-cache @>/dev/null ; then
-        elog -n $pname "Resetting font cache, this may take a moment..."
+        elog -n "$pname" "Resetting font cache, this may take a moment..."
         fc-cache -f $font_dir
     fi
 
-    elog -n $pname "Finished installing fonts to '$font_dir'."
+    elog -n "$pname" "Finished installing fonts to '$font_dir'."
 }
 
 # Function installpowerfonts - Install powerline fonts.
