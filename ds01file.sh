@@ -219,34 +219,6 @@ chmodr () {
     find "${dir}" -type f -name "${fglob}" -exec chmod "${mode}" {} \;
 }
 
-# Function getmp3 - Extracts argument file mp3 to arg.mp3 via avconv utility.
-unset getmp3
-getmp3 () {
-    typeset oldind="$OPTIND"
-    typeset removal
-
-    OPTIND=1
-    while getopts ':r' opt ; do
-        case "${opt}" in
-        r) removal=true;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
-
-    for i in "$@" ; do
-        mp3filename="${i%.*}".mp3
-
-        if [ -f "${i}" ] && [ ! -e "${mp3filename}" ] ; then
-            if avconv -i "${i}" -threads 3 -acodec libmp3lame -b 128k -vn -f mp3 \
-                "${mp3filename}" \
-            && [ -n "${removal}" ]
-            then
-                rm -f "${i}"
-            fi
-        fi
-    done
-}
-
 unset lstgz
 lstgz () {
     for f in "$@" ; do
@@ -415,4 +387,75 @@ untxz () {
         xz -c -d "${f}" | tar -xvf -
     done
 }
+
+# ##############################################################################
+# Disk and sizing functions
+
+# Function dfgb - displays free disk space in GB.
+unset dfgb
+dfgb () {
+    typeset dfdir="${1:-.}"
+    typeset freegb
+
+    [ -d "${dfdir}" ] || return 10
+
+    freegb=$(df -gP "${dfdir}" | tail -n +2 | tail -n 1 | awk '{print $4}' | cut -d'.' -f1) \
+    || return 20
+
+    echo "${freegb}"
+}
+
+# Function dubulk - Displays disk usage of filenames read from stdin.
+#  Handles massive file lists.
+unset dubulk
+dubulk () {
+    while read filename ; do echo "${filename}" ; done \
+    | xargs -n 1000 du -sm
+}
+
+# Function dudesc - Displays disk usage of filenames read from stdin.
+#  Sorted in descending order.
+unset dudesc
+dudesc () {
+    dubulk | sort -rn
+}
+
+# Function dufile - Process data formatted from du, from stdin,
+#  yielding back just the filenames.
+# Remarks: The original sorting order read from stdin is kept.
+# Use case #1: pass filenames to another process that
+#  must act on a filesize ordered sequence.
+unset dufile
+dufile () {
+    sed -e 's#^[^[:blank:]]*[[:blank:]][[:blank:]]*##'
+}
+
+# Function dugt1 - Displays disk usage of filenames read from stdin which are greater than 1MB.
+unset dugt1
+dugt1 () {
+    dubulk | sed -n -e '/^[1-9][0-9]*[.]/p'
+}
+
+# Function dugt1desc - Displays disk usage of filenames read from stdin which are greater than 1MB.
+#  Sorted in descending order.
+unset dugt1desc
+dugt1desc () {
+    dubulk | sed -n -e '/^[1-9][0-9]*[.]/p' | sort -rn
+}
+
+# Function dugt10 - Displays disk usage of filenames > 10MBm read from stdin.
+#  Sorted in descending order.
+unset dugt10
+dugt10 () {
+    dubulk | sed -n -e '/^[1-9][0-9][0-9]*[.]/p'
+}
+
+# Function dugt10desc - Displays disk usage of filenames > 10MBm read from stdin.
+#  Sorted in descending order.
+unset dugt10desc
+dugt10desc () {
+    dubulk | sed -n -e '/^[1-9][0-9][0-9]*[.]/p' | sort -rn
+}
+
+# ##############################################################################
 

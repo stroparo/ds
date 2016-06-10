@@ -30,20 +30,6 @@ makeat () {
     echo "Exit status: ""$?"
 }
 
-# Function screenb - run a bash shell in a screen session.
-# Syntax: [sessionname]
-unset screenb
-screenb () {
-    screen -S "${1:-screenbash}" bash
-}
-
-# Function screenk - run a ksh shell in a screen session.
-# Syntax: [sessionname]
-unset screenk
-screenk () {
-    env ENV="${HOME}/.kshrc" screen -S "${1:-screenksh}" ksh
-}
-
 # ##############################################################################
 # Debian
 
@@ -171,110 +157,7 @@ fixaptmodes () {
 }
 
 # ##############################################################################
-# Disk and sizing functions
-
-# Function dfgb - displays free disk space in GB.
-unset dfgb
-dfgb () {
-    typeset dfdir="${1:-.}"
-    typeset freegb
-
-    [ -d "${dfdir}" ] || return 10
-
-    freegb=$(df -gP "${dfdir}" | tail -n +2 | tail -n 1 | awk '{print $4}' | cut -d'.' -f1) \
-    || return 20
-
-    echo "${freegb}"
-}
-
-# Function dubulk - Displays disk usage of filenames read from stdin.
-#  Handles massive file lists.
-unset dubulk
-dubulk () {
-    while read filename ; do echo "${filename}" ; done \
-    | xargs -n 1000 du -sm
-}
-
-# Function dudesc - Displays disk usage of filenames read from stdin.
-#  Sorted in descending order.
-unset dudesc
-dudesc () {
-    dubulk | sort -rn
-}
-
-# Function dufile - Process data formatted from du, from stdin,
-#  yielding back just the filenames.
-# Remarks: The original sorting order read from stdin is kept.
-# Use case #1: pass filenames to another process that
-#  must act on a filesize ordered sequence.
-unset dufile
-dufile () {
-    sed -e 's#^[^[:blank:]]*[[:blank:]][[:blank:]]*##'
-}
-
-# Function dugt1 - Displays disk usage of filenames read from stdin which are greater than 1MB.
-unset dugt1
-dugt1 () {
-    dubulk | sed -n -e '/^[1-9][0-9]*[.]/p'
-}
-
-# Function dugt1desc - Displays disk usage of filenames read from stdin which are greater than 1MB.
-#  Sorted in descending order.
-unset dugt1desc
-dugt1desc () {
-    dubulk | sed -n -e '/^[1-9][0-9]*[.]/p' | sort -rn
-}
-
-# Function dugt10 - Displays disk usage of filenames > 10MBm read from stdin.
-#  Sorted in descending order.
-unset dugt10
-dugt10 () {
-    dubulk | sed -n -e '/^[1-9][0-9][0-9]*[.]/p'
-}
-
-# Function dugt10desc - Displays disk usage of filenames > 10MBm read from stdin.
-#  Sorted in descending order.
-unset dugt10desc
-dugt10desc () {
-    dubulk | sed -n -e '/^[1-9][0-9][0-9]*[.]/p' | sort -rn
-}
-
-# ##############################################################################
 # Installations
-
-unset installdropbox
-installdropbox () {
-    typeset pname=installdropbox
-
-    if _is_linux && [ ! -e ~/.dropbox-dist/dropboxd ] ; then
-        elog -n "$pname" 'Started.'
-
-        cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
-
-        # Desktop tray workaround (export empty DBUS_SESSION_BUS_ADDRESS for process):
-        # This first approach doesnt work as Dropbox often updates itself:
-        # sed -i -e 's/^exec.*dropbox/export DBUS_SESSION_BUS_ADDRESS=""; &/' ~/.dropbox-dist/dropboxd
-        cat > ~/.config/autostart/dropbox.desktop <<EOF
-[Desktop Entry]
-Encoding=UTF-8
-Version=0.9.4
-Type=Application
-Name=dropbox
-Comment=dropbox
-Exec=env DBUS_SESSION_BUS_ADDRESS='' ${HOME}/.dropbox-dist/dropboxd
-OnlyShowIn=XFCE;
-StartupNotify=false
-Terminal=false
-Hidden=false
-EOF
-        elog -n "$pname" 'Launching dropbox..'
-        env DBUS_SESSION_BUS_ADDRESS='' "${HOME}"/.dropbox-dist/dropboxd > /dev/null 2>&1 &
-
-        elog -n "$pname" 'Completed.'
-    else
-        elog -n "$pname" -s 'Already installed or not in Linux.'
-    fi
-}
 
 # Function installohmyzsh - Install Oh My ZSH.
 unset installohmyzsh
@@ -283,21 +166,6 @@ installohmyzsh () {
 
     if which zsh >/dev/null && [ ! -d "${HOME}/.oh-my-zsh" ] ; then
         sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
-    fi
-}
-
-# Function installpowerfonts - Install powerline fonts.
-unset installpowerfonts
-installpowerfonts () {
-    echo '==> Installing powerline fonts..' 1>&2
-
-    if _is_linux ; then
-
-        # TODO unless installed:
-
-        wget https://github.com/powerline/fonts/archive/master.zip -O ~/powerline.zip
-        (cd ~ ; unzip powerline.zip)
-        ~/fonts-master/install.sh && rm -rf ~/fonts-master ~/powerline.zip
     fi
 }
 
@@ -323,26 +191,6 @@ installtruecrypt () {
             echo "Installing '${pkginstaller}'.." 1>&2
             "${pkginstaller}" && rm -f "${pkginstaller}"
         fi
-    fi
-}
-
-# Function installyoutubedl
-unset installyoutubedl
-installyoutubedl () {
-    typeset pname=installyoutubedl
-    typeset youtubedlpath='/usr/local/bin/youtube-dl'
-
-    echo '==> Installing youtube-dl..' 1>&2
-
-    if _is_linux ; then
-        if [ ! -e "${youtubedlpath}" ] ; then
-            sudo wget 'https://yt-dl.org/latest/youtube-dl' -O "${youtubedlpath}"
-            sudo chmod a+rx "${youtubedlpath}"
-        else
-            echo 'Already installed.' 1>&2
-        fi
-    else
-        echo 'Not in Linux, so nothing done.' 1>&2
     fi
 }
 
@@ -651,24 +499,18 @@ EOF
     return 1
 }
 
-# ##############################################################################
-# Virtualbox
+# Function screenb - run a bash shell in a screen session.
+# Syntax: [sessionname]
+unset screenb
+screenb () {
+    screen -S "${1:-screenbash}" bash
+}
 
-# Function mountvboxsf - Mount virtualbox shared folder.
-# Syntax: path-to-dir (sharing will be named as its basename)
-unset mountvboxsf
-mountvboxsf () {
-
-    [ -n "${1}" ] || return 1
-    [ -d "${1}" ] || sudo mkdir "${1}"
-
-    sudo mount -t vboxsf -o rw,uid="${USER}",gid="$(id -gn)" "$(basename ${1})" "${1}"
-
-    if [ "$?" -eq 0 ] ; then
-        cd "${1}"
-        pwd
-        ls -FlA
-    fi
+# Function screenk - run a ksh shell in a screen session.
+# Syntax: [sessionname]
+unset screenk
+screenk () {
+    env ENV="${HOME}/.kshrc" screen -S "${1:-screenksh}" ksh
 }
 
 # ##############################################################################

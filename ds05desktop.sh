@@ -6,6 +6,34 @@
 # ##############################################################################
 # Desktop functions
 
+# Function getmp3 - Extracts argument file mp3 to arg.mp3 via avconv utility.
+unset getmp3
+getmp3 () {
+    typeset oldind="$OPTIND"
+    typeset removal
+
+    OPTIND=1
+    while getopts ':r' opt ; do
+        case "${opt}" in
+        r) removal=true;;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
+
+    for i in "$@" ; do
+        mp3filename="${i%.*}".mp3
+
+        if [ -f "${i}" ] && [ ! -e "${mp3filename}" ] ; then
+            if avconv -i "${i}" -threads 3 -acodec libmp3lame -b 128k -vn -f mp3 \
+                "${mp3filename}" \
+            && [ -n "${removal}" ]
+            then
+                rm -f "${i}"
+            fi
+        fi
+    done
+}
+
 # Function m3uzer: create m3u files inside the specified directory tree.
 # Syntax: {root-directory}
 unset m3uzer
