@@ -11,17 +11,19 @@
 
 unset installdropbox
 installdropbox () {
+
     typeset pname=installdropbox
 
-    if _is_linux && [ ! -e ~/.dropbox-dist/dropboxd ] ; then
-        elog -n "$pname" 'Started.'
+    echo '==> Installing dropbox..' 1>&2
 
-        cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
+    if _is_linux ; then
+        if [ ! -e ~/.dropbox-dist/dropboxd ] ; then
+            cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
 
-        # Desktop tray workaround (export empty DBUS_SESSION_BUS_ADDRESS for process):
-        # This first approach doesnt work as Dropbox often updates itself:
-        # sed -i -e 's/^exec.*dropbox/export DBUS_SESSION_BUS_ADDRESS=""; &/' ~/.dropbox-dist/dropboxd
-        cat > ~/.config/autostart/dropbox.desktop <<EOF
+            # Desktop tray workaround (export empty DBUS_SESSION_BUS_ADDRESS for process):
+            # This first approach doesnt work as Dropbox often updates itself:
+            # sed -i -e 's/^exec.*dropbox/export DBUS_SESSION_BUS_ADDRESS=""; &/' ~/.dropbox-dist/dropboxd
+            cat > ~/.config/autostart/dropbox.desktop <<EOF
 [Desktop Entry]
 Encoding=UTF-8
 Version=0.9.4
@@ -34,12 +36,15 @@ StartupNotify=false
 Terminal=false
 Hidden=false
 EOF
-        elog -n "$pname" 'Launching dropbox..'
-        env DBUS_SESSION_BUS_ADDRESS='' "${HOME}"/.dropbox-dist/dropboxd > /dev/null 2>&1 &
+            elog -n "$pname" 'Launching dropbox..'
+            env DBUS_SESSION_BUS_ADDRESS='' "${HOME}"/.dropbox-dist/dropboxd > /dev/null 2>&1 &
 
-        elog -n "$pname" 'Completed.'
+            elog -n "$pname" 'Completed.'
+        else
+            elog -s -n "$pname" 'It was installed already.' 1>&2
+        fi
     else
-        elog -n "$pname" -s 'Already installed or not in Linux.'
+        elog -s -n "$pname" 'Not in Linux, so nothing done.'
     fi
 }
 
@@ -47,6 +52,7 @@ EOF
 # Syntax: {input-font-package-filename}
 unset installinputfont
 installinputfont () {
+
     typeset pname=installinputfont
     typeset find_command="find \"$HOME/Input_Fonts\" \( -name '*.[o,t]tf' -or -name '*.pcf.gz' \) -type f -print0"
     typeset font_dir="$HOME/.local/share/fonts"
@@ -79,22 +85,26 @@ installinputfont () {
 # Function installpowerfonts - Install powerline fonts.
 unset installpowerfonts
 installpowerfonts () {
+
     echo '==> Installing powerline fonts..' 1>&2
 
     if _is_linux ; then
-
-        # TODO unless installed:
-
-        wget https://github.com/powerline/fonts/archive/master.zip -O ~/powerline.zip
-        (cd ~ ; unzip powerline.zip)
-        ~/fonts-master/install.sh && rm -rf ~/fonts-master ~/powerline.zip
+        if [ ! -e "$HOME/.local/share/fonts/Inconsolata for Powerline.otf" ] ; then
+            wget https://github.com/powerline/fonts/archive/master.zip -O ~/powerline.zip
+            (cd ~ ; unzip powerline.zip)
+            ~/fonts-master/install.sh && rm -rf ~/fonts-master ~/powerline.zip
+        else
+            echo 'It was installed already.' 1>&2
+        fi
+    else
+        echo 'Not in Linux, so nothing done.' 1>&2
     fi
 }
 
 # Function installyoutubedl
 unset installyoutubedl
 installyoutubedl () {
-    typeset pname=installyoutubedl
+
     typeset youtubedlpath='/usr/local/bin/youtube-dl'
 
     echo '==> Installing youtube-dl..' 1>&2
@@ -104,7 +114,7 @@ installyoutubedl () {
             sudo wget 'https://yt-dl.org/latest/youtube-dl' -O "${youtubedlpath}"
             sudo chmod a+rx "${youtubedlpath}"
         else
-            echo 'Already installed.' 1>&2
+            echo 'It was installed already.' 1>&2
         fi
     else
         echo 'Not in Linux, so nothing done.' 1>&2
