@@ -390,6 +390,13 @@ untxz () {
     done
 }
 
+unset xzp
+xzp () {
+    paralleljobs "xz -4 {}" <<EOF
+$(eval ls -1 '"$@"')
+EOF
+}
+
 # ##############################################################################
 # Disk and sizing functions
 
