@@ -278,7 +278,9 @@ rentidy () {
         newfilename="$(echo "${editspace}" | \
                 sed -e 's/\([a-z]\)\([A-Z]\)/\1-\2/g' | \
                 tr '[[:upper:]]' '[[:lower:]]' | \
-                sed -e 's/[][ ~_@#(),-]\+/-/g' -e "s/['\"!！]//g")"
+                sed -e 's/[][ ~_@#(),-]\+/-/g' -e "s/['\"!！]//g" | \
+                sed -e 's/-[&]-/-and-/g' | \
+                sed -e 's/-*[.]-*/./g')"
         newfilename="${prefixintact:+${prefixintact}/}${newfilename}"
 
         if [ "${i}" != "${newfilename}" ] ; then
