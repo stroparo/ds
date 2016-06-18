@@ -390,11 +390,64 @@ untxz () {
     done
 }
 
+# Function xzp - (De)compress set ox xz files, also traverse given dirs looking for xz.
+# Syntax: [-d] [-t {target root}]
+# Remark: The target root is going to be a common root for several source directories
+#   even when those sources are in separate dir trees in the filesystem all the way up
+#   to the root. Also, a target being specified implies xz's -c (--keep).
 unset xzp
 xzp () {
-    paralleljobs "xz -4 {}" <<EOF
-$(eval ls -1 '"$@"')
+    typeset cmd decompress files maxprocs target
+    typeset oldind="$OPTIND"
+
+    OPTIND=1
+    while getopts ':dp:t:' opt ; do
+        case "${opt}" in
+        d) decompress='-d' ;;
+        p) maxprocs="${OPTARG}" ;;
+        t) target="${OPTARG}" ;;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
+
+    # Set command to place output files to specified target if one was passed in:
+    if [ -n "${target}" ] ; then
+        if [ ! -d "${target}" -o ! -w "${target}" ] ; then
+            elog -f -n xzp "Target path (${target}) is not writable."
+        fi
+
+        cmd="tgt=\"${target}\"/{} ; mkdir -p \"\$(dirname \"\${tgt}\")\""
+        if [ -n "${decompress}" ] ; then
+            cmd="${cmd}"' ; xz -c -d {} > "${tgt%.xz}"'
+        else # compress
+            cmd="${cmd}"' ; xz -c -4 {} > "'
+        fi
+    else
+        cmd="xz ${decompress:--4} {}"
+    fi
+
+    # Paths:
+    if [ -n "${decompress}" ] ; then
+        files=$(eval ls -1dF '"$@"' | grep '[.]xz$')
+    else # compress
+        files=$(eval ls -1dF '"$@"' | grep -v '[.]xz$' | grep -v '/$')
+    fi
+
+    # Files:
+    paralleljobs -p "${maxprocs}" -z xz "${cmd}" <<EOF
+${files}
 EOF
+    # Dirs:
+    for d in "$@" ; do
+        if [ -d "$d" ] ; then 
+            cd "${d}"
+            # cat <<EOF
+            paralleljobs -p "${maxprocs}" -z xz "${cmd}" <<EOF
+$(find . -name '*.xz' -type f)
+EOF
+            cd - >/dev/null 2>&1
+        fi
+    done
 }
 
 # ##############################################################################
