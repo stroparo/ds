@@ -205,17 +205,18 @@ paralleljobs () {
     typeset ts="$(date '+%Y%m%d%OH%OM%OS')"
 
     # Options:
-    while getopts ':l:n:p:' opt ; do
+    while getopts ':l:n:p:z:' opt ; do
         case "${opt}" in
         l) logdir="${OPTARG}";;
         n) n="${OPTARG}";;
         p) maxprocs="${OPTARG}";;
+        z) cmdzero="${OPTARG}";;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
     cmd="${1} ; res=\$? ; echo \$(date '+%Y%m%d-%OH%OM%OS') ; echo \${res}"
-    cmdzero="${1%% *}"
+    : ${cmdzero:=${1%% *}}
     setlogdir "${logdir}" || return 10
 
     # Enforce number type: 
