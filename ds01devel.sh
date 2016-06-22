@@ -28,8 +28,9 @@ sshkeygenrsa () {
 # Git
 
 # Function gitr - exec git for all repos descending from current directory.
+# Syntax: [-c command] [-s] [command subcommands arguments etc.]
 # Remark: GGIGNORE global can have an egrep regex for git repos to be ignored.
-# Syntax: [-c command] [command subcommands arguments etc.]
+# Rmk #2: -s causes the command to be displayed only when its output is non-empty.
 unset gitr
 gitr () {
     typeset oldind="${OPTIND}"
@@ -58,17 +59,18 @@ gitr () {
         fi <<EOF
 ${gitdir%/.git}
 EOF
-        gitcmdmsg="#### For git repo '${PWD}', execute:
-\$ ${gitcmd} $@"
+        gitcmdmsg="==> ${gitcmd} $@ # At '${PWD}'"
 
         if [ -n "${statusopt}" ] ; then
             if [ -n "$(eval ${gitcmd} "$@" 2>&1)" ] ; then
                 echo "${gitcmdmsg}"
                 eval ${gitcmd} "$@" 2>&1
+                echo ''
             fi
         else
             echo "${gitcmdmsg}"
             eval ${gitcmd} "$@" 2>&1
+            echo ''
         fi
 
         cd - >/dev/null
