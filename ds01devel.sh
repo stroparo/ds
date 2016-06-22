@@ -34,8 +34,10 @@ sshkeygenrsa () {
 unset gitr
 gitr () {
     typeset oldind="${OPTIND}"
-    typeset gitcmdmsg statusopt
     typeset pname=gitr
+
+    typeset cmdout
+    typeset gitcmdmsg statusopt
     typeset gitcmd='git'
     typeset usage="Usage: [-c newCommandInsteadOfGit] [options] [args]"
 
@@ -62,9 +64,11 @@ EOF
         gitcmdmsg="==> ${gitcmd} $@ # At '${PWD}'"
 
         if [ -n "${statusopt}" ] ; then
-            if [ -n "$(eval ${gitcmd} "$@" 2>&1)" ] ; then
+            cmdout="$(eval ${gitcmd} "$@" 2>&1)"
+
+            if [ -n "${cmdout}" ] ; then
                 echo "${gitcmdmsg}"
-                eval ${gitcmd} "$@" 2>&1
+                echo "${cmdout}"
                 echo ''
             fi
         else
