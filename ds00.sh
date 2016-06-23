@@ -339,7 +339,7 @@ ps1enhance () {
     fi
 }
 
-# Function runcommands - calls commands in the argument (most be one per line), in order.
+# Function runcommands - calls commands in the argument ( one per line), in order.
 unset runcommands
 runcommands () {
     typeset commandlist="${1}"
@@ -462,6 +462,31 @@ catnum () {
     mutail -n1 "$@" | grep '^[0-9][0-9]*$'
 }
 
+# Function ckeof - Check whether final EOL (end-of-line) is missing.
+# Syntax: [file-or-dir1 [file-or-dir2...]]
+unset ckeof
+ckeof () {
+    typeset enforcecwd="${1:-.}" ; shift
+    typeset files
+
+    for i in "${enforcecwd}" "$@"; do
+        if [ -d "$i" ] ; then
+            files=$(find "$i" -type f)
+        else
+            files="${i}"
+        fi
+
+        while read file ; do
+            #if (tail -n 1 "$i"; echo '##EOF##') | grep -q '.##EOF##$' ; then
+            if [ "$(awk 'END{print FNR;}' "${file}")" != "$(wc -l "${file}" | awk '{print $1}')" ] ; then
+                echo "${file}"
+            fi
+        done <<EOF
+${files}
+EOF
+    done
+}
+
 # Function ckwineol - check whether any file has windows end-of-line.
 # Syntax: [file-or-dir1 [file-or-dir2...]]
 unset ckwineol
@@ -499,35 +524,10 @@ dos2unix () {
     done
 }
 
-# Function eofck - Check whether final EOL (end-of-line) is missing.
+# Function fixeof - Fix and add final EOL (end-of-line) when missing.
 # Syntax: [file-or-dir1 [file-or-dir2...]]
-unset eofck
-eofck () {
-    typeset enforcecwd="${1:-.}" ; shift
-    typeset files
-
-    for i in "${enforcecwd}" "$@"; do
-        if [ -d "$i" ] ; then
-            files=$(find "$i" -type f)
-        else
-            files="${i}"
-        fi
-
-        while read file ; do
-            #if (tail -n 1 "$i"; echo '##EOF##') | grep -q '.##EOF##$' ; then
-            if [ "$(awk 'END{print FNR;}' "${file}")" != "$(wc -l "${file}" | awk '{print $1}')" ] ; then
-                echo "${file}"
-            fi
-        done <<EOF
-${files}
-EOF
-    done
-}
-
-# Function eoffix - Fix and add final EOL (end-of-line) when missing.
-# Syntax: [file-or-dir1 [file-or-dir2...]]
-unset eoffix
-eoffix () {
+unset fixeof
+fixeof () {
     [ "${1}" = '-v' ] && verbose=true && shift
     typeset enforcecwd="${1:-.}" ; shift
     typeset files
@@ -554,34 +554,15 @@ EOF
     done
 }
 
-# Function gettimes: get log times for every *.log file inside the current directory tree.
-unset gettimes
-gettimes () {
-    for i in $(find . -name '*.log') ; do
-        # Job name:
-        echo $(basename ${i})
-
-        # Obtain time in seconds:
-        cat ${i} | awk -F'[: ]+' '
-            /^[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/ {
-                if ( ! first_consumed ) {
-                    first = ($1 * 3600) + ($2 * 60) + $3
-                    first_consumed = "True";
-                }
-                last = ($1 * 3600) + ($2 * 60) + $3
-            }
-            END { time = last - first; print time, "seconds"; }
-        '
-    done
-}
-
 # Function greperr - Checks files' last line is a sole zero.
 # Remark: Common case scenario, an exit status $? logged last by a command.
 unset greperr
 greperr () {
     for f in "$@" ; do
-        echo "==> ${f} <=="
-        tail -n 1 "${f}" | grep -v '[[:space:]]*0$'
+        if tail -n 1 "${f}" | grep -qv '[[:space:]]*0$' ; then
+            echo "==> ${f} <=="
+            tail -n 1 "${f}" | grep -v '[[:space:]]*0$'
+        fi
     done
 }
 
