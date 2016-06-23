@@ -97,16 +97,17 @@ archive () {
 unset childrentgz
 childrentgz () {
     typeset oldind="$OPTIND"
-    typeset srcdir destdir maxprocs paracmd
+    typeset srcdir destdir maxprocs paracmd dowait
     typeset gziplevel=1
     typeset uncompressed=false
 
     OPTIND=1
-    while getopts ':c:p:u' opt ; do
+    while getopts ':c:p:uw' opt ; do
         case "${opt}" in
         c) gziplevel="${OPTARG}";;
         p) maxprocs="${OPTARG}";;
         u) uncompressed=true;;
+        w) dowait=true;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
@@ -147,6 +148,10 @@ childrentgz () {
 $(ls -1 -d * | dudesc | dufile)
 EOF
     cd - >/dev/null 2>&1
+
+    if [ -n "$dowait" ] ; then
+        wait || return 1
+    fi
 }
 
 # Function childrentgunz - restores all srcdir/*gz children into destdir,
