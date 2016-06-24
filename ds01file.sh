@@ -425,6 +425,7 @@ xzp () {
     if [ -n "${target}" ] ; then
         if [ ! -d "${target}" -o ! -w "${target}" ] ; then
             elog -f -n xzp "Target path (${target}) is not writable."
+            return 1
         fi
 
         cmd="tgt=\"${target}\"/{} ; mkdir -p \"\$(dirname \"\${tgt}\")\""
