@@ -204,8 +204,8 @@ installtruecrypt () {
 #       Each entry in the env list must be formatted like this:
 #       {environment-name}:{user}:{pass}:{host}:{destination-path}
 # 2) tgtglob{env} variable might contain additional space-separated globs.
-#       But globs are passed via the -f option (-f "glob1 glob2 ...")
-#       so only those are going to be considered whereas tgtglob will
+#       But when globs are passed via the -f option (-f "glob1 glob2 ...")
+#       only those are going to be considered as tgtglob will
 #       only serve as the default/fallback.
 # 3) -r option
 #       Reset files, i.e. deletes them from destination before copying.
