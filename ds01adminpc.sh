@@ -79,7 +79,7 @@ installinputfont () {
     # Reset font cache on Linux
     if command -v fc-cache @>/dev/null ; then
         elog -n "$pname" "Resetting font cache, this may take a moment..."
-        fc-cache -f $font_dir
+        fc-cache -f "$font_dir"
     fi
 
     elog -n "$pname" "Finished installing fonts to '$font_dir'."
