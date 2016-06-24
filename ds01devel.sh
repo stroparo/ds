@@ -39,7 +39,7 @@ gitr () {
     typeset cmdout
     typeset gitcmdmsg statusopt
     typeset gitcmd='git'
-    typeset usage="Usage: [-c newCommandInsteadOfGit] [options] [args]"
+    typeset usage="Usage: [-c newCommandInsteadOfGit] [-s] [command args]"
 
     OPTIND=1
     while getopts ':c:hs' opt ; do
