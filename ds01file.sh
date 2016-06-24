@@ -397,7 +397,7 @@ untxz () {
 
 # Function xzp - (De)compress set ox xz files, also traverse given dirs looking for xz.
 #
-# Syntax: [-d] [-t {target root}]
+# Syntax: [-d] [-t {target root}] filenames...
 #
 # Options:
 # -d
@@ -408,7 +408,8 @@ untxz () {
 #   to the root. Also, a target being specified implies xz's -c (--keep).
 unset xzp
 xzp () {
-    typeset cmd decompress files maxprocs target
+    typeset cmd copycmd decompress maxprocs target
+    typeset compressedfiles files2copy inflatedfiles
     typeset oldind="$OPTIND"
 
     OPTIND=1
@@ -428,38 +429,53 @@ xzp () {
             return 1
         fi
 
-        cmd="tgt=\"${target}\"/{} ; mkdir -p \"\$(dirname \"\${tgt}\")\""
+        cmd='tgt="'"${target}"'"/{} ; mkdir -p "$(dirname "${tgt}")"'
+
+        copycmd="${cmd}"' ; cp {} "${tgt}"'
+
         if [ -n "${decompress}" ] ; then
             cmd="${cmd}"' ; xz -c -d {} > "${tgt%.xz}"'
         else # compress
-            cmd="${cmd}"' ; xz -c -4 {} > "'
+            cmd="${cmd}"' ; xz -c -4 {} > "${tgt}.xz"'
         fi
     else
         cmd="xz ${decompress:--4} {}"
     fi
 
-    # Paths:
+    # Files:
+    compressedfiles=$(eval ls -1dF '"$@"' | grep '[.]xz$')
+    inflatedfiles=$(eval ls -1dF '"$@"' | grep -v '[.]xz$' | grep -v '/$')
+
+    # Complement files to be just copied:
     if [ -n "${decompress}" ] ; then
-        files=$(eval ls -1dF '"$@"' | grep '[.]xz$')
+        files2copy="${inflatedfiles}"
     else # compress
-        files=$(eval ls -1dF '"$@"' | grep -v '[.]xz$' | grep -v '/$')
+        files2copy="${compressedfiles}"
     fi
 
-    # Files:
+    # Main action (compress | decompress):
     paralleljobs -p "${maxprocs}" -z xz "${cmd}" <<EOF
 ${files}
 EOF
-    # Dirs:
-    for d in "$@" ; do
-        if [ -d "$d" ] ; then 
-            cd "${d}"
-            # cat <<EOF
-            paralleljobs -p "${maxprocs}" -z xz "${cmd}" <<EOF
-$(find . -name '*.xz' -type f)
+
+    # Copy complement files only if a target was specified:
+    if [ -n "${target}" ] ; then
+        paralleljobs -p "${maxprocs}" "${copycmd}" <<EOF
+${files2copy}
 EOF
-            cd - >/dev/null 2>&1
-        fi
-    done
+    fi
+
+    # Dirs:
+#    for d in "$@" ; do
+#        if [ -d "$d" ] ; then 
+#            cd "${d}"
+#            # cat <<EOF
+#            paralleljobs -p "${maxprocs}" -z xz "${cmd}" <<EOF
+#$(find . -name '*.xz' -type f)
+#EOF
+#            cd - >/dev/null 2>&1
+#        fi
+#    done
 }
 
 # ##############################################################################
