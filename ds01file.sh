@@ -396,7 +396,13 @@ untxz () {
 }
 
 # Function xzp - (De)compress set ox xz files, also traverse given dirs looking for xz.
+#
 # Syntax: [-d] [-t {target root}]
+#
+# Options:
+# -d
+#   Indicates decompression mode. Omitting it yields the default compression mode.
+#
 # Remark: The target root is going to be a common root for several source directories
 #   even when those sources are in separate dir trees in the filesystem all the way up
 #   to the root. Also, a target being specified implies xz's -c (--keep).
