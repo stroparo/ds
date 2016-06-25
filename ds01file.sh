@@ -224,6 +224,20 @@ chmodr () {
     find "${dir}" -type f -name "${fglob}" -exec chmod "${mode}" {} \;
 }
 
+# Function loc - search via locate program.
+# Purpose: wrap and interpolate arguments with a literal '*'
+#  and execute 'locate -bi {wrapped_args}'. It avoids running
+#  locate with just an '*' i.e. you have to pass at least a
+#  non-empty argument.
+# Syntax: chunk1 [chunk2 ...]
+unset loc
+loc () {
+  [[ -z ${1} ]] && return 1
+  typeset locvalue='*'
+  for i in "$@" ; do locvalue="${locvalue}${i}*" ; done
+  locate -bi "${locvalue}"
+}
+
 unset lstgz
 lstgz () {
     for f in "$@" ; do
