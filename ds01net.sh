@@ -222,5 +222,17 @@ screenk () {
     env ENV="${HOME}/.kshrc" screen -S "${1:-screenksh}" ksh
 }
 
+# Function sshkeygenrsa - generate id_rsa if none present for the current user.
+unset sshkeygenrsa
+sshkeygenrsa () {
+    # Create an ssh key if there is none:
+    if [ ! -e "${HOME}"/.ssh/id_rsa ] ; then
+        ssh-keygen -t rsa -b 4096 -C "${1:-mykey}"
+
+        # Call the agent to add the newly generated key:
+        sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/sshagent.sh"
+    fi
+}
+
 # ##############################################################################
 
