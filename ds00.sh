@@ -612,10 +612,13 @@ mutail () {
 unset printawk
 printawk () {
     typeset fieldsep
+    typeset oldind="${OPTIND}"
     typeset outsep
     typeset pattern
     typeset printargs
+    typeset usage='Syntax: printawk -F fieldsep -O outsep -p pattern {1st field} [2nd field [3rd ...]]'
 
+    OPTIND=1
     while getopts ':F:O:p:' opt ; do
         case "${opt}" in
         F) fieldsep="${OPTARG}" ;;
@@ -623,13 +626,12 @@ printawk () {
         p) pattern="${OPTARG}" ;;
         esac
     done
-    shift $((OPTIND - 1)) ; OPTIND=1
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
-    printargs="\$${1}"
-    shift
+    [ "$#" -eq 0 ] && echo "${usage}" 1>&2 && return
 
     for i in "$@" ; do
-        printargs="${printargs}, \$${i}"
+        printargs="${printargs:+${printargs}, }\$${i}"
     done
 
     awk ${fieldsep:+-F${fieldsep}} \
@@ -672,6 +674,30 @@ _any_not_w () {
     for i in "$@" ; do
         [ -n "${1}" -a ! -w "${1}" ] && return 0
     done
+    return 1
+}
+
+# Function progmiss - Checks 'which' programs and prints missing programs.
+unset progmiss
+progmiss () {
+    typeset misslist prog
+
+    if [[ -z ${1} ]] ; then
+        echo 'No-op. Must input at least one argument.'
+        return
+    fi
+
+    for prog in "$@" ; do
+        which "${prog}" >/dev/null 2>&1 || misslist="${misslist:+${misslist} }${prog}"
+    done
+
+    misslist="${misslist% }"
+
+    if [[ -n ${misslist} ]] ; then
+        echo "Missing binaries: ${misslist}"
+        return
+    fi
+
     return 1
 }
 
