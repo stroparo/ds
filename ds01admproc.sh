@@ -14,3 +14,13 @@ alertdeadproc () {
   while true ; do echo '\a' ; sleep 8 ; done
 }
 
+# Function topu - top user processes, or topas when working in AIX.
+unset topu
+topu () {
+    if _is_aix ; then
+        topas -U "${USER}" -P
+    else
+        top -U "${UID:-$(id -u)}"
+    fi
+}
+

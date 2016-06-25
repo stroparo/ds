@@ -112,10 +112,10 @@ d () {
 unset echodots
 echodots () {
     trap return SIGPIPE
-    while sleep "${1:-200}" ; do
+    while sleep "${1:-4}" ; do
         if [ -n "${BASH_VERSION}" ] ; then
             echo -n '.' 1>&2
-        elif [[ ${SHELL} = *ksh ]] ; then
+        elif [[ ${SHELL} = *[kz]sh ]] ; then
             echo '.\c' 1>&2
         else
             echo '.'
@@ -426,16 +426,6 @@ EOF
     done
     if [ -n "${verbose}" -a -n "${name}" ] ; then
         elog -n "${pname}" "GROUP COMPLETE."
-    fi
-}
-
-# Function topu - top user processes, or topas when working in AIX.
-unset topu
-topu () {
-    if _is_aix ; then
-        topas -U "${USER}" -P
-    else
-        top -U "${UID:-$(id -u)}"
     fi
 }
 
