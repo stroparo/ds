@@ -628,6 +628,30 @@ printawk () {
         "${pattern}${pattern:+ }{print ${printargs};}"
 }
 
+# Function progmiss - Checks 'which' programs and prints missing programs.
+unset progmiss
+progmiss () {
+    typeset misslist prog
+
+    if [[ -z ${1} ]] ; then
+        echo 'No-op. Must input at least one argument.'
+        return
+    fi
+
+    for prog in "$@" ; do
+        which "${prog}" >/dev/null 2>&1 || misslist="${misslist:+${misslist} }${prog}"
+    done
+
+    misslist="${misslist% }"
+
+    if [[ -n ${misslist} ]] ; then
+        echo "Missing binaries: ${misslist}"
+        return
+    fi
+
+    return 1
+}
+
 # ##############################################################################
 # Testing functions
 
@@ -663,30 +687,6 @@ _any_not_w () {
     for i in "$@" ; do
         [ -n "${1}" -a ! -w "${1}" ] && return 0
     done
-    return 1
-}
-
-# Function progmiss - Checks 'which' programs and prints missing programs.
-unset progmiss
-progmiss () {
-    typeset misslist prog
-
-    if [[ -z ${1} ]] ; then
-        echo 'No-op. Must input at least one argument.'
-        return
-    fi
-
-    for prog in "$@" ; do
-        which "${prog}" >/dev/null 2>&1 || misslist="${misslist:+${misslist} }${prog}"
-    done
-
-    misslist="${misslist% }"
-
-    if [[ -n ${misslist} ]] ; then
-        echo "Missing binaries: ${misslist}"
-        return
-    fi
-
     return 1
 }
 
