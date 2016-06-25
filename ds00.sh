@@ -690,28 +690,6 @@ progmiss () {
     return 1
 }
 
-# Function testslice - Tests wether number is in a [min, max) slice.
-# Syntax: num min max
-unset testslice
-testslice () {
-    typeset oldind="${OPTIND}"
-
-    OPTIND=1
-    while getopts 'h' option ; do
-        case "${option}" in
-        h|help)
-            echo 'Usage: num [min max) (open ended)'
-            return
-            ;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND=1
-
-    if [ "${#}" -ne 3 ] ; then false ; return ; fi
-
-    [[ ${2} -le ${1} && ${1} -lt ${3} ]]
-}
-
 # ##############################################################################
 # Bootstrap calls:
 
