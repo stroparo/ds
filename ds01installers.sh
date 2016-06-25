@@ -4,7 +4,7 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
-# Admin - installers setup functions
+# Admin - install & setup functions
 
 # Function installohmyzsh - Install Oh My ZSH.
 unset installohmyzsh
