@@ -25,6 +25,8 @@ ckaptitude () {
     fi
 }
 
+
+
 # Function aptclean - clean up ubuntu packages and unwanted files.
 # Rmk - this also installs localepurge, but it must be executed separately (in that
 #   package you will choose only the locales you use and/or want to keep).
@@ -73,8 +75,6 @@ aptinstall () {
     typeset oldind="${OPTIND}"
     typeset assumeyes doupgrade pkgslist
 
-    [[ $SHELL = *zsh* ]] && set -o shwordsplit
-
     OPTIND=1
     while getopts ':uy' option ; do
         case "${option}" in
@@ -100,8 +100,9 @@ aptinstall () {
     if ${doupgrade:-false} ; then
         sudo aptitude upgrade ${assumeyes} || return 11
     fi
-    sudo aptitude install ${assumeyes} -Z ${pkgslist} || return 21
 
+    [[ $SHELL = *zsh* ]] && set -o shwordsplit
+    sudo aptitude install ${assumeyes} -Z ${pkgslist} || return 21
     [[ $SHELL = *zsh* ]] && set +o shwordsplit
 }
 
@@ -131,5 +132,43 @@ fixaptmodes () {
     if [ -d /etc/apt/sources.list.d ] ; then
         sudo chmod 644 /etc/apt/sources.list.d/*
     fi
+}
+
+# Function installppa - add ubuntu ppa repositories.
+unset installppa
+installppa () {
+    typeset pname=installppa
+    typeset usage="${pname} {ppa file (one ppa path per line)}"
+
+    typeset ppalistfile="$1"
+
+    if ! _is_ubuntu ; then
+        elog -s -n "$pname" "Not in ubuntu."
+        return
+    fi
+
+    if [ ! -f "$ppalistfile" ] ; then
+        elog -f -n "$pname" "${usage}"
+        return 1
+    fi
+
+    elog -n "$pname" 'Started.'
+
+    [[ $SHELL = *zsh* ]] && set -o shwordsplit
+
+    for ppa in "$(cat "$ppalistfile")" ; do
+        if ! (ls -1 /etc/apt/sources.list.d/apt | \
+                grep -q "$(echo "$ppa" | sed -e 's#/#-#g')")
+        then
+            elog -n "$pname" "Adding ppa: ${ppa}"
+            sudo apt-add-repository "ppa:${ppa}"
+        else
+            elog -s -n "$pname" "'${ppa}' ppa already present."
+        fi
+    done
+
+    [[ $SHELL = *zsh* ]] && set +o shwordsplit
+
+    elog -n "$pname" 'Finished.'
 }
 
