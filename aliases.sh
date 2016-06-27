@@ -6,11 +6,12 @@
 # ##############################################################################
 # Aliases
 
+alias modeds='[ -w "$DS_HOME/scripts" ] && chmod 740 "$DS_HOME/scripts/"*sh'
+alias modehome='[ -w ~/bin ] && chmod 740 ~/bin/*sh'
 alias tpf='typeset -f'
 alias tps='typeset'
 alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
 alias xgit="alias | grep 'git '"
-alias xhome='[ -w ~/bin ] && chmod 740 ~/bin/*sh'
 
 # Common:
 alias cls='clear'
