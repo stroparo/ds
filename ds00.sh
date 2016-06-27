@@ -683,6 +683,13 @@ _any_null () {
     return 1
 }
 
+_any_not_r () {
+    for i in "$@" ; do
+        [ -n "${1}" -a ! -r "${1}" ] && return 0
+    done
+    return 1
+}
+
 _any_not_w () {
     for i in "$@" ; do
         [ -n "${1}" -a ! -w "${1}" ] && return 0
