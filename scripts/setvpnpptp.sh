@@ -9,7 +9,8 @@
 # Function setvpnpptp - Sets PPTP vpn for Linux.
 
 setvpnpptp () {
-    typeset usage='setvpnpptp {connection name} {host address[|other hosts up script]} [up command]'
+    typeset usage='Usage:
+setvpnpptp {connection name} {host address[|other hosts up script]} [up command]'
 
     typeset conn_name="$1"
     typeset host="${2%%|*}"
