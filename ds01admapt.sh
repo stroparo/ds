@@ -84,14 +84,18 @@ aptinstall () {
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
   
+    # Prep:
+
     if [ ! -r "${1}" ] ; then
         echo "A readable packagelist file must be passed as the first argument. Aborted." 1>&2
         return 1
     fi
-    pkgslist=$(sed -e 's/#.*$//' "${1}" | grep .)
-
     ckaptitude || return 1
     sudo aptitude update || return 2
+
+    pkgslist=$(sed -e 's/#.*$//' "${1}" | grep .)
+
+    # Main task:
   
     if ${doupgrade:-false} ; then
         sudo aptitude upgrade ${assumeyes} || return 11
