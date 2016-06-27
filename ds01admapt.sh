@@ -21,7 +21,7 @@ ckaptitude () {
             elog -n "$pname" -f 'Failed installing aptitude. Aborted.'
             return 1
         fi
-        elog -n "$pname" 'Done installing aptitude.'
+        elog -n "$pname" 'Check complete.'
     fi
 }
 
