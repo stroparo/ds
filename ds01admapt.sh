@@ -171,6 +171,6 @@ installppa () {
 
     [[ -n $ZSH_VERSION ]] && set +o shwordsplit
 
-    elog -n "$pname" 'Finished.'
+    elog -n "$pname" 'Complete.'
 }
 
