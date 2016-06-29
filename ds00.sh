@@ -732,5 +732,3 @@ _any_not_w () {
 # Bootstrap calls:
 
 [ -n "${DS_VERBOSE}" ] && dsinfo 1>&2
-
-sourcefiles "${DS_HOME}/aliases*sh"

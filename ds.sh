@@ -55,6 +55,7 @@ pnamerestore () { pname="$oldpname" ; }
 
 # DS init:
 . "${DS_HOME}/ds00.sh" || return 10
+sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/aliases*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t -n 'Specialized routines 01..09' "${DS_HOME}/ds0[1-9]*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t -n 'Specialized routines 10..89' "${DS_HOME}/ds[1-8][0-9]*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t -n 'Specialized routines etcetera' "${DS_HOME}/ds[A-Za-z]*sh"
