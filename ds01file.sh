@@ -93,7 +93,10 @@ archive () {
 #  via paralleljobs function.
 # Deps: dudesc, dufile, paralleljobs.
 # Remark: abort if destdir already exists.
-# Syntax: [-p maxprocesses] srcdir destdir
+# Syntax: [-c gziplevel] [-p maxprocesses] [-u] [-w] srcdir destdir
+# Options:
+#   -u triggers uncompressed tars
+#   -w triggers waiting for the last background process
 unset childrentgz
 childrentgz () {
     typeset oldind="$OPTIND"
