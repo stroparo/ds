@@ -25,8 +25,6 @@ ckaptitude () {
     fi
 }
 
-
-
 # Function aptclean - clean up ubuntu packages and unwanted files.
 # Rmk - this also installs localepurge, but it must be executed separately (in that
 #   package you will choose only the locales you use and/or want to keep).
