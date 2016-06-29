@@ -157,14 +157,16 @@ installppa () {
     [[ -n $ZSH_VERSION ]] && set -o shwordsplit
 
     for ppa in "$(cat "$ppalistfile")" ; do
-        if ! (ls -1 /etc/apt/sources.list.d/apt | \
-                grep -q "$(echo "$ppa" | sed -e 's#/#-#g')")
+
+        if ! (ls -1 /etc/apt/sources.list.d | \
+            grep -q "$(echo "$ppa" | sed -e 's#/#-#g')")
         then
             elog -n "$pname" "Adding ppa: ${ppa}"
             sudo apt-add-repository "ppa:${ppa}"
         else
             elog -s -n "$pname" "'${ppa}' ppa already present."
         fi
+
     done
 
     [[ -n $ZSH_VERSION ]] && set +o shwordsplit
