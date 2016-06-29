@@ -135,19 +135,23 @@ fixaptmodes () {
 # Function installppa - add ubuntu ppa repositories.
 unset installppa
 installppa () {
+
     typeset pname=installppa
+
+    typeset somefail=false
+    typeset ppalistfile="$1"
     typeset usage="${pname} {ppa file (one ppa path per line)}"
 
-    typeset ppalistfile="$1"
-
     if ! _is_ubuntu ; then
+
         elog -s -n "$pname" "Not in ubuntu."
         return
-    fi
 
-    if [ ! -f "$ppalistfile" ] ; then
+    elif [ ! -f "$ppalistfile" ] ; then
+
         elog -f -n "$pname" "${usage}"
         return 1
+
     fi
 
     elog -n "$pname" 'Started.'
@@ -160,7 +164,11 @@ installppa () {
             grep -q "$(echo "$ppa" | sed -e 's#/#-#g')")
         then
             elog -n "$pname" "Adding ppa: ${ppa}"
-            sudo apt-add-repository "ppa:${ppa}"
+
+            if ! sudo apt-add-repository "ppa:${ppa}" ; then
+                elog -f -n "$pname" "Failed installing '${ppa}' ppa."
+                somefail=true
+            fi
         else
             elog -s -n "$pname" "'${ppa}' ppa already present."
         fi
@@ -169,6 +177,11 @@ installppa () {
 
     [[ -n $ZSH_VERSION ]] && set +o shwordsplit
 
-    elog -n "$pname" 'Complete.'
+    if $somefail ; then
+        elog -f -n "$pname" 'Some ppa failed.'
+        return 1
+    else
+        elog -n "$pname" 'Complete.'
+    fi
 }
 
