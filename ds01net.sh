@@ -25,17 +25,29 @@
 # Syntax: [-e {env-regex}] [-f {local-globs}] [-p] [-r] {srcdir} {site} [site2 [site3 ...]]
 unset pushl
 pushl () {
+
     typeset oldind="${OPTIND}"
-    typeset env_regex purge_only reset_files srcdir xglobs xglobsarg
+
+    typeset env_regex
+    typeset exclude='@@@@DONOT@@@@'
+    typeset conn
+    typeset purge_only
+    typeset reset_files
+    typeset srcdir
+    typeset tgtglobexp
+    typeset xglobs
+    typeset xglobsarg
+
     which lftp >/dev/null 2>&1 || return 10
 
     OPTIND=1
-    while getopts ':e:f:pr' opt ; do
+    while getopts ':e:f:prx:' opt ; do
         case ${opt} in
-        e) env_regex="${OPTARG}";;
+        e) env_regex="${OPTARG}" ;;
         f) xglobsarg="${OPTARG}" ; xglobs="${OPTARG}" ;;
-        p) purge_only=true;;
-        r) reset_files=true;;
+        p) purge_only=true ;;
+        r) reset_files=true ;;
+        x) exclude="${OPTARG}" ;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
@@ -43,9 +55,18 @@ pushl () {
     srcdir="$(cd ${1}; echo "$PWD")"
     shift
 
+    if [[ -n $xglobsarg ]] ; then
+        xglobs="$(cd "$srcdir" && eval echo "${xglobs}" | sed -e "s/${exclude}//g")"
+    fi
+
     for env in "$@" ; do
-        if [ -z "${xglobsarg}" ] ; then
-            xglobs="$(eval echo "\"\${tgtglob${env}}\"")"
+        if [[ -z $xglobsarg ]] ; then
+            tgtglobexp="$(eval echo "\${tgtglob${env}}")"
+            xglobs="$(cd "$srcdir" && eval echo "${tgtglobexp}" | sed -e "s/${exclude}//g")"
+        fi
+
+        if [[ -z $xglobs ]]; then
+            elog -f -n "$pname" "Failed expanding xglobs."
         fi
 
         echo "==> Env: '${env}'; Files: '${xglobs}' <=="
@@ -59,23 +80,28 @@ pushl () {
             fi <<EOF
 ${environ}
 EOF
+            conn="sftp://${h}/${dest#/}"
+
             echo "${environ} => ${purge_only:+rm in }path: '${u}@${h}:${dest#/}'."
 
             if ${reset_files:-false} || ${purge_only:-false} ; then
-                lftp -e 'set sftp:auto-confirm yes ; mrm -f '"${xglobs}"' ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}"
+                lftp -e 'set sftp:auto-confirm yes ; mrm -f '"${xglobs}"' ; exit' -u "${u},${pw}" "${conn}"
             fi
             ${purge_only:-false} && continue
 
             # Put files:
-            cd "${srcdir:-err}" \
-            && lftp -e 'set sftp:auto-confirm yes ; mput '"${xglobs}"' ; exit' -u "${u},${pw}" "sftp://${h}/${dest#/}"
+            (cd "${srcdir:-err}" \
+            && lftp -e 'set sftp:auto-confirm yes ; mput '"${xglobs}"' ; exit' -u "${u},${pw}" "${conn}")
 
-            if [ "$?" != 0 ] ; then echo "${environ} => error"\! ; return 1 ; fi
+            if [ "$?" != 0 ] ; then
+                echo "${environ} => error"\!
+                return 1
+            fi
         done <<EOF
 $(eval echo "\"\${tgt${env}}\"")
 EOF
     done
-    echo 'Pushing process complete.'
+    echo 'Pushing process complete.' ; echo ''
 }
 
 # ##############################################################################
