@@ -384,6 +384,10 @@ unarchive () {
             (cd "${outd}" ; gunzip -c "${f}" | tar -x${verbose:+v}f -)
             ;;
         
+        *.tar.xz|*txz)
+            (cd "${outd}" ; xz -c -d "${f}" | tar -x${verbose:+v}f -)
+            ;;
+
         *.zip)
             ! which unzip >/dev/null 2>&1 && echo "SKIP: '${f}'. unzip program not available." 1>&2 && continue
             unzip "${f}" -d "${outd}"
