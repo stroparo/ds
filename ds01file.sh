@@ -45,16 +45,11 @@ archive () {
             srcident=$(basename "${src}")
             srcpath="${src}"
         else
-            if ! (set | egrep -q "^${src}=") ; then
-                echo "SKIP: No file nor variable named '${src}'" 1>&2
-                continue
-            fi
-
             srcident="${src}"
             srcpath="$(eval echo "\$${src}")"
 
             if [ ! -r "${srcpath}" ] ; then
-                echo "SKIP: ${src}='${srcpath}' is not a readable path." 1>&2
+                echo "SKIP: '${src}' is not a readable path nor a variable (value='${srcpath}')." 1>&2
                 continue
             fi
         fi
