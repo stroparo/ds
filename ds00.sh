@@ -731,4 +731,6 @@ _any_not_w () {
 # ##############################################################################
 # Bootstrap calls:
 
-[ -n "${DS_VERBOSE}" ] && dsinfo 1>&2
+if [ -n "${DS_VERBOSE}" ] ; then
+    dsinfo 1>&2
+fi
