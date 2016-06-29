@@ -101,9 +101,9 @@ aptinstall () {
         sudo aptitude upgrade ${assumeyes} || return 11
     fi
 
-    [[ $SHELL = *zsh* ]] && set -o shwordsplit
+    [[ -n $ZSH_VERSION ]] && set -o shwordsplit
     sudo aptitude install ${assumeyes} -Z ${pkgslist} || return 21
-    [[ $SHELL = *zsh* ]] && set +o shwordsplit
+    [[ -n $ZSH_VERSION ]] && set +o shwordsplit
 }
 
 # Function dpkgstat: View installation status of given package names.
@@ -154,7 +154,7 @@ installppa () {
 
     elog -n "$pname" 'Started.'
 
-    [[ $SHELL = *zsh* ]] && set -o shwordsplit
+    [[ -n $ZSH_VERSION ]] && set -o shwordsplit
 
     for ppa in "$(cat "$ppalistfile")" ; do
         if ! (ls -1 /etc/apt/sources.list.d/apt | \
@@ -167,7 +167,7 @@ installppa () {
         fi
     done
 
-    [[ $SHELL = *zsh* ]] && set +o shwordsplit
+    [[ -n $ZSH_VERSION ]] && set +o shwordsplit
 
     elog -n "$pname" 'Finished.'
 }
