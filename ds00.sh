@@ -186,11 +186,25 @@ loop () {
     done
 }
 
-# Function paralleljobs - Fires parallel processes, entries read from stdin
-#  replace {} expressions in the command.
-# Syntax: [-n {args-per-process}] [-p maxprocesses] {command}
-# Remark: 
-# Example: "gzip '{}'"
+# Function paralleljobs - Fires parallel processes, entries read from stdin one per line.
+#   '{}' expressions in the command yield the entry for the current job.
+#
+# Syntax:
+#   [-l {logdir}] [-n {args-per-process}] [-p {maxprocesses}] [-z {taskname}] {command}
+#
+# Options:
+#
+#   -l {logdir}
+#       Defaults to $DS_ENV_LOG
+#
+#   -z {cmdzero}
+#       Specify the task name for example when the command starts
+#       with other stuff in lieu of the command, such as IFS=...
+#       This is what gets put into the log filename.
+#
+# Example:
+#   "gzip '{}'"
+#
 unset paralleljobs
 paralleljobs () {
     typeset argcount=0
