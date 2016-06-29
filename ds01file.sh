@@ -135,9 +135,9 @@ childrentgz () {
     cd "${srcdir}" || return 99
 
     if ${uncompressed} ; then
-        paracmd="tar -cf '${destdir}'/{}.tar {} ; echo \$?"
+        paracmd="tar -cf '${destdir}'/{}.tar {}"
     else
-        paracmd="tar -cf - {} | gzip -${gziplevel:-1} -c - > '${destdir}'/{}.tar.gz ; echo \$?"
+        paracmd="tar -cf - {} | gzip -${gziplevel:-1} -c - > '${destdir}'/{}.tar.gz"
     fi
 
     echo "INFO: Started." 1>&2
@@ -161,7 +161,7 @@ unset childrentgunz
 childrentgunz () {
     typeset oldind="$OPTIND"
     typeset srcdir destdir maxprocs
-    typeset paracmd="gunzip -c {} | tar -xf - ; echo \$?"
+    typeset paracmd="gunzip -c {} | tar -xf -"
     typeset uncompressed=false
 
     OPTIND=1
@@ -195,7 +195,7 @@ childrentgunz () {
     cd "${destdir}" || return 99
 
     if ${uncompressed} ; then
-        paracmd="tar -xf {} ; echo \$?"
+        paracmd="tar -xf {}"
     fi
 
     echo "INFO: Started." 1>&2
