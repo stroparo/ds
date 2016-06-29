@@ -443,6 +443,23 @@ EOF
     fi
 }
 
+# Function userconfirm - Ask a question and yield success if user responded [yY]*
+unset userconfirm
+userconfirm () {
+
+    typeset confirm
+
+    echo ${BASH_VERSION:+-e} "$@" "[y/N] \c"
+
+    read confirm
+
+    if [[ $confirm = [yY]* ]] ; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # ##############################################################################
 # Text processing functions
 
