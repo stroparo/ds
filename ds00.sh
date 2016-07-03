@@ -39,20 +39,21 @@ aliasnoext () {
     shift $((OPTIND - 1)) ; OPTIND=1
 
     for dir in "$@" ; do
-        [ -d "${dir}" ] && \
-        while read script ; do
-            if [ -x "${script}" ] ; then
-                aliasname="${script##*/}"
-                aliasname="${aliasname%%.*}"
-                eval unalias "${aliasname}" 2>/dev/null
-                eval alias "${aliasname}=${script}"
-                if [ -n "${verbose}" ] ; then
-                    eval type "${aliasname}"
+        if [ -d "${dir}" ] ; then
+            while read script ; do
+                if [ -x "${script}" ] ; then
+                    aliasname="${script##*/}"
+                    aliasname="${aliasname%%.*}"
+                    eval unalias "${aliasname}" 2>/dev/null
+                    eval alias "${aliasname}=${script}"
+                    if [ -n "${verbose}" ] ; then
+                        eval type "${aliasname}"
+                    fi
                 fi
-            fi
-        done <<EOF
+            done <<EOF
 $(ls -1 "${dir}"/*sh 2>/dev/null)
 EOF
+        fi
     done
 }
 
