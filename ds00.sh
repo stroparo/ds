@@ -187,7 +187,7 @@ enforcedir () {
     typeset pname=enforcedir
 
     for d in "$@" ; do
-        mkdir "${d}" 2>/dev/null
+        mkdir -p "${d}" 2>/dev/null
 
         if _any_dir_not_rwx "${d}" ; then
             elog -f -n "$pname" "You do not have rwx mode for '${d}' directory."
