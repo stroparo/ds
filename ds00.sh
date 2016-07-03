@@ -78,8 +78,10 @@ cyd () {
 # Function chmodshells - Sets mode for *sh scripts inside the specified directories.
 unset chmodshells
 chmodshells () {
-    typeset mode='u+rwx'
     typeset oldind="$OPTIND"
+
+    typeset files
+    typeset mode='u+rwx'
     typeset verbose
 
     # Options:
@@ -93,14 +95,13 @@ chmodshells () {
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     for d in "$@" ; do
-        if [ -d "${d}" ] ; then
-            if [ -w "${d}" ] ; then
-                if ! chmod ${verbose} "${mode}" "${d}"/*sh ; then
-                    echo "WARN: Failed chmod u+rwx '${d}/*sh'.." 1>&2
-                fi
-            else
-                echo "SKIP: Not writable dir '${d}'.." 1>&2
-            fi
+        if ! _any_dir_not_w "${d}" ; then
+            files="$(awk 'FNR == 1 && $0 ~ /^#!.*sh/ { print FILENAME; }' \
+                $(find "${d}" -type f | egrep -v '[.](git|hg|svn)'))"
+
+            [[ -n $ZSH_VERSION ]] && set -o shwordsplit
+            chmod ${verbose} "${mode}" ${files}
+            [[ -n $ZSH_VERSION ]] && set +o shwordsplit
         fi
     done
 }
@@ -309,7 +310,8 @@ paralleljobs () {
                 [ "${argcount}" -lt "${n}" ] && continue
             fi
         else
-            elog -f -n "${pname}" "Invalid number of args per process in n option, must be positive."
+            elog -f -n "${pname}" \
+                "Invalid number of args per process in n option, must be positive."
             return 20
         fi
 
@@ -337,7 +339,6 @@ paralleljobs () {
         # Wait for a vacant pool slot:
         while [ `jobs -r | wc -l` -ge ${maxprocs} ] ; do true ; done
 
-        # elog "bash -c \"${icmd}\" >> \"${ilog}\" 2>&1 &" 2>&1 | tee -a "${logdir}"/debug-paralleljobs.log
         # elog "Subproc #${pcount} .."
         nohup bash -c "${icmd}" >> "${ilog}" 2>&1 &
     done
@@ -389,7 +390,8 @@ pgr () {
     ps -ef | egrep -i ${options} "$@" | egrep -v "grep.*(${1})"
 }
 
-# Function ps1enhance - make PS1 better, displaying user, host, time, $? and the current directory.
+# Function ps1enhance - make PS1 better, displaying user, host, time, $? and the
+#   current directory.
 unset ps1enhance
 ps1enhance () {
     if [ -n "${BASH_VERSION}" ] ; then
@@ -553,7 +555,9 @@ ckeof () {
 
         while read file ; do
             #if (tail -n 1 "$i"; echo '##EOF##') | grep -q '.##EOF##$' ; then
-            if [ "$(awk 'END{print FNR;}' "${file}")" != "$(wc -l "${file}" | awk '{print $1}')" ] ; then
+            if [ "$(awk 'END{print FNR;}' "${file}")" != \
+                "$(wc -l "${file}" | awk '{print $1}')" ]
+            then
                 echo "${file}"
             fi
         done <<EOF
@@ -579,7 +583,8 @@ ckeolwin () {
         while read file ; do
             #if (tail -n 1 "$i"; echo '##EOF##') | grep -q '.##EOF##$' ; then
             
-            if [ $(head -1 "${file}" | tr '\r' '\n' | wc -l | awk '{print $1;}') -eq 2 ] ; then
+            if [ $(head -1 "${file}" | tr '\r' '\n' | wc -l | awk '{print $1;}') -eq 2 ]
+            then
                 echo "${file}"
             fi
         done <<EOF
@@ -616,7 +621,9 @@ fixeof () {
 
         while read file ; do
             #if (tail -n 1 "$i"; echo '##EOF##') | grep -q '.##EOF##$' ; then
-            if [ "$(awk 'END{print FNR;}' "${file}")" != "$(wc -l "${file}" | awk '{print $1}')" ] ; then
+            if [ "$(awk 'END{print FNR;}' "${file}")" != \
+                "$(wc -l "${file}" | awk '{print $1}')" ]
+            then
                 echo -e '\n\c' >> "${file}"
 
                 if ${verbose:-false} ; then
@@ -691,7 +698,8 @@ printawk () {
     typeset outsep
     typeset pattern
     typeset printargs
-    typeset usage='Syntax: printawk -F fieldsep -O outsep -p pattern {1st field} [2nd field [3rd ...]]'
+    typeset usage=\
+'Syntax: printawk -F fieldsep -O outsep -p pattern {1st field} [2nd field [3rd ...]]'
 
     OPTIND=1
     while getopts ':F:O:p:' opt ; do
