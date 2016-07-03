@@ -17,6 +17,15 @@ Options:
 # ##############################################################################
 # Functions
 
+prep () {
+
+    if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" || [ -z "${DS_LOADED}" ] ; then
+        echo "$(basename "$0"): FATAL: Could not load DS - Daily Shells." 1>&2
+        exit 1
+    fi
+
+}
+
 deploypackages () {
 
     typeset oldind="${OPTIND}"
@@ -62,5 +71,6 @@ deploypackages () {
 # ##############################################################################
 # Main
 
+prep
 deploypackages "$@"
 exit "$?"
