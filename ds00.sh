@@ -151,6 +151,21 @@ elog () {
     fi
 }
 
+# Function enforcedir - Tries to create or set mode for directory.
+unset enforcedir
+enforcedir () {
+    typeset pname=enforcedir
+
+    for d in "$@" ; do
+        mkdir "${d}" 2>/dev/null
+
+        if _any_dir_not_rwx "${d}" ; then
+            elog -f -n "$pname" "You do not have rwx mode for '${d}' directory."
+            return 1
+        fi
+    done
+}
+
 # Function getnow - setup NOW* and TODAY* environment variables.
 unset getnow
 getnow () {
@@ -697,6 +712,13 @@ _all_not_null () {
 _any_dir_not_w () {
     for i in "$@" ; do
         [ ! -d "${1}" -o ! -w "${1}" ] && return 0
+    done
+    return 1
+}
+
+_any_dir_not_rwx () {
+    for i in "$@" ; do
+        [ ! -d "${1}" -o ! -r "${1}" -o ! -w "${1}" -o ! -x "${1}" ] && return 0
     done
     return 1
 }
