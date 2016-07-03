@@ -341,16 +341,20 @@ EOF
 unset unarchive
 unarchive () {
     typeset oldind="$OPTIND"
-    typeset force verbose
     typeset pname=unarchive
+
+    typeset exclude
+    typeset force
     typeset outd='.'
+    typeset verbose
 
     OPTIND=1
-    while getopts ':fo:v' opt ; do
+    while getopts ':fo:vx:' opt ; do
         case "${opt}" in
         f) force=true;;
         o) outd="${OPTARG:-.}" ;;
         v) verbose=true ;;
+        x) exclude="${OPTARG}" ;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
@@ -363,7 +367,11 @@ unarchive () {
 
     for f in "$@" ; do
         export f
-        
+
+        if echo "${f}" | egrep -i -q "${exclude}" ; then
+            continue
+        fi
+
         [ -n "${verbose:-}" ] && echo "INFO: Unarchiving '${f}'.." 1>&2
 
         case "${f}" in
