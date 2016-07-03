@@ -748,44 +748,65 @@ _all_not_null () {
     return 0
 }
 
+_any_dir_not_r () {
+    for i in "$@" ; do
+        if [ ! -d "${1}" -o ! -r "${1}" ] ; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 _any_dir_not_w () {
     for i in "$@" ; do
-        [ ! -d "${1}" -o ! -w "${1}" ] && return 0
+        if [ ! -d "${1}" -o ! -w "${1}" ] ; then
+            return 0
+        fi
     done
     return 1
 }
 
 _any_dir_not_rwx () {
     for i in "$@" ; do
-        [ ! -d "${1}" -o ! -r "${1}" -o ! -w "${1}" -o ! -x "${1}" ] && return 0
+        if [ ! -d "${1}" -o ! -r "${1}" -o ! -w "${1}" -o ! -x "${1}" ] ; then
+            return 0
+        fi
     done
     return 1
 }
 
 _any_exists () {
     for i in "$@" ; do
-        [ -e "${1}" ] && return 0
+        if [ -e "${1}" ] ; then
+            return 0
+        fi
     done
     return 1
 }
 
 _any_null () {
     for i in "$@" ; do
-        [ -z "${i}" ] && return 0
+        if [ -z "${i}" ] ; then
+            return 0
+        fi
     done
     return 1
 }
 
 _any_not_r () {
     for i in "$@" ; do
-        [ -n "${1}" -a ! -r "${1}" ] && return 0
+        if [ -n "${1}" ] && [ ! -r "${1}" ] ; then
+            return 0
+        fi
     done
     return 1
 }
 
 _any_not_w () {
     for i in "$@" ; do
-        [ -n "${1}" -a ! -w "${1}" ] && return 0
+        if [ -n "${1}" ] && [ ! -w "${1}" ] ; then
+            return 0
+        fi
     done
     return 1
 }
