@@ -396,6 +396,36 @@ setlogdir () {
     fi
 }
 
+# Function chmodshells - Sets mode for *sh scripts inside the specified directories.
+unser chmodshells
+chmodshells () {
+    typeset mode='u+rwx'
+    typeset oldind="$OPTIND"
+    typeset verbose
+
+    # Options:
+    OPTIND=1
+    while getopts ':m:v' opt ; do
+        case "${opt}" in
+        m) mode="${OPTARG}" ;;
+        v) verbose='-v' ;;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
+
+    for d in "$@" ; do
+        if [ -d "${d}" ] ; then
+            if [ -w "${d}" ] ; then
+                if ! chmod ${verbose} "${mode}" "${d}"/*sh ; then
+                    echo "WARN: Failed chmod u+rwx '${d}/*sh'.." 1>&2
+                fi
+            else
+                echo "SKIP: Not writable dir '${d}'.." 1>&2
+            fi
+        fi
+    done
+}
+
 # Function sourcefiles - each arg is a glob; source all glob expanded paths.
 #  Tilde paths are accepted, as the expansion is yielded
 #  via eval. Expanded directories are ignored.

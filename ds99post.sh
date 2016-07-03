@@ -14,5 +14,6 @@ DS_LOADED=true
 unalias d 2>/dev/null
 
 # Calls:
+chmodshells "${DS_HOME}/bin" "${DS_HOME}/scripts"
 aliasnoext "${DS_HOME}/bin" "${DS_HOME}/scripts"
 runcommands "${DS_POST_CALLS}"
