@@ -31,6 +31,42 @@ makeat () {
 }
 
 # ##############################################################################
+# Deployment / Installation
+
+# Function deploypackages - install software
+# Option -c asks for prior user confirmation.
+unset deploypackages
+deploypackages () {
+
+    typeset pname=deploypackages
+
+    typeset userconfirm
+    if [ "$1" = '-c' ] ; then userconfirm=true ; shift ; fi
+
+    typeset pkgspath="${1}"
+    typeset deploypath="${2}"
+
+    if ${userconfirm:-false} ; then
+        userconfirm "Deploy packages from '${pkgspath}' ?" || return
+    fi
+
+    if [ -z "$(ls -1 "${pkgspath}" 2>/dev/null | egrep '([.]7z|[.]zip|bz2|gz)$')" ] ; then
+        elog -n "$pname" -f "No packages in '${pkgspath}'."
+        return 1
+    fi
+
+    elog -n "$pname" "Packages path '${pkgspath}' .."
+    elog -n "$pname" ".. deploying to '${deploypath}' .."
+
+    unarchive -v -o "${deploypath}" $(ls -1 "${pkgspath}"/*.7z 2>/dev/null)
+    unarchive -v -o "${deploypath}" $(ls -1 "${pkgspath}"/*.zip 2>/dev/null)
+    unarchive -v -o "${deploypath}" $(ls -1 "${pkgspath}"/*bz2 2>/dev/null)
+    unarchive -v -o "${deploypath}" $(ls -1 "${pkgspath}"/*gz 2>/dev/null)
+
+    elog -n "$pname" 'Complete.'
+}
+
+# ##############################################################################
 # Java
 
 # Function loadjava - load environment variables based on JAVA_HOME path.
