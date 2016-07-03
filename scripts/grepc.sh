@@ -2,15 +2,18 @@
 
 # DS - Daily Shells Library
 # License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
+#   See README.md document in projects page at
+#   https://github.com/stroparo/ds
 
 # Purpose:
 # This script emulates grep with context operations.
-#  Default context i.e. before and after is 10 lines
-#  around the matching position.
+# Default context i.e. before and after is 10 lines
+# around the matching position.
 
-# Syntax: [-a afterlines] [-b beforelines] [-c contextlines]
+usage="$(basename "$0") [-a afterlines] [-b beforelines] [-c contextlines]"
+
+# ##############################################################################
+# Functions
 
 grepc () {
     typeset afterlines
@@ -46,4 +49,8 @@ grepc () {
     done
 }
 
+# ##############################################################################
+# Main
+
 grepc "$@"
+exit "$?"

@@ -2,15 +2,17 @@
 
 # DS - Daily Shells Library
 # License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
+#   See README.md document in projects page at
+#   https://github.com/stroparo/ds
+
+# Purpose:
+# Set a PPTP vpn up for Linux.
 
 # ##############################################################################
-# Function setvpnpptp - Sets PPTP vpn for Linux.
+# Functions
 
 setvpnpptp () {
-    typeset usage='Usage:
-setvpnpptp {connection name} {host address[|other hosts up script]} [up command]'
+    typeset usage='setvpnpptp {connection name} {host address[|other hosts up script]} [up command]'
 
     typeset conn_name="$1"
     typeset host="${2%%|*}"
@@ -66,7 +68,11 @@ PPPEOF
     ls -l "$vpnpptpconf" "$vpnpptppeer"
 }
 
+# ##############################################################################
+# Main
+
 # Call it only if not interactive (not sourced):
 if [ "$#" -gt 1 ] ; then
     setvpnpptp "$@"
+    exit "$?"
 fi
