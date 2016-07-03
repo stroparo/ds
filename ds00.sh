@@ -397,7 +397,7 @@ setlogdir () {
 }
 
 # Function chmodshells - Sets mode for *sh scripts inside the specified directories.
-unser chmodshells
+unset chmodshells
 chmodshells () {
     typeset mode='u+rwx'
     typeset oldind="$OPTIND"
