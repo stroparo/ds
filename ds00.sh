@@ -506,6 +506,15 @@ userconfirm () {
     fi
 }
 
+# Function userinput - Read value to variable userinput.
+unset userinput
+userinput () {
+
+    echo ${BASH_VERSION:+-e} "$@: \c"
+
+    read userinput
+}
+
 # ##############################################################################
 # Text processing functions
 
