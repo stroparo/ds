@@ -376,9 +376,9 @@ pathmunge () {
   
     for i in "$@" ; do
         if [ -n "${pathmunge_after}" ] ; then
-            PATH="${PATH}:${i}"
+            PATH="${PATH}:$(eval echo "${i}")"
         else
-            PATH="${i}:${PATH}"
+            PATH="$(eval echo "${i}"):${PATH}"
         fi
     done
     PATH="${PATH#:}"
