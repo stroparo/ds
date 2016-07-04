@@ -544,13 +544,28 @@ userinput () {
 # Text processing functions
 
 # Function appendunique - If string not present in file, append to it.
-# Syntax: string filename
+# Syntax: string file1 [file2 ...]
 unset appendunique
 appendunique () {
-    if touch "${2}" && [ -w "${2}" ]; then
-        fgrep -q "${1}" "${2}" || echo "${1}" >> "${2}"
-    else
-        echo "Cannot write to '${2}'. Aborted." 1>&2
+
+    typeset msgerrforfile="appendunique: ERROR for file"
+    typeset failedsome=false
+    typeset text="${1}" ; shift
+
+    for f in "$@" ; do
+        if touch "${f}" && [ -w "${f}" ] && ! fgrep -q "${text}" "${f}" ; then
+            if ! echo "${text}" >> "${f}" ; then
+                failedsome=true
+                echo "${msgerrforfile} '${f}' .." 1>&2
+            fi
+        else
+            failedsome=true
+            echo "${msgerrforfile} '${f}' .." 1>&2
+        fi
+    done
+
+    if ${failedsome} ; then
+        echo "appendunique: FATAL: Text was '${text}'." 1>&2
         return 1
     fi
 }
