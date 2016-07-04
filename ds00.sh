@@ -457,11 +457,15 @@ setlogdir () {
 #  Stdout is fully redirected to stderr.
 unset sourcefiles
 sourcefiles () {
-    typeset name src srcresult tolerant verbose
-    typeset nta='Non-tolerant abort.'
+
+    typeset oldind="${OPTIND}"
     typeset pname='sourcefiles'
 
+    typeset name src srcresult tolerant verbose
+    typeset nta='Non-tolerant abort.'
+
     # Options:
+    OPTIND=1
     while getopts ':n:tv' opt ; do
         case "${opt}" in
         n) name="${OPTARG}";;
@@ -469,7 +473,7 @@ sourcefiles () {
         v) verbose=true;;
         esac
     done
-    shift $((OPTIND - 1)) ; OPTIND=1
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     [ -n "${verbose}" -a -n "${name}" ] && elog -n "${pname}" "GROUP '${name}'"
 
