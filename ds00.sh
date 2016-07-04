@@ -194,7 +194,7 @@ elog () {
     fi
 }
 
-# Function enforcedir - Tries to create or set mode for directory.
+# Function enforcedir - Tries to create the directory and fails if not rwx.
 unset enforcedir
 enforcedir () {
     typeset pname=enforcedir
