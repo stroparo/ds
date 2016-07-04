@@ -110,7 +110,7 @@ chmodshells () {
     done
 
     if ${addpaths:-false}; then
-        pathmunge "$@"
+        pathmunge -x "$@"
     fi
 
     if ${addalias:-false}; then
@@ -362,29 +362,40 @@ paralleljobs () {
 }
 
 # Function pathmunge - prepend (-a causes to append) directory to PATH global.
-# Syntax: {path}1+
+# Syntax: [-v varname] {path}1+
 unset pathmunge
 pathmunge () {
-    typeset pathmunge_after
+    typeset oldind="${OPTIND}"
+
+    typeset doexport=false
+    typeset mungeafter=false
+    typeset varname=PATH
+    typeset mgdpath mgdstring previous
   
-    while getopts ':a' opt ; do
+    OPTIND=1
+    while getopts ':av:x' opt ; do
         case "${opt}" in
-        a) pathmunge_after=1 ;;
+        a) mungeafter=true ;;
+        v) varname="${OPTARG}" ;;
+        x) doexport=true ;;
         esac
     done
-    shift $((OPTIND-1)) ; OPTIND=1
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
   
     for i in "$@" ; do
-        if [ -n "${pathmunge_after}" ] ; then
-            PATH="${PATH}:$(eval echo "${i}")"
+        mgdpath="$(eval echo "\"${i}\"")"
+        previous="$(eval echo '"${'"${varname}"'}"')"
+
+        if ${mungeafter} ; then
+            mgdstring="${previous}${previous:+:}${mgdpath}"
         else
-            PATH="$(eval echo "${i}"):${PATH}"
+            mgdstring="${mgdpath}${previous:+:}${previous}"
         fi
+
+        eval "${varname}='${mgdstring}'"
     done
-    PATH="${PATH#:}"
-    PATH="${PATH%:}"
-  
-    unset opt pathmunge_after
+
+    if ${doexport} ; then eval export "${varname}" ; fi
 }
 
 # Function pgr - pgrep emulator.
