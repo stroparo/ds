@@ -80,15 +80,19 @@ unset chmodshells
 chmodshells () {
     typeset oldind="$OPTIND"
 
+    typeset addaliases
+    typeset addpaths
     typeset files
     typeset mode='u+rwx'
     typeset verbose
 
     # Options:
     OPTIND=1
-    while getopts ':m:v' opt ; do
+    while getopts ':am:pv' opt ; do
         case "${opt}" in
+        a) addaliases=true ;;
         m) mode="${OPTARG}" ;;
+        p) addpaths=true ;;
         v) verbose='-v' ;;
         esac
     done
@@ -104,6 +108,14 @@ chmodshells () {
             [[ -n $ZSH_VERSION ]] && set +o shwordsplit
         fi
     done
+
+    if ${addpaths:-false}; then
+        pathmunge "$@"
+    fi
+
+    if ${addalias:-false}; then
+        aliasnoext "$@"
+    fi
 }
 
 # Function ckenv - check number of arguments and sets hasgnu ("GNU is not Unix").
