@@ -251,10 +251,20 @@ screenk () {
 # Function sshkeygenrsa - generate id_rsa if none present for the current user.
 unset sshkeygenrsa
 sshkeygenrsa () {
-    # Create an ssh key if there is none:
-    if [ ! -e "${HOME}"/.ssh/id_rsa ] ; then
-        ssh-keygen -t rsa -b 4096 -C "${1:-mykey}"
+    typeset comment="$1"
+    typeset keypath="${HOME}/.ssh/id_rsa"
 
+    while [ -e "${keypath}" ] ; do
+        userinput "Key '${keypath}' already exists, type in another path"
+        keypath="${userinput}"
+    done
+
+    while [ -z "${comment}" ] ; do
+        userinput 'SSH key comment (email, name or whatever)'
+        comment="${userinput}"
+    done
+
+    if ssh-keygen -t rsa -b 4096 -C "${comment:-mykey}" -f "${keypath}" ; then
         # Call the agent to add the newly generated key:
         sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/sshagent.sh"
     fi
