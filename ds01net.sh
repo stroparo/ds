@@ -254,8 +254,14 @@ sshkeygenrsa () {
     typeset comment="$1"
     typeset keypath="${HOME}/.ssh/id_rsa"
 
+    if [ -e "${keypath}" ] && \
+        ! userconfirm "Default '${keypath}' key already exists, enter another path?"
+    then
+        return
+    fi
+
     while [ -e "${keypath}" ] ; do
-        userinput "Key '${keypath}' already exists, type in another path"
+        userinput "Type a path that still does not exist for your key"
         keypath="${userinput}"
     done
 
