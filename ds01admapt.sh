@@ -41,9 +41,6 @@ aptclean () {
     which deborphan > /dev/null 2>&1 || sudo aptitude install -y deborphan
     which localepurge > /dev/null 2>&1 || sudo aptitude install -y localepurge
 
-    # Remove bulky stock packages:
-    sudo aptitude purge -y oxygen-icon-theme
-
     # Remove orphaned packages:
     if which deborphan > /dev/null 2>&1 ; then
         elog -n "$pname" '...'
