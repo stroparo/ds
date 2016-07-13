@@ -142,17 +142,9 @@ installppa () {
     typeset ppalistfile="$1"
     typeset usage="${pname} {ppa file (one ppa path per line)}"
 
-    if ! _is_ubuntu ; then
+    ! _is_ubuntu && elog -s -n "$pname" "Not in ubuntu." && return
 
-        elog -s -n "$pname" "Not in ubuntu."
-        return
-
-    elif [ ! -f "$ppalistfile" ] ; then
-
-        elog -f -n "$pname" "${usage}"
-        return 1
-
-    fi
+    [ ! -f "$ppalistfile" ] && elog -f -n "$pname" "${usage}" && return 1
 
     elog -n "$pname" 'Started.'
 
