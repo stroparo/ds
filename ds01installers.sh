@@ -197,9 +197,9 @@ installyoutubedl () {
 
     echo '==> Installing youtube-dl..' 1>&2
 
-    if ! _is_linux ; then
+    if ! _is_linux && ! _is_cygwin ; then
 
-        echo 'SKIP: Not in Linux, so nothing done.' 1>&2
+        echo 'SKIP: Not in Cygwin or Linux, so nothing done.' 1>&2
         return
 
     elif [ -e "${youtubedlpath}" ] ; then
@@ -208,8 +208,13 @@ installyoutubedl () {
         return
     fi
 
-    sudo wget -q -O "${youtubedlpath}" 'https://yt-dl.org/latest/youtube-dl'
-    sudo chmod a+rx "${youtubedlpath}"
+    if _is_linux ; then
+        sudo wget -q -O "${youtubedlpath}" 'https://yt-dl.org/latest/youtube-dl'
+        sudo chmod a+rx "${youtubedlpath}"
+    elif _is_cygwin ; then
+        wget -q -O "${youtubedlpath}" 'https://yt-dl.org/latest/youtube-dl'
+        chmod a+rx "${youtubedlpath}"
+    fi
 
     if ls -l "${youtubedlpath}" ; then
         echo 'Installation complete.' 1>&2
