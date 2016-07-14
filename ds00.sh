@@ -340,6 +340,7 @@ paralleljobs () {
         fi
 
         # Prep command and its log filename:
+        iargs="$(echo "${iargs}" | sed 's#&#\&#g')"
         icmd="$(echo "${cmd}" | sed -e "s#[{][}]#${iargs}#g")" || return 30
         pcount=$((pcount+1))
         if [ "${n}" -gt 1 ] ; then
