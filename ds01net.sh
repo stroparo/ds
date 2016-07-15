@@ -127,6 +127,21 @@ EOF
 
 alias eep='scp ${ee_id:+ -i "${ee_id}"}'
 
+eeauth () {
+
+    typeset identfile="$1"
+
+    # TODO implement option to prompt for each entry..
+
+    # TODO echo proper validation error:
+    test -f "$identfile" || return 1
+
+    for env in $(eel|cut -d: -f1) ; do
+        ee -s $env
+        ssh-copy-id -i "$identfile" "${ee_user}@${ee_host}"
+    done
+}
+
 # Enter environment list available in EEPATH ee.txt files:
 eel () {
     while IFS=: read eepath ; do
