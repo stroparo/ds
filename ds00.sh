@@ -28,7 +28,7 @@ _is_ubuntu () { [[ "$(uname -a)" = *[Uu]buntu* ]] ; }
 unset aliasnoext
 aliasnoext () {
 
-    typeset verbose
+    typeset verbose=false
 
     # Options:
     while getopts ':v' opt ; do
@@ -46,7 +46,7 @@ aliasnoext () {
                     aliasname="${aliasname%%.*}"
                     eval unalias "${aliasname}" 2>/dev/null
                     eval alias "${aliasname}=${script}"
-                    if [ -n "${verbose}" ] ; then
+                    if $verbose ; then
                         eval type "${aliasname}"
                     fi
                 fi
@@ -461,60 +461,73 @@ sourcefiles () {
 
     typeset oldind="${OPTIND}"
     typeset pname='sourcefiles'
+    typeset quiet=false
+    typeset tolerant=false
+    typeset verbose=false
 
-    typeset name src srcresult tolerant verbose
+    typeset name src srcresult
     typeset nta='Non-tolerant abort.'
 
     # Options:
     OPTIND=1
-    while getopts ':n:tv' opt ; do
+    while getopts ':n:qtv' opt ; do
         case "${opt}" in
         n) name="${OPTARG}";;
+        q) quiet=true;;
         t) tolerant=true;;
         v) verbose=true;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
-    [ -n "${verbose}" -a -n "${name}" ] && elog -n "${pname}" "GROUP '${name}'"
+    if $verbose && test -n "${name}" ; then
+        $quiet || elog -n "${pname}" "GROUP '${name}'"
+    fi
 
     for globpattern in "$@" ; do
 
         if ! eval ls -1d ${globpattern} >/dev/null 2>&1 ; then
-            elog -s -n "${pname}" "Glob '${globpattern}' had no matches."
-            [ -z "${tolerant}" ] && elog -f -n "${name}" "${nta} Bad glob." && return 1
+            $quiet || elog -s -n "${pname}" "Glob '${globpattern}' had no matches."
+
+            if ! ${tolerant} ; then
+                $quiet || elog -f -n "${name}" "${nta} Bad glob."
+                return 1
+            fi
             continue
         fi
 
         exec 4<&0
 
         while read src ; do
-            [ -n "${verbose}" ] && elog -n "${pname}" "=> '${src}'.."
+            if $verbose ; then
+                $quiet || elog -n "${pname}" "=> '${src}'.."
+            fi
 
             if [ -r "${src}" ] ; then
                 . "${src}" 1>&2
             else
-                elog -w -n "${pname}" "'${src}' was not readable."
+                $quiet || elog -w -n "${pname}" "'${src}' was not readable."
                 false
             fi
             srcresult=$?
 
             if [ "${srcresult}" -ne 0 ] ; then
-                [ -z "${tolerant}" ] \
-                && elog -f -n "${pname}" "${nta} Sourcing '${src}'." \
-                && return 1
+                if ! $tolerant ; then
+                    $quiet || elog -f -n "${pname}" "${nta} Sourcing '${src}'."
+                    return 1
+                fi
 
-                elog -w -n "${pname}" "Tolerant fail for '${src}'."
+                $quiet || elog -w -n "${pname}" "Tolerant fail for '${src}'."
             else
-                if [ -n "${verbose}" ] ; then
-                    elog -n "${pname}" "=> '${src}' completed successfully."
+                if $verbose ; then
+                    $quiet || elog -n "${pname}" "=> '${src}' completed successfully."
                 fi
             fi
         done <<EOF
 $(eval ls -1d ${globpattern} 2>/dev/null)
 EOF
     done
-    if [ -n "${verbose}" -a -n "${name}" ] ; then
+    if $verbose && test -n "${name}" ; then
         elog -n "${pname}" "GROUP COMPLETE."
     fi
 }
