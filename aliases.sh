@@ -78,6 +78,8 @@ fi
 # ##############################################################################
 # SysAdmin:
 
+alias edkeys='mkdir ~/.ssh 2>/dev/null ; vi ~/.ssh/authorized_keys'
+
 alias psfe='ps -fe'
 alias psfens='ps -fe | grep -v bash | grep -v sshd'
 alias psfu='ps -fu "${UID:-$(id -u)}" -U "${UID:-$(id -u)}"'
