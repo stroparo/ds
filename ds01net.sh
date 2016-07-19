@@ -28,10 +28,13 @@ pushl () {
 
     typeset oldind="${OPTIND}"
 
-    typeset env_regex
+    typeset destdir
+    typeset envregex
+    typeset envpaths
     typeset exclude='@@@@DONOT@@@@'
     typeset conn
-    typeset purge_only
+    typeset purge_only=false
+    typeset readstdin=false
     typeset reset_files
     typeset srcdir
     typeset tgtglobexp
@@ -41,9 +44,10 @@ pushl () {
     which lftp >/dev/null 2>&1 || return 10
 
     OPTIND=1
-    while getopts ':e:f:prx:' opt ; do
+    while getopts ':d:e:f:prx:' opt ; do
         case ${opt} in
-        e) env_regex="${OPTARG}" ;;
+        d) destdir="${OPTARG}" ;;
+        e) envregex="${OPTARG}" ;;
         f) xglobsarg="${OPTARG}" ; xglobs="${OPTARG}" ;;
         p) purge_only=true ;;
         r) reset_files=true ;;
@@ -69,20 +73,35 @@ pushl () {
             elog -f -n "$pname" "Failed expanding xglobs."
         fi
 
+        envpaths="$(eval echo "\"\${tgt${env}}\"")"
+        if $readstdin ; then
+            envpaths="${envpaths}
+$(cat)"
+        fi
+
         echo "==> Env: '${env}'; Files: '${xglobs}' <=="
 
         while IFS=':' read environ u pw h dest ; do
             [[ -z "${u}" ]] && continue
 
             # Filter host name:
-            if ! grep -q "${env_regex}" ; then
+            if ! grep -q "${envregex}" ; then
                 continue
             fi <<EOF
 ${environ}
 EOF
+            # Remote path override:
+            if [ -n "$destdir" ] ; then
+                if [[ $destdir = /* ]] ; then
+                    dest="$destdir"
+                else
+                    dest="${dest}/${destdir}"
+                fi
+            fi
+
             conn="sftp://${h}/${dest#/}"
 
-            echo "${environ} => ${purge_only:+rm in }path: '${u}@${h}:${dest#/}'."
+            echo "${environ} => $(${purge_only} && echo "rm in ")path: '${u}@${h}:${dest#/}'."
 
             if ${reset_files:-false} || ${purge_only:-false} ; then
                 lftp -e 'set sftp:auto-confirm yes ; mrm -f '"${xglobs}"' ; exit' -u "${u},${pw}" "${conn}"
@@ -91,14 +110,14 @@ EOF
 
             # Put files:
             (cd "${srcdir:-err}" \
-            && lftp -e 'set sftp:auto-confirm yes ; mkdir -p "'"${dest}"'" ; mput '"${xglobs}"' ; exit' -u "${u},${pw}" "${conn}")
+            && lftp -e 'set sftp:auto-confirm yes ; mkdir -f -p '"${dest}"' ; mput '"${xglobs}"' ; exit' -u "${u},${pw}" "${conn}")
 
             if [ "$?" != 0 ] ; then
                 echo "${environ} => error"\!
                 return 1
             fi
         done <<EOF
-$(eval echo "\"\${tgt${env}}\"")
+${envpaths}
 EOF
     done
     echo 'Pushing process complete.' ; echo ''
