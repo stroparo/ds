@@ -5,8 +5,7 @@
 #   See README.md document in projects page at
 #   https://github.com/stroparo/ds
 
-# Purpose:
-# This script deploys packages from-to the given directories.
+# Program deploypackages - Deploy packages from-to the given directories.
 
 usage="$(basename "$0") [-c] [-x {exclude-expression}] {packages-path} {destination}
 
