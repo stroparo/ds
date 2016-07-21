@@ -113,7 +113,7 @@ EOF
             && lftp -e 'set sftp:auto-confirm yes ; mkdir -f -p '"${dest}"' ; mput '"${xglobs}"' ; exit' -u "${u},${pw}" "${conn}")
 
             if [ "$?" != 0 ] ; then
-                echo "${environ} => error"\!
+                echo "${environ} => error"\! 1>&2
                 return 1
             fi
         done <<EOF

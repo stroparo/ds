@@ -80,8 +80,8 @@ unset chmodshells
 chmodshells () {
     typeset oldind="$OPTIND"
 
-    typeset addaliases
-    typeset addpaths
+    typeset addaliases=false
+    typeset addpaths=false
     typeset files
     typeset mode='u+rwx'
     typeset verbose
@@ -109,11 +109,11 @@ chmodshells () {
         fi
     done
 
-    if ${addpaths:-false}; then
+    if ${addpaths}; then
         pathmunge -x "$@"
     fi
 
-    if ${addalias:-false}; then
+    if ${addaliases}; then
         aliasnoext "$@"
     fi
 }

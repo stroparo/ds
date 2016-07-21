@@ -349,7 +349,7 @@ unarchive () {
     typeset oldind="$OPTIND"
     typeset pname=unarchive
 
-    typeset exclude
+    typeset exclude='@@@@DUMMYEXCLUDE@@@@'
     typeset force
     typeset outd='.'
     typeset verbose
