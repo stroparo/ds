@@ -1,0 +1,173 @@
+#!/usr/bin/env bash
+
+# DS - Daily Shells Library
+# License:
+#   See README.md document in projects page at
+#   https://github.com/stroparo/ds
+
+# Program pushl - push files to specific target environments using LFTP program.
+
+# Syntax
+# [-e {env-regex}] [-f {local-globs}] [-p] [-r] {srcdir} {site} [site2 [site3 ...]]
+
+# Remarks:
+# 1) The environment list must be in the TGT{env} variable.
+#       Each entry in the env list must be formatted like this:
+#       {environment-name}:{user}:{pass}:{host}:{destination-path}
+# 2) TGTGLOB{env} variable might contain additional space-separated globs.
+#       But when globs are passed via the -f option (-f "glob1 glob2 ...")
+#       only those are going to be considered as TGTGLOB will
+#       only serve as the default/fallback.
+# 3) -r option
+#       Reset files, i.e. deletes them from destination before copying.
+# 4) -p option
+#       Causes pushl to only purge all files in the destination
+#       Usage of -r is redundant here.
+
+# ##############################################################################
+# Globals
+
+export CONN=''
+export CONNOPT=''
+export DESTDIR=''
+export ENVPATHS=''
+export ENVREGEX=''
+export EXCLUDE='@@@@EXCLUDEDUMMY@@@@'
+export GLOBSFINAL=''
+export PURGE_ONLY=false
+export RESET_FILES=''
+export SRCDIR=''
+
+# ##############################################################################
+# Prep args
+
+while getopts ':c:d:e:f:prx:' opt ; do
+    case ${opt} in
+    c)
+        export CONNOPT="${OPTARG}"
+        ;;
+    d)
+        export DESTDIR="${OPTARG}"
+        ;;
+    e)
+        export ENVREGEX="${OPTARG}"
+        ;;
+    f)
+        export GLOBSFINAL="${OPTARG}"
+        export GLOBSOPT="${OPTARG}"
+        ;;
+    p)
+        export PURGE_ONLY=true
+        ;;
+    r)
+        export RESET_FILES=true
+        ;;
+    x)
+        export EXCLUDE="${OPTARG}"
+        ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+export SRCDIR="$(cd ${1}; echo "$PWD")"
+shift
+
+# ##############################################################################
+# Prep
+
+# Check available lftp program:
+which lftp >/dev/null 2>&1 || exit 10
+
+# ##############################################################################
+# Functions
+
+prep () {
+
+    if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1 || [ -z "${DS_LOADED}" ] ; then
+        echo "$(basename "$0"): FATAL: Could not load DS - Daily Shells." 1>&2
+        exit 1
+    fi
+
+}
+
+ckglobs () {
+    if [[ -z $GLOBSFINAL ]]; then
+        elog -f -n "$pname" "Failed expanding GLOBSFINAL."
+        exit 1
+    fi
+}
+
+setglobs () {
+
+    if [[ -n $GLOBSOPT ]] ; then
+        export GLOBSVAL="$GLOBSOPT"
+    else
+        export GLOBSVAL="$1"
+    fi
+
+    export GLOBSFINAL="$(cd "$SRCDIR" && eval echo "${GLOBSVAL}" | sed -e "s/${EXCLUDE}//g")"
+
+    ckglobs
+}
+
+pushl () {
+
+    setglobs
+
+    for envgroup in "$@" ; do
+
+        export ENVUPPER="$(echoupcase "$envgroup")"
+
+        [[ -z $GLOBSOPT ]] && setglobs "$(eval echo "\${TGTGLOB${ENVUPPER}}")"
+
+        export ENVPATHS="$(eval echo "\"\${TGT${ENVUPPER}}\"")"
+
+        echo "==> Env '${ENVUPPER}', files: '${GLOBSFINAL}' <=="
+
+        while IFS=':' read environ u pw h dest ; do
+            [[ -z "${u}" ]] && continue
+
+            # Filter host name:
+            echogrep "${ENVREGEX}" "${environ}" > /dev/null 2>&1 || continue
+
+            # Prep path
+            if [ -n "$DESTDIR" ] ; then
+                if [[ $DESTDIR = /* ]] ; then
+                    dest="$DESTDIR"
+                else
+                    dest="${dest}/${DESTDIR}"
+                fi
+            fi
+
+            CONN="sftp://${h}/${dest}"
+
+            echo "${environ} => $(${PURGE_ONLY} && echo "rm in ")path: '${u}@${h}:${dest}'."
+
+            if ${RESET_FILES:-false} || ${PURGE_ONLY:-false} ; then
+                lftp -e 'set sftp:auto-confirm yes ; mrm -f '"${GLOBSFINAL}"' ; exit' -u "${u},${pw}" "${CONN}"
+            fi
+            ${PURGE_ONLY:-false} && continue
+
+            # Put files:
+            (cd "${SRCDIR:-err}" \
+            && lftp -e 'set sftp:auto-confirm yes ; mkdir -p '"${dest}"' ; mput '"${GLOBSFINAL}"' ; exit' -u "${u},${pw}" "${CONN}")
+
+            if [ "$?" != 0 ] ; then
+                echo "${environ} => error"\! 1>&2
+                return 1
+            fi
+        done <<EOF
+${ENVPATHS}
+EOF
+    done
+
+    echo 'Pushing process complete.'
+    echo ''
+}
+
+# ##############################################################################
+# Main
+
+prep
+pushl "$@"
+exit "$?"
