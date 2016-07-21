@@ -71,15 +71,13 @@ installdropbox () {
     echo '==> Installing dropbox..' 1>&2
 
     if ! _is_linux ; then
-
         echo 'SKIP: Not in Linux, so nothing done.' 1>&2
         return
+    fi
 
-    elif [ -e ~/.dropbox-dist/dropboxd ] ; then
-
+    if [ -e ~/.dropbox-dist/dropboxd ] ; then
         echo 'SKIP: It was installed already.' 1>&2
         return
-
     fi
 
     cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | \
@@ -119,20 +117,16 @@ installinputfont () {
     echo '==> Installing input font..' 1>&2
 
     if ! _is_linux ; then
-
         echo 'SKIP: Not in Linux, so nothing done.' 1>&2
         return
-
-    elif [ -e "$font_dir/InputMono-Regular.ttf" ] ; then
-
+    fi
+    if [ -e "$font_dir/InputMono-Regular.ttf" ] ; then
         echo 'SKIP: It was installed already.' 1>&2
         return
-
-    elif [ ! -e "$inputfontpackage" ] ; then
-
+    fi
+    if [ ! -e "$inputfontpackage" ] ; then
         echo 'FATAL: Invalid input font package location (first argument).' 1>&2
         return 1
-
     fi
 
     unzip -d "$HOME" "$inputfontpackage" 'Input_Fonts/*'

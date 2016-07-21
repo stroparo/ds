@@ -68,7 +68,7 @@ aptclean () {
 unset aptinstall
 aptinstall () {
     typeset oldind="${OPTIND}"
-    typeset assumeyes doupgrade pkgslist
+    typeset assumeyes doupgrade
 
     OPTIND=1
     while getopts ':uy' option ; do
@@ -88,17 +88,17 @@ aptinstall () {
     ckaptitude || return 1
     sudo aptitude update || return 2
 
-    pkgslist=$(sed -e 's/#.*$//' "${1}" | grep .)
-
-    # Main task:
-  
     if ${doupgrade:-false} ; then
         sudo aptitude upgrade ${assumeyes} || return 11
     fi
 
-    [[ -n $ZSH_VERSION ]] && set -o shwordsplit
-    sudo aptitude install ${assumeyes} -Z ${pkgslist} || return 21
-    [[ -n $ZSH_VERSION ]] && set +o shwordsplit
+    # [[ -n $ZSH_VERSION ]] && set -o shwordsplit
+    if [ -f "$1" ] ; then
+        sudo aptitude install ${assumeyes} -Z $(sed -e 's/#.*$//' "${1}" | grep .) || return 21
+    else
+        sudo aptitude install ${assumeyes} -Z "$@" || return 22
+    fi
+    # [[ -n $ZSH_VERSION ]] && set +o shwordsplit
 }
 
 # Function dpkgstat: View installation status of given package names.
