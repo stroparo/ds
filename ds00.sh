@@ -23,35 +23,37 @@ _is_debian () { [[ "$(uname -a)" = *[Db]ebian* ]] ; }
 _is_linux () { [[ "$(uname -a)" = *[Ll]inux* ]] || _is_debian || _is_ubuntu ; }
 _is_ubuntu () { [[ "$(uname -a)" = *[Uu]buntu* ]] ; }
 
-# Function aliasnoext - pick {argument}/*sh and yield aliases without extension.
-# Syntax: {directory}1+
+# Function aliasnoext
+# Purpose:
+# Pick argument directories' scripts and yield corresponding aliases with no extension.
+# Syntax:
+# {directory}1+
 unset aliasnoext
 aliasnoext () {
 
+    typeset oldind="${OPTIND}"
     typeset verbose=false
 
-    # Options:
+    OPTIND=1
     while getopts ':v' opt ; do
         case "${opt}" in
         v) verbose=true;;
         esac
     done
-    shift $((OPTIND - 1)) ; OPTIND=1
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     for dir in "$@" ; do
-        if [ -d "${dir}" ] ; then
+        if ! _any_dir_not_w "${dir}" ; then
             while read script ; do
                 if [ -x "${script}" ] ; then
                     aliasname="${script##*/}"
                     aliasname="${aliasname%%.*}"
                     eval unalias "${aliasname}" 2>/dev/null
                     eval alias "${aliasname}=${script}"
-                    if $verbose ; then
-                        eval type "${aliasname}"
-                    fi
+                    $verbose && eval type "${aliasname}"
                 fi
             done <<EOF
-$(ls -1 "${dir}"/*sh 2>/dev/null)
+$(findscripts "${dir}")
 EOF
         fi
     done
@@ -75,14 +77,13 @@ cyd () {
     _is_cygwin && cd /cygdrive/"${1:-c}" && ls -AFhl 1>&2
 }
 
-# Function chmodshells - Sets mode for *sh scripts inside the specified directories.
+# Function chmodshells - Sets mode for scripts inside the specified directories.
 unset chmodshells
 chmodshells () {
     typeset oldind="$OPTIND"
 
     typeset addaliases=false
     typeset addpaths=false
-    typeset files
     typeset mode='u+rwx'
     typeset verbose
 
@@ -98,14 +99,11 @@ chmodshells () {
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
-    for d in "$@" ; do
-        if ! _any_dir_not_w "${d}" ; then
-            files="$(awk 'FNR == 1 && $0 ~ /^#!.*sh/ { print FILENAME; }' \
-                $(find "${d}" -type f | egrep -v '[.](git|hg|svn)'))"
-
-            [[ -n $ZSH_VERSION ]] && set -o shwordsplit
-            chmod ${verbose} "${mode}" ${files}
-            [[ -n $ZSH_VERSION ]] && set +o shwordsplit
+    for dir in "$@" ; do
+        if ! _any_dir_not_w "${dir}" ; then
+            # [[ -n $ZSH_VERSION ]] && set -o shwordsplit
+            chmod ${verbose} "${mode}" $(findscripts "${dir}")                    
+            # [[ -n $ZSH_VERSION ]] && set +o shwordsplit
         fi
     done
 
@@ -207,6 +205,19 @@ enforcedir () {
             return 1
         fi
     done
+}
+
+unset findscripts
+findscripts () {
+
+    typeset pname=findscripts
+
+    typeset re_scripts="perl|python|ruby|sh"
+
+    awk 'FNR == 1 && $0 ~ /^#!.*('"${re_scripts}"') */ {
+        print FILENAME;
+    }' \
+        $(find "$@" -type f | egrep -v '[.](git|hg|svn)')
 }
 
 # Function getnow - setup NOW* and TODAY* environment variables.
@@ -571,14 +582,11 @@ appendunique () {
     typeset text="${1}" ; shift
 
     for f in "$@" ; do
-        if touch "${f}" && [ -w "${f}" ] && ! fgrep -q "${text}" "${f}" ; then
+        if ! fgrep -q "${text}" "${f}" ; then
             if ! echo "${text}" >> "${f}" ; then
                 failedsome=true
                 echo "${msgerrforfile} '${f}' .." 1>&2
             fi
-        else
-            failedsome=true
-            echo "${msgerrforfile} '${f}' .." 1>&2
         fi
     done
 
@@ -658,6 +666,32 @@ dos2unix () {
         tr -d '\r' < "${i}" > "${i}.u"
         mv "${i}.u" "${i}"
     done
+}
+
+# Function echogrep - grep echoed arguments instead of files.
+unset echogrep
+echogrep () {
+    typeset pname=echogrep
+
+    typeset casei re
+
+    if [ "$1" = '-i' ] ; then
+        casei=true
+        shift
+    fi
+
+    re="$1"
+    shift
+
+    grep ${casei:+-i} "$re" <<EOF
+$(for i in "$@" ; do echo "${i}" ; done)
+EOF
+}
+
+# Function echoupcase - Echoes arguments then translates to uppercase via piped tr.
+unset echoupcase
+echoupcase () {
+    echo "$@" | tr '[[:lower:]]' '[[:upper:]]'
 }
 
 # Function fixeof - Fix and add final EOL (end-of-line) when missing.
@@ -800,6 +834,12 @@ progmiss () {
     fi
 
     return 1
+}
+
+# Function - Wrapper function for a tr call from [[:lower:]] to [[:upper:]].
+unset upcase
+upcase () {
+    tr '[[:lower:]]' '[[:upper:]]'
 }
 
 # ##############################################################################
