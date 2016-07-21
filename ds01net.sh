@@ -110,7 +110,7 @@ EOF
 
             # Put files:
             (cd "${srcdir:-err}" \
-            && lftp -e 'set sftp:auto-confirm yes ; mkdir -f -p '"${dest}"' ; mput '"${xglobs}"' ; exit' -u "${u},${pw}" "${conn}")
+            && lftp -e 'set sftp:auto-confirm yes ; mkdir -p '"${dest}"' ; mput '"${xglobs}"' ; exit' -u "${u},${pw}" "${conn}")
 
             if [ "$?" != 0 ] ; then
                 echo "${environ} => error"\! 1>&2
