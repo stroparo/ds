@@ -6,6 +6,30 @@
 # ##############################################################################
 # Networking facilities
 
+# Function pushds
+# Purpose:
+#   Push ds scripts and source files to envs pointed to by arguments.
+pushds () {
+
+    typeset oldind="$OPTIND"
+
+    typeset envre
+    typeset exc
+
+    OPTIND=1
+    while getopts ':e:x:' opt ; do
+        case ${opt} in
+        e) envre="$OPTARG";;
+        x) exc="$OPTARG";;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND="$oldind"
+
+    pushl -r -e "$envre" -d '.ds/' -f "${DS_GLOB}" -x "$exc" "${DS_HOME}" "$@"
+
+    pushl -e "$envre" -d '.ds/scripts' -f "*" -x "$exc" "${DS_HOME}/scripts" "$@"
+}
+
 # Function screenb - run a bash shell in a screen session.
 # Syntax: [sessionname]
 unset screenb
