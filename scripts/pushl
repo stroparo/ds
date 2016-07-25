@@ -53,7 +53,6 @@ while getopts ':c:d:e:f:prx:' opt ; do
         export ENVREGEX="${OPTARG}"
         ;;
     f)
-        export GLOBSFINAL="${OPTARG}"
         export GLOBSOPT="${OPTARG}"
         ;;
     p)
@@ -101,12 +100,14 @@ setglobs () {
 
     if [[ -n $GLOBSOPT ]] ; then
         export GLOBSVAL="$GLOBSOPT"
+    elif [ -z "$1" ] ; then
+        echo 'setglobs:SKIP: Nor a glob option neither an argument was passed so set to "*".' 1>&2
+        export GLOBSVAL="*"
     else
         export GLOBSVAL="$1"
     fi
 
     export GLOBSFINAL="$(cd "$SRCDIR" && eval echo "${GLOBSVAL}" | sed -e "s/${EXCLUDE}//g")"
-
     ckglobs
 }
 
@@ -138,7 +139,6 @@ pushl () {
                     dest="${dest}/${DESTDIR}"
                 fi
             fi
-
             CONN="sftp://${h}/${dest}"
 
             echo "${environ} => $(${PURGE_ONLY} && echo "rm in ")path: '${u}@${h}:${dest}'."
@@ -149,8 +149,10 @@ pushl () {
             ${PURGE_ONLY:-false} && continue
 
             # Put files:
-            (cd "${SRCDIR:-err}" \
-            && lftp -e 'set sftp:auto-confirm yes ; mkdir -p '"${dest}"' ; mput '"${GLOBSFINAL}"' ; exit' -u "${u},${pw}" "${CONN}")
+            (cd "${SRCDIR:-err}" && \
+                lftp -e 'set sftp:auto-confirm yes ; mkdir -p '"${dest}"' ; mput '"${GLOBSFINAL}"' ; exit' \
+                     -u "${u},${pw}" \
+                    "${CONN}")
 
             if [ "$?" != 0 ] ; then
                 echo "${environ} => error"\! 1>&2
