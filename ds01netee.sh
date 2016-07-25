@@ -15,29 +15,60 @@
 # attribute=value
 #
 # Mandatory attributes:
-# ee_desc='description'
-# ee_user=user
-# ee_host=hostname
+# eedesc='description'
+# eeu=user
+# eeh=hostname
 #
 # Optional attributes:
-# ee_cmd='some command'
-# ee_id='some .pem or other file to be handled to ssh -i option'
+# eecmd='some command'
+# eeid='some .pem or other file to be handled to ssh -i option'
 
-alias eep='scp ${ee_id:+ -i "${ee_id}"}'
+alias eep='scp ${eeid:+ -i "${eeid}"}'
 
 eeauth () {
 
-    typeset identfile="$1"
+    typeset oldind="${OPTIND}"
+    typeset pname=eeauth
 
-    # TODO implement option to prompt for each entry..
+    typeset expression
+    typeset identfile
+    typeset interactive=false
 
-    # TODO echo proper validation error:
-    test -f "$identfile" || return 1
-
-    for env in $(eel|cut -d: -f1) ; do
-        ee -s $env
-        ssh-copy-id -i "$identfile" "${ee_user}@${ee_host}"
+    OPTIND=1
+    while getopts ':e:i' opt ; do
+        case "${opt}" in
+        e) expression="$OPTARG";;
+        i) interactive=true;;
+        esac
     done
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
+
+    identfile="$1"
+
+    if ! [ -f "$identfile" ] ; then
+        echo "$pname:FATAL: Bad ident file argument." 1>&2
+        return 1
+    fi
+
+    for env in $(eel | cut -d: -f1) ; do
+        if $interactive && ! userconfirm "Push to '${env}' env?" ; then
+            continue
+        fi
+        if [ -n "$expression" ] && ! echogrep "${expression}" "${env}" ; then
+            continue
+        fi
+        ee -s $env
+        ssh-copy-id -i "$identfile" "${eeu}@${eeh}"
+    done
+}
+
+# Function eefiles - Expand ee.txt filenames from paths in EEPATH
+eefiles () {
+    while IFS=: read eepath ; do
+        find "${eepath}" -type f -name 'ee.txt'
+    done <<EOF
+${EEPATH}
+EOF
 }
 
 # Enter environment list available in EEPATH ee.txt files:
@@ -56,8 +87,8 @@ eel () {
                 waitingdesc = 1;
             }
 
-            /^ *ee_desc *=/ {
-                gsub(/'"'"'| *ee_desc= */, "");
+            /^ *eedesc *=/ {
+                gsub(/'"'"'| *eedesc= */, "");
                 desc = $0;
                 print name ": " desc;
                 waitingdesc = 0;
@@ -71,78 +102,97 @@ ${EEPATH}
 EOF
 }
 
-# Enter environment execute ie connect to the environment. System command is ssh.
+# Function eesel
+# Purpose:
+#   Select ee environment from first occurrence in ee.txt files found in EEPATH.
+eesel () {
+    typeset section_search_term="$1"
+    typeset section
+
+    while read eefile ; do
+
+        section="$(getsection "$section_search_term" "$eefile" | sed -e 's/^/export /')"
+
+        if [ -n "$section" ] ; then
+            eval "$section"
+        fi
+        if [ -n "${sectionname}" ] ; then
+            echo "Selected env '${eedesc:-${sectionname}}': ${eeu}@${eeh}" 1>&2
+            break
+        fi
+    done <<EOF
+$(eefiles)
+EOF
+
+}
+
+# Function eex
+# Purpose:
+#   Enter environment execute ie connect to the environment. System command is ssh.
 eex () {
-    if test -n "${ee_cmd}" && test -z "${1}" ; then
-        echo 'WARN: There is ee_cmd set but this eex call has no arguments.' 1>&2
+
+    if [ -z "$eeh" ] ; then
+        echo "eex:FATAL: No host in eeh variable ($eeh)." 1>&2
+        return 1
     fi
 
-    if [ -n "${ee_id}" ] ; then
-        ssh -i "${ee_id}" -l "${ee_user}" "${ee_host}" "$@"
+    if [ -z "$eeu" ] ; then
+        echo "eex:FATAL: No user in eeu variable ($eeu)." 1>&2
+        return 1
+    fi
+
+    if [ -n "${eeid}" ] ; then
+        ssh -i "${eeid}" -l "${eeu}" "${eeh}" "$@"
     else
-        ssh -l "${ee_user}" "${ee_host}" "$@"
+        ssh -l "${eeu}" "${eeh}" "$@"
     fi
 }
 
-# Function ees - Enter-Environment select environment (sets up env. variables).
+# Function ees
+# Purpose:
+#   Enter-Environment select environment (sets up env. variables).
 ee () {
+
     typeset oldind="${OPTIND}"
-    typeset ee_name_search eefile eepath selectonly
-    ee_name=""; ee_desc=""; ee_user=""; ee_host=""; ee_domain=""; ee_id=""; ee_cmd=""
+
+    typeset eefile eepath
+    typeset searchterm
+    typeset selectonly=false
+    typeset useentrycmd=false
+
+    export eecodename=""
+    export eedesc=""
+    export eedomain=""
+    export eeu=""
+    export eeh=""
+    export eeid=""
+    export eecmd=""
 
     OPTIND=1
-    while getopts ':s' opt ; do
+    while getopts ':cs' opt ; do
         case "${opt}" in
-        s) selectonly=true ;;
+        c) useentrycmd=true;;
+        s) selectonly=true;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
-    ee_name_search="$1"
+    searchterm="$1"
     shift
 
-    if [ -z "${ee_name_search}" ] ; then
+    if [ -z "${searchterm}" ] ; then
         echo 'FAIL: Must pass a nonempty environment name/id.' 1>&2
         return 1
     fi
 
-    # Search for the entry in EEPATH ee.txt files and setup variables if found:
-    while IFS=: read eepath ; do
-        while read eefile ; do
-            eval "$(awk -vee_name_search="${ee_name_search}" '
+    eesel "$searchterm"
 
-            # Find the entry:
-            /^ *\['"${ee_name_search}"'\] *$/ { found = 1; print "ee_name=" ee_name_search; }
-
-            # Print entry content:
-            found && $0 ~ /^ *[^[]/ { inbody = 1; print; }
-
-            # Stop on next entry after printing:
-            inbody && $0 ~ /^ *\[/ { exit 0; }
-            ' "${eefile}")"
-
-            test -n "${ee_name}" && break
-        done <<EOF
-$(find "${eepath}" -type f -name 'ee.txt')
-EOF
-        test -n "${ee_name}" && break
-    done <<EOF
-${EEPATH}
-EOF
     # Execute if the environment was found:
-    if test -n "${ee_name}" ; then
-        if test -n "${selectonly}" ; then
-            echo "Selected '${ee_desc:-${env_name}}': ${ee_user}@${ee_host}"
+    if ! ${selectonly} ; then
+        if $useentrycmd && [ "${eecmd}" != "" ] ; then
+            eex ${eecmd}
         else
-            if [ "${ee_cmd}" != "" ] ; then
-                eex ${ee_cmd}
-            else
-                eex "$@"
-            fi
+            eex "$@"
         fi
-        return 0
     fi
-
-    echo "No environment found." 1>&2
-    return 1
 }
