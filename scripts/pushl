@@ -14,7 +14,7 @@ Remarks:
       Each entry in the env list must be formatted like this:
       {environment-name}:{user}:{pass}:{host}:{destination-path}
 2) TGTGLOB{env} variable might contain additional space-separated globs.
-      But when globs are passed via the -f option (-f "glob1 glob2 ...")
+      But when globs are passed via the -f option (-f \"glob1 glob2 ...\")
       only those are going to be considered as TGTGLOB will
       only serve as the default/fallback.
 3) -r option
