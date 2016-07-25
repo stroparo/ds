@@ -726,6 +726,30 @@ EOF
     done
 }
 
+# Function getsection
+# Purpose:
+#   Picks up a section from a text file, sections being formatted like old ini files.
+unset getsection
+getsection () {
+
+    typeset pname=getsection
+    typeset filename="$2"
+    typeset sectionsearch="$1"
+
+    awk -vsectionsearch="${sectionsearch}" '
+
+    # Find the entry:
+    /^ *\['"${sectionsearch}"'\] *$/ { found = 1; print "sectionname=" $0; }
+
+    # Print entry content:
+    found && $0 ~ /^ *[^[]/ { inbody = 1; print; }
+
+    # Stop on next entry after printing:
+    inbody && $0 ~ /^ *\[/ { exit 0; }
+    ' "${filename}"
+
+}
+
 # Function greperr - Checks files' last line is a sole zero.
 # Remark: Common case scenario, an exit status $? logged last by a command.
 unset greperr
