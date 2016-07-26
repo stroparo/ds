@@ -44,26 +44,25 @@ screenk () {
     env ENV="${HOME}/.kshrc" screen -S "${1:-screenksh}" ksh
 }
 
-# Function sshkeygenrsa - generate id_rsa if none present for the current user.
+# Function sshkeygenrsa
+# Purpose:
+#   Generate id_rsa if none present for the current user.
+# Usage:
+# {comment} [keypath]
 unset sshkeygenrsa
 sshkeygenrsa () {
+
     typeset comment="$1"
-    typeset keypath="${HOME}/.ssh/id_rsa"
-
-    if [ -e "${keypath}" ] && \
-        ! userconfirm "Default '${keypath}' key already exists, enter another path?"
-    then
-        return
-    fi
-
-    while [ -e "${keypath}" ] ; do
-        userinput "Type a path that still does not exist for your key"
-        keypath="${userinput}"
-    done
+    typeset keypath="${2:-${HOME}/.ssh/id_rsa}"
 
     while [ -z "${comment}" ] ; do
         userinput 'SSH key comment (email, name or whatever)'
         comment="${userinput}"
+    done
+
+    while [ -e "${keypath}" ] ; do
+        userinput "Key '${keypath}' already exists, type another path"
+        keypath="${userinput}"
     done
 
     if ssh-keygen -t rsa -b 4096 -C "${comment:-mykey}" -f "${keypath}" ; then
