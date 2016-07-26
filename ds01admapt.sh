@@ -68,11 +68,14 @@ aptclean () {
 unset aptinstall
 aptinstall () {
     typeset oldind="${OPTIND}"
-    typeset assumeyes doupgrade
+    typeset assumeyes
+    typeset doupdate=true
+    typeset doupgrade=false
 
     OPTIND=1
-    while getopts ':uy' option ; do
+    while getopts ':nuy' option ; do
         case "${option}" in
+        n) doupdate=false;;
         u) doupgrade=true;;
         y) assumeyes='-y';;
         esac
@@ -86,14 +89,17 @@ aptinstall () {
         return 1
     fi
     ckaptitude || return 1
-    sudo aptitude update || return 2
 
-    if ${doupgrade:-false} ; then
+    if ${doupdate} ; then
+        sudo aptitude update || return 2
+    fi
+
+    if ${doupgrade} ; then
         sudo aptitude upgrade ${assumeyes} || return 11
     fi
 
     if [ -f "$1" ] ; then
-        sudo aptitude install ${assumeyes} -Z $(sed -e 's/#.*$//' "${1}" | grep .) || return 21
+        sudo aptitude install ${assumeyes} -Z $(sed -e 's/#.*$//' "$@" | grep .) || return 21
     elif [[ $1 != dummy ]] ; then
         sudo aptitude install ${assumeyes} -Z "$@" || return 22
     fi
