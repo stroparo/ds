@@ -81,7 +81,7 @@ aptinstall () {
   
     # Prep:
 
-    if [ ! -r "${1}" ] ; then
+    if [[ $1 != dummy ]] && [ ! -r "${1}" ] ; then
         echo "A readable packagelist file must be passed as the first argument. Aborted." 1>&2
         return 1
     fi
@@ -92,13 +92,11 @@ aptinstall () {
         sudo aptitude upgrade ${assumeyes} || return 11
     fi
 
-    # [[ -n $ZSH_VERSION ]] && set -o shwordsplit
     if [ -f "$1" ] ; then
         sudo aptitude install ${assumeyes} -Z $(sed -e 's/#.*$//' "${1}" | grep .) || return 21
-    else
+    elif [[ $1 != dummy ]] ; then
         sudo aptitude install ${assumeyes} -Z "$@" || return 22
     fi
-    # [[ -n $ZSH_VERSION ]] && set +o shwordsplit
 }
 
 # Function dpkgstat: View installation status of given package names.
