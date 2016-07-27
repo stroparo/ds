@@ -42,13 +42,6 @@ gitr () {
     while read gitdir; do
         cd "${gitdir%/.git}"
 
-        # Ignore:
-        if egrep -q "${GGIGNORE:-}" ; then
-            cd - >/dev/null
-            continue
-        fi <<EOF
-${gitdir%/.git}
-EOF
         gitcmdmsg="==> ${gitcmd} $@ # At '${PWD}'"
 
         if [ -n "${statusopt}" ] ; then
@@ -67,7 +60,7 @@ EOF
 
         cd - >/dev/null
     done <<EOF
-$(find . -type d -name ".git" | sort)
+$(find . -type d -name ".git" | egrep -i -v "${GGIGNORE}/[.]git" | sort)
 EOF
 }
 
