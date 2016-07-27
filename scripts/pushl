@@ -156,6 +156,7 @@ pushl () {
 
             if [ "$?" != 0 ] ; then
                 echo "${environ} => error"\! 1>&2
+                echo 1>&2
                 return 1
             fi
         done <<EOF
