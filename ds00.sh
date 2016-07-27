@@ -671,19 +671,21 @@ dos2unix () {
 # Function echogrep - grep echoed arguments instead of files.
 unset echogrep
 echogrep () {
-    typeset pname=echogrep
+    typeset iopt qopt re
+    typeset oldind="$OPTIND"
 
-    typeset casei re
+    OPTIND=1
+    while getopts ':iq' opt ; do
+        case "${opt}" in
+        i) iopt='-i';;
+        q) qopt='-q';;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
-    if [ "$1" = '-i' ] ; then
-        casei=true
-        shift
-    fi
+    re="$1" ; shift
 
-    re="$1"
-    shift
-
-    grep ${casei:+-i} "$re" <<EOF
+    grep ${iopt} ${qopt} "$re" <<EOF
 $(for i in "$@" ; do echo "${i}" ; done)
 EOF
 }
