@@ -279,6 +279,7 @@ unset paralleljobs
 paralleljobs () {
     typeset argcount=0
     typeset cmd cmdzero flatentry iargs icmd ilog ilogsuffix
+    typeset dotee=false
     typeset haltstring='__HALT__'
     typeset logdir="${DS_ENV_LOG}"
     typeset logsuffixmulti='pno_'
@@ -289,11 +290,12 @@ paralleljobs () {
     typeset ts="$(date '+%Y%m%d%OH%OM%OS')"
 
     # Options:
-    while getopts ':l:n:p:z:' opt ; do
+    while getopts ':l:n:p:tz:' opt ; do
         case "${opt}" in
         l) logdir="${OPTARG}";;
         n) n="${OPTARG}";;
         p) maxprocs="${OPTARG}";;
+        t) dotee=true;;
         z) cmdzero="${OPTARG}";;
         esac
     done
@@ -309,6 +311,8 @@ paralleljobs () {
 
     # Argcount fixed for n==1:
     [ "${n}" -eq 1 ] && argcount=1
+
+    LOGS=()
 
     while read entry ; do
         [ -z "${entry}" ] && continue
@@ -364,12 +368,26 @@ paralleljobs () {
         while [ `jobs -r | wc -l` -ge ${maxprocs} ] ; do true ; done
 
         # elog "Subproc #${pcount} .."
+        if $dotee ; then
+            LOGS=(${LOGS[@]} "$ilog")
+        fi
         nohup bash -c "${icmd}" >> "${ilog}" 2>&1 &
     done
 
     if [ "${pcount}" -gt 0 ] ; then
         elog "Finished launching a total of ${pcount} processes for this jobset."
         elog "Processing last batch of `jobs -p | wc -l` jobs.."
+    fi
+
+    if $dotee ; then
+        wait || return 1
+        for log in ${LOGS[@]} ; do
+            echo "$(ex "$log" <<EOF
+            :/{res}$/+1,$p
+EOF
+            )" | \
+                head -n -2
+        done
     fi
 }
 

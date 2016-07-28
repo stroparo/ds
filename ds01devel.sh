@@ -25,41 +25,44 @@ gitr () {
     typeset pname=gitr
 
     typeset cmdout
-    typeset gitcmdmsg statusopt
+    typeset gitcmdmsg
     typeset gitcmd='git'
+    typeset statusopt=false
     typeset usage="Usage: [-c newCommandInsteadOfGit] [-s] [command args]"
 
     OPTIND=1
     while getopts ':c:hs' opt ; do
         case "${opt}" in
-        c) gitcmd="${OPTARG}" ;;
+        c) gitcmd="${OPTARG}";;
         h) elog -i -n "${pname}" "${usage}" ; OPTIND=1 ; return ;;
-        s) statusopt=true ;;
+        s) statusopt=true;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
-    while read gitdir; do
-        cd "${gitdir%/.git}"
+    typeset gitrcmd="$(cat <<EOF
+cd {}/..
 
-        gitcmdmsg="==> ${gitcmd} $@ # At '${PWD}'"
+gitcmdmsg="==> ${gitcmd} $@ # At '\${PWD}'"
 
-        if [ -n "${statusopt}" ] ; then
-            cmdout="$(eval ${gitcmd} "$@" 2>&1)"
+if ${statusopt} ; then
 
-            if [ -n "${cmdout}" ] ; then
-                echo "${gitcmdmsg}"
-                echo "${cmdout}"
-                echo ''
-            fi
-        else
-            echo "${gitcmdmsg}"
-            eval ${gitcmd} "$@" 2>&1
-            echo ''
-        fi
+    cmdout="\$(eval ${gitcmd} $@ 2>&1)"
 
-        cd - >/dev/null
-    done <<EOF
+    if [ -n "\${cmdout}" ] ; then
+        echo "\${gitcmdmsg}"
+        echo "\${cmdout}"
+        echo ''
+    fi
+else
+    echo "\${gitcmdmsg}"
+    eval ${gitcmd} $@ 2>&1
+    echo ''
+fi
+EOF
+)"
+
+    paralleljobs -t -z "$gitcmd" "$gitrcmd" <<EOF
 $(find . -type d -name ".git" | egrep -i -v "${GGIGNORE}/[.]git" | sort)
 EOF
 }
