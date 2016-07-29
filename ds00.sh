@@ -287,14 +287,16 @@ paralleljobs () {
     typeset n=1
     typeset pcount=0
     typeset pname='paralleljobs'
+    typeset subshell=bash
     typeset ts="$(date '+%Y%m%d%OH%OM%OS')"
 
     # Options:
-    while getopts ':l:n:p:tz:' opt ; do
+    while getopts ':l:n:p:s:tz:' opt ; do
         case "${opt}" in
         l) logdir="${OPTARG}";;
         n) n="${OPTARG}";;
         p) maxprocs="${OPTARG}";;
+        s) subshell="${OPTARG}";;
         t) dotee=true;;
         z) cmdzero="${OPTARG}";;
         esac
@@ -371,7 +373,7 @@ paralleljobs () {
         if $dotee ; then
             LOGS=(${LOGS[@]} "$ilog")
         fi
-        nohup bash -c "${icmd}" >> "${ilog}" 2>&1 &
+        nohup $subshell -c "${icmd}" >> "${ilog}" 2>&1 &
     done
 
     if [ "${pcount}" -gt 0 ] ; then
