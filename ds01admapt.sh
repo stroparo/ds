@@ -6,23 +6,45 @@
 # ##############################################################################
 # Admin APT (aptitude & apt-get) functions
 
-# Function ckaptitude - checks and installs aptitude if unavailable.
+# Function ckapt
+# Purpose:
+#   Check if inside an APT environment
+unset ckapt
+ckapt () {
+    if ! which apt > /dev/null && ! which apt-get > /dev/null ; then
+        echo "Not in an APT environment.." 1>&2
+        return 1
+    fi
+    return 0
+}
+
+# Function ckaptitude
+# Purpose:
+#   Checks and installs aptitude if unavailable.
 unset ckaptitude
 ckaptitude () {
     typeset pname=ckaptitude
 
     if ! which aptitude > /dev/null 2>&1 ; then
+
+        ckapt || return "$?"
+
         elog -n "$pname" 'Installing aptitude..'
 
-        sudo apt-get update \
-        && sudo apt-get install -y aptitude 
+        if sudo apt-get update ; then
+            sudo apt-get install -y aptitude 
+        else
+            elog -f -n "$pname" "apt-get update."
+            return 1
+        fi
 
         if ! which aptitude > /dev/null 2>&1 ; then
             elog -n "$pname" -f 'Failed installing aptitude. Aborted.'
             return 1
         fi
-        elog -n "$pname" 'Check complete.'
     fi
+
+    elog -n "$pname" 'Check complete.'
 }
 
 # Function aptclean - clean up ubuntu packages and unwanted files.
@@ -35,27 +57,24 @@ aptclean () {
 
     elog -n "$pname" 'Started.'
 
-    ckaptitude || return 1
-    sudo aptitude update || return 2
+    ckapt || return "$?"
 
     which deborphan > /dev/null 2>&1 || sudo aptitude install -y deborphan
     which localepurge > /dev/null 2>&1 || sudo aptitude install -y localepurge
 
-    # Remove orphaned packages:
     if which deborphan > /dev/null 2>&1 ; then
-        elog -n "$pname" '...'
-        elog -n "$pname" 'Orphaned packages:'
+        echo '==> Orphaned packages:'
         sudo deborphan
-        elog -n "$pname" 'Remove? (y|n) '
-        read rmorphan
-        if [[ ${rmorphan} = y* ]] ; then
+        if userconfirm 'Remove?' ; then
             sudo deborphan | xargs sudo apt-get purge -y
         fi
+    else
+        elog -s -p "$pname" "No deborphan program available.."
     fi
 
     # Remove caches:
-    sudo apt-get autoclean -y
-    sudo apt-get clean -y
+    userconfirm 'apt-get autoclean?' && sudo apt-get autoclean -y
+    userconfirm 'apt-get clean?' && sudo apt-get clean -y
 
     elog -n "$pname" 'Completed.'
 }
@@ -103,6 +122,60 @@ aptinstall () {
     elif [[ $1 != dummy ]] ; then
         sudo aptitude install ${assumeyes} -Z "$@" || return 22
     fi
+}
+
+# Function aptdeploy
+# Purpose:
+#   Install ubuntu packages.
+# Remarks:
+#   APTREMOVELIST global will cause aptitude purge to be called with that list.
+unset aptdeploy
+aptdeploy () {
+
+    typeset pname=aptdeploy
+
+    typeset ask=false
+    typeset upgradeoption
+
+    # Options:
+    typeset oldind="${OPTIND}"
+    OPTIND=1
+    while getopts ':i' option ; do
+        case "${option}" in
+        i) ask=true;;
+        esac
+    done
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
+
+    elog -n "$pname" 'Prep..'
+
+    ckapt || return "$?"
+
+    if _any_not_r "$@" ; then
+        elog -f -n "$pname" "All argument files must be readable."
+        return 1
+    fi
+
+    if [[ $- = *i* ]] && ask && ! userconfirm 'Proceed deploying APT assets?' ; then
+        return
+    fi
+
+    if [[ $- = *i* ]] && userconfirm 'Upgrade all packages?' ; then
+        upgradeoption='-u'
+    fi
+
+    elog -n "$pname" 'Started.'
+
+    aptinstall -${upgradeoption}y "$@"
+
+    fixaptmodes
+    aptclean
+
+    if [ -n "$APTREMOVELIST" ] ; then
+        sudo aptitude purge $(echo $APTREMOVELIST)
+    fi
+
+    elog -n "$pname" 'Complete.'
 }
 
 # Function dpkgstat: View installation status of given package names.
