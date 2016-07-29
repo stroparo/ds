@@ -65,6 +65,15 @@ sshkeygenrsa () {
         keypath="${userinput}"
     done
 
+    if [[ $keypath = $HOME/.ssh* ]] && [ ! -d "$HOME/.ssh" ] ; then
+        mkdir "$HOME/.ssh"
+    fi
+
+    if [ ! -d "$(dirname "$keypath")" ] ; then
+        elog -n "$pname" "No directory available to store '$keypath'."
+        return 1
+    fi
+
     if ssh-keygen -t rsa -b 4096 -C "${comment:-mykey}" -f "${keypath}" ; then
         # Call the agent to add the newly generated key:
         sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/sshagent.sh"
