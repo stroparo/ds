@@ -287,15 +287,17 @@ paralleljobs () {
     typeset n=1
     typeset pcount=0
     typeset pname='paralleljobs'
+    typeset quiet=false
     typeset subshell=bash
     typeset ts="$(date '+%Y%m%d%OH%OM%OS')"
 
     # Options:
-    while getopts ':l:n:p:s:tz:' opt ; do
+    while getopts ':l:n:p:qs:tz:' opt ; do
         case "${opt}" in
         l) logdir="${OPTARG}";;
         n) n="${OPTARG}";;
         p) maxprocs="${OPTARG}";;
+        q) quiet=true;;
         s) subshell="${OPTARG}";;
         t) dotee=true;;
         z) cmdzero="${OPTARG}";;
@@ -339,7 +341,7 @@ paralleljobs () {
                 [ "${argcount}" -lt "${n}" ] && continue
             fi
         else
-            elog -f -n "${pname}" \
+            $quiet || elog -f -n "${pname}" \
                 "Invalid number of args per process in n option, must be positive."
             return 20
         fi
@@ -347,13 +349,13 @@ paralleljobs () {
         # Halting control is best when processing multi-args at a time (n > 1):        
         if [ "${entry}" = "${haltstring}" ] ; then
             if [ "${argcount:-0}" -eq 0 ] ; then
-                elog -w "Halt string found but no arguments pending,"
-                elog -w " ie either the input was empty or the number"
-                elog -w " of entries was a multiple of n.."
+                $quiet || elog -w "Halt string found but no arguments pending,"
+                $quiet || elog -w " ie either the input was empty or the number"
+                $quiet || elog -w " of entries was a multiple of n.."
                 break
             fi
 
-            elog -w "Halt string found; calling last job of this set.."
+            $quiet || elog -w "Halt string found; calling last job of this set.."
         fi
 
         # Prep command and its log filename:
@@ -364,19 +366,17 @@ paralleljobs () {
             ilogsuffix="${logsuffixmulti}${pcount}"
         fi
         ilog="${logdir}/${cmdzero}_${ts}_${ilogsuffix}.log"
+        if $dotee ; then LOGS=(${LOGS[@]} "$ilog") ; fi
+
         echo "Command: ${icmd}" > "${ilog}" || return 40
 
         # Wait for a vacant pool slot:
         while [ `jobs -r | wc -l` -ge ${maxprocs} ] ; do true ; done
 
-        # elog "Subproc #${pcount} .."
-        if $dotee ; then
-            LOGS=(${LOGS[@]} "$ilog")
-        fi
         nohup $subshell -c "${icmd}" >> "${ilog}" 2>&1 &
     done
 
-    if [ "${pcount}" -gt 0 ] ; then
+    if ! $quiet && [ "${pcount}" -gt 0 ] ; then
         elog "Finished launching a total of ${pcount} processes for this jobset."
         elog "Processing last batch of `jobs -p | wc -l` jobs.."
     fi

@@ -62,9 +62,10 @@ fi
 EOF
 )"
 
-    paralleljobs -p 32 -t -z "$gitcmd" "$gitrcmd" <<EOF
+    (paralleljobs -p 32 -q -t -z "$gitcmd" "$gitrcmd" <<EOF
 $(find . -type d -name ".git" | egrep -i -v "${GGIGNORE}/[.]git" | sort)
 EOF
+)
 }
 
 # Function gitclones - Clone repos passed in the argument, one per line (quote it).
