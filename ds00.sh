@@ -705,7 +705,7 @@ echogrep () {
 
     re="$1" ; shift
 
-    grep ${iopt} ${qopt} "$re" <<EOF
+    egrep ${iopt} ${qopt} "$re" <<EOF
 $(for i in "$@" ; do echo "${i}" ; done)
 EOF
 }
