@@ -7,7 +7,7 @@
 # DS base objects
 alias t='d "${TEMP_DIRECTORY}" -A'
 
-# DS aliases - change directory:
+# Aliases to directories:
 alias cdbak='d "${BACKUP_DIRECTORY}" -A'
 alias cde='d "${DS_ENV}" -A'
 alias cdl='cd "${DS_ENV_LOG}" && (ls -AFlrt | tail -n 64)'
@@ -17,245 +17,12 @@ alias cdlt='cd "${DS_ENV_LOG}" && cd "$(ls -1d */|sort|tail -n 1)" && ls -AFlrt'
 alias ds='d "${DS_HOME}" -Ah ; [ -n "$(git status -s)" ] && git diff'
 alias t='d "${TEMP_DIRECTORY}" -A'
 
-# Environment tests
+# Test environment functions:
 _is_aix () { [[ $(uname -a) = *[Aa][Ii][Xx]* ]] ; }
 _is_cygwin () { [[ "$(uname -a)" = *[Cc]ygwin* ]] ; }
 _is_debian () { [[ "$(uname -a)" = *[Db]ebian* ]] ; }
 _is_linux () { [[ "$(uname -a)" = *[Ll]inux* ]] || _is_debian || _is_ubuntu ; }
 _is_ubuntu () { [[ "$(uname -a)" = *[Uu]buntu* ]] ; }
-
-# Function aliasnoext
-# Purpose:
-# Pick argument directories' scripts and yield corresponding aliases with no extension.
-# Syntax:
-# {directory}1+
-unset aliasnoext
-aliasnoext () {
-
-    typeset oldind="${OPTIND}"
-    typeset verbose=false
-
-    OPTIND=1
-    while getopts ':v' opt ; do
-        case "${opt}" in
-        v) verbose=true;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
-
-    for dir in "$@" ; do
-        if ! _any_dir_not_w "${dir}" ; then
-            while read script ; do
-                if [ -x "${script}" ] ; then
-                    aliasname="${script##*/}"
-                    aliasname="${aliasname%%.*}"
-                    eval unalias "${aliasname}" 2>/dev/null
-                    eval alias "${aliasname}=${script}"
-                    $verbose && eval type "${aliasname}"
-                fi
-            done <<EOF
-$(findscripts "${dir}")
-EOF
-        fi
-    done
-}
-
-# Function appendto - Append to variable (arg1), the given text (arg2).
-unset appendto
-appendto () {
-    if [ -z "$(eval "echo \"\$${1}\"")" ] ; then
-        eval "${1}=\"${2}\""
-    else
-        eval "${1}=\"\$${1}
-${2}\""
-    fi
-}
-
-# Function cyd - cd to the disk drive letter argument; fails if not in cygwin.
-# Syntax: cyd {a|b|c|d|e|f|...}
-unset cyd 2>/dev/null
-cyd () {
-    _is_cygwin && cd /cygdrive/"${1:-c}" && ls -AFhl 1>&2
-}
-
-# Function chmodshells - Sets mode for scripts inside the specified directories.
-unset chmodshells
-chmodshells () {
-    typeset oldind="$OPTIND"
-
-    typeset addaliases=false
-    typeset addpaths=false
-    typeset mode='u+rwx'
-    typeset verbose
-
-    # Options:
-    OPTIND=1
-    while getopts ':am:pv' opt ; do
-        case "${opt}" in
-        a) addaliases=true ;;
-        m) mode="${OPTARG}" ;;
-        p) addpaths=true ;;
-        v) verbose='-v' ;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
-
-    for dir in "$@" ; do
-        if ! _any_dir_not_w "${dir}" ; then
-            # [[ -n $ZSH_VERSION ]] && set -o shwordsplit
-            chmod ${verbose} "${mode}" $(findscripts "${dir}")                    
-            # [[ -n $ZSH_VERSION ]] && set +o shwordsplit
-        fi
-    done
-
-    if ${addpaths}; then
-        pathmunge -x "$@"
-    fi
-
-    if ${addaliases}; then
-        aliasnoext "$@"
-    fi
-}
-
-# Function ckenv - check number of arguments and sets hasgnu ("GNU is not Unix").
-# Syntax: {min-args} [max-args=min-args]
-unset ckenv
-ckenv () {
-    typeset args_slice_min="${1:-0}"
-    typeset args_slice_max="${2:-0}"
-    shift 2
-
-    if ! [ "${#}" -ge "${args_slice_min}" -a \
-           "${#}" -le "${args_slice_max}" ] ; then
-        echo "Bad arguments:" "$@" 1>&2
-        return 1
-    fi
-
-    # hasgnu - "has GNU?" portability indicator
-    find --version 2> /dev/null | grep -i -q 'gnu'
-    if [ "$?" -eq 0 ] ; then
-        export hasgnu=true
-    fi
-}
-
-# Function d - change directory and execute pwd followed by an ls.
-# Syntax: {directory}
-unalias d 2>/dev/null
-unset d
-d () {
-    dir="${1}"
-    shift
-
-    cd "${dir}" || return 1
-    pwd 1>&2
-    ls -Fl "$@" 1>&2
-}
-
-# Function echodots - Echoes dots between 200s or number of seconds in arg1.
-unset echodots
-echodots () {
-    trap return SIGPIPE
-    while sleep "${1:-4}" ; do
-        if [ -n "${BASH_VERSION}" ] ; then
-            echo -n '.' 1>&2
-        elif [[ ${SHELL} = *[kz]sh ]] ; then
-            echo '.\c' 1>&2
-        else
-            echo '.'
-        fi
-    done
-}
-
-# Function elog - echoes a string to standard error.
-unset elog
-elog () {
-
-    typeset msgtype="INFO"
-    typeset pname
-    typeset verbosecondition
-
-    # Options:
-    while getopts ':dfin:svw' opt ; do
-        case "${opt}" in
-        d) msgtype="DEBUG" ;;
-        f) msgtype="FATAL" ;;
-        i) msgtype="INFO" ;;
-        n) pname="${OPTARG}" ;;
-        s) msgtype="SKIP" ;;
-        v) verbosecondition=true ;;
-        w) msgtype="WARNING" ;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND=1
-
-    if [ -z "${verbosecondition}" -o -n "${DS_VERBOSE}" ] ; then 
-        echo "${pname:+${pname}:}${msgtype:+${msgtype}:}" "$@" 1>&2
-    fi
-}
-
-# Function enforcedir - Tries to create the directory and fails if not rwx.
-unset enforcedir
-enforcedir () {
-    typeset pname=enforcedir
-
-    for d in "$@" ; do
-        mkdir -p "${d}" 2>/dev/null
-
-        if _any_dir_not_rwx "${d}" ; then
-            elog -f -n "$pname" "You do not have rwx mode for '${d}' directory."
-            return 1
-        fi
-    done
-}
-
-unset findscripts
-findscripts () {
-
-    typeset pname=findscripts
-
-    typeset re_scripts="perl|python|ruby|sh"
-
-    awk 'FNR == 1 && $0 ~ /^#!.*('"${re_scripts}"') */ {
-        print FILENAME;
-    }' \
-        $(find "$@" -type f | egrep -v '[.](git|hg|svn)')
-}
-
-# Function getnow - setup NOW* and TODAY* environment variables.
-unset getnow
-getnow () {
-    export NOW_HMS="$(date '+%OH%OM%OS')"
-    export NOW_YMDHM="$(date '+%Y%m%d%OH%OM')"
-    export NOW_YMDHMS="$(date '+%Y%m%d%OH%OM%OS')"
-    export TODAY="$(date '+%Y%m%d')"
-    export TODAY_ISO="$(date '+%Y-%m-%d')"
-}
-
-# Function loop - pass a command to be executed every secs seconds.
-# Syntax: [-d secs] command
-unset loop
-loop () {
-    typeset interval=10
-
-    while getopts ':d:' opt ; do
-        case "${opt}" in
-        d)
-            interval="${OPTARG}"
-            ;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND=1
-
-    while true ; do
-        clear 2>/dev/null || echo '' 1>&2
-        echo "Looping thru every ${interval} seconds.." 1>&2
-        echo "Command:" "$@" 1>&2
-        $@
-        sleep "${interval}" 2>/dev/null \
-        || sleep 10 \
-        || break
-    done
-}
 
 # Function paralleljobs - Fires parallel processes, entries read from stdin one per line.
 #   '{}' expressions in the command yield the entry for the current job.
@@ -394,6 +161,240 @@ EOF
     fi
 }
 
+# ##############################################################################
+# Filesystem
+
+# Function chmodshells - Sets mode for scripts inside the specified directories.
+unset chmodshells
+chmodshells () {
+    typeset oldind="$OPTIND"
+
+    typeset addaliases=false
+    typeset addpaths=false
+    typeset mode='u+rwx'
+    typeset verbose
+
+    # Options:
+    OPTIND=1
+    while getopts ':am:pv' opt ; do
+        case "${opt}" in
+        a) addaliases=true ;;
+        m) mode="${OPTARG}" ;;
+        p) addpaths=true ;;
+        v) verbose='-v' ;;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
+
+    for dir in "$@" ; do
+        if ! _any_dir_not_w "${dir}" ; then
+            # [[ -n $ZSH_VERSION ]] && set -o shwordsplit
+            chmod ${verbose} "${mode}" $(findscripts "${dir}")                    
+            # [[ -n $ZSH_VERSION ]] && set +o shwordsplit
+        fi
+    done
+
+    if ${addpaths}; then
+        pathmunge -x "$@"
+    fi
+
+    if ${addaliases}; then
+        aliasnoext "$@"
+    fi
+}
+
+# Function enforcedir - Tries to create the directory and fails if not rwx.
+unset enforcedir
+enforcedir () {
+    typeset pname=enforcedir
+
+    for d in "$@" ; do
+        mkdir -p "${d}" 2>/dev/null
+
+        if _any_dir_not_rwx "${d}" ; then
+            elog -f -n "$pname" "You do not have rwx mode for '${d}' directory."
+            return 1
+        fi
+    done
+}
+
+unset findscripts
+findscripts () {
+
+    typeset pname=findscripts
+
+    typeset re_scripts="perl|python|ruby|sh"
+
+    awk 'FNR == 1 && $0 ~ /^#!.*('"${re_scripts}"') */ {
+        print FILENAME;
+    }' \
+        $(find "$@" -type f | egrep -v '[.](git|hg|svn)')
+}
+
+# ##############################################################################
+# Process management
+
+# Function pgr - pgrep emulator.
+# Syntax: [egrep-pattern]
+unset pgr
+pgr () {
+    typeset options
+
+    # Options:
+    while getopts ':' opt ; do
+        options="${options} -${opt} ${OPTARG:-'${OPTARG}'}"
+    done
+    shift $((OPTIND - 1)) ; OPTIND=1
+
+    ps -ef | egrep -i ${options} "$@" | egrep -v "grep.*(${1})"
+}
+
+# ##############################################################################
+# Shell functions
+
+# Function aliasnoext
+# Purpose:
+# Pick argument directories' scripts and yield corresponding aliases with no extension.
+# Syntax:
+# {directory}1+
+unset aliasnoext
+aliasnoext () {
+
+    typeset oldind="${OPTIND}"
+    typeset verbose=false
+
+    OPTIND=1
+    while getopts ':v' opt ; do
+        case "${opt}" in
+        v) verbose=true;;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
+
+    for dir in "$@" ; do
+        if ! _any_dir_not_w "${dir}" ; then
+            while read script ; do
+                if [ -x "${script}" ] ; then
+                    aliasname="${script##*/}"
+                    aliasname="${aliasname%%.*}"
+                    eval unalias "${aliasname}" 2>/dev/null
+                    eval alias "${aliasname}=${script}"
+                    $verbose && eval type "${aliasname}"
+                fi
+            done <<EOF
+$(findscripts "${dir}")
+EOF
+        fi
+    done
+}
+
+# Function appendto - Append to variable (arg1), the given text (arg2).
+unset appendto
+appendto () {
+    if [ -z "$(eval "echo \"\$${1}\"")" ] ; then
+        eval "${1}=\"${2}\""
+    else
+        eval "${1}=\"\$${1}
+${2}\""
+    fi
+}
+
+# Function cyd - cd to the disk drive letter argument; fails if not in cygwin.
+# Syntax: cyd {a|b|c|d|e|f|...}
+unset cyd 2>/dev/null
+cyd () {
+    _is_cygwin && cd /cygdrive/"${1:-c}" && ls -AFhl 1>&2
+}
+
+# Function ckenv - check number of arguments and sets hasgnu ("GNU is not Unix").
+# Syntax: {min-args} [max-args=min-args]
+unset ckenv
+ckenv () {
+    typeset args_slice_min="${1:-0}"
+    typeset args_slice_max="${2:-0}"
+    shift 2
+
+    if ! [ "${#}" -ge "${args_slice_min}" -a \
+           "${#}" -le "${args_slice_max}" ] ; then
+        echo "Bad arguments:" "$@" 1>&2
+        return 1
+    fi
+
+    # hasgnu - "has GNU?" portability indicator
+    find --version 2> /dev/null | grep -i -q 'gnu'
+    if [ "$?" -eq 0 ] ; then
+        export hasgnu=true
+    fi
+}
+
+# Function d - change directory and execute pwd followed by an ls.
+# Syntax: {directory}
+unalias d 2>/dev/null
+unset d
+d () {
+    dir="${1}"
+    shift
+
+    cd "${dir}" || return 1
+    pwd 1>&2
+    ls -Fl "$@" 1>&2
+
+    if which git >/dev/null 2>&1 && [ -e "${PWD}/.git" ]; then
+        git status -s
+    fi
+}
+
+# Function echodots - Echoes dots between 200s or number of seconds in arg1.
+unset echodots
+echodots () {
+    trap return SIGPIPE
+    while sleep "${1:-4}" ; do
+        if [ -n "${BASH_VERSION}" ] ; then
+            echo -n '.' 1>&2
+        elif [[ ${SHELL} = *[kz]sh ]] ; then
+            echo '.\c' 1>&2
+        else
+            echo '.'
+        fi
+    done
+}
+
+# Function getnow - setup NOW* and TODAY* environment variables.
+unset getnow
+getnow () {
+    export NOW_HMS="$(date '+%OH%OM%OS')"
+    export NOW_YMDHM="$(date '+%Y%m%d%OH%OM')"
+    export NOW_YMDHMS="$(date '+%Y%m%d%OH%OM%OS')"
+    export TODAY="$(date '+%Y%m%d')"
+    export TODAY_ISO="$(date '+%Y-%m-%d')"
+}
+
+# Function loop - pass a command to be executed every secs seconds.
+# Syntax: [-d secs] command
+unset loop
+loop () {
+    typeset interval=10
+
+    while getopts ':d:' opt ; do
+        case "${opt}" in
+        d)
+            interval="${OPTARG}"
+            ;;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND=1
+
+    while true ; do
+        clear 2>/dev/null || echo '' 1>&2
+        echo "Looping thru every ${interval} seconds.." 1>&2
+        echo "Command:" "$@" 1>&2
+        $@
+        sleep "${interval}" 2>/dev/null \
+        || sleep 10 \
+        || break
+    done
+}
+
 # Function pathmunge - prepend (-a causes to append) directory to PATH global.
 # Syntax: [-v varname] {path}1+
 unset pathmunge
@@ -431,19 +432,28 @@ pathmunge () {
     if ${doexport} ; then eval export "${varname}" ; fi
 }
 
-# Function pgr - pgrep emulator.
-# Syntax: [egrep-pattern]
-unset pgr
-pgr () {
-    typeset options
+# Function progmiss - Checks 'which' programs and prints missing programs.
+unset progmiss
+progmiss () {
+    typeset misslist prog
 
-    # Options:
-    while getopts ':' opt ; do
-        options="${options} -${opt} ${OPTARG:-'${OPTARG}'}"
+    if [[ -z ${1} ]] ; then
+        echo 'No-op. Must input at least one argument.'
+        return
+    fi
+
+    for prog in "$@" ; do
+        which "${prog}" >/dev/null 2>&1 || misslist="${misslist:+${misslist} }${prog}"
     done
-    shift $((OPTIND - 1)) ; OPTIND=1
 
-    ps -ef | egrep -i ${options} "$@" | egrep -v "grep.*(${1})"
+    misslist="${misslist% }"
+
+    if [[ -n ${misslist} ]] ; then
+        echo "Missing binaries: ${misslist}"
+        return
+    fi
+
+    return 1
 }
 
 # Function ps1enhance - make PS1 better, displaying user, host, time, $? and the
@@ -590,8 +600,16 @@ userinput () {
     read userinput
 }
 
+
 # ##############################################################################
 # Text processing functions
+
+# TODO rename to tailnum
+catnum () { mutail -n1 "$@" | grep '^[0-9][0-9]*$' ; }
+
+echoupcase () { echo "$@" | tr '[[:lower:]]' '[[:upper:]]' ; }
+locase () { tr '[[:upper:]]' '[[:lower:]]' ; }
+upcase () { tr '[[:lower:]]' '[[:upper:]]' ; }
 
 # Function appendunique - If string not present in file, append to it.
 # Syntax: string file1 [file2 ...]
@@ -615,13 +633,6 @@ appendunique () {
         echo "appendunique: FATAL: Text was '${text}'." 1>&2
         return 1
     fi
-}
-
-# Function catnum - Cat files and greps the catenated content for number-only lines.
-# See also: greperr
-unset catnum
-catnum () {
-    mutail -n1 "$@" | grep '^[0-9][0-9]*$'
 }
 
 # Function ckeof - Check whether final EOL (end-of-line) is missing.
@@ -711,10 +722,31 @@ $(for i in "$@" ; do echo "${i}" ; done)
 EOF
 }
 
-# Function echoupcase - Echoes arguments then translates to uppercase via piped tr.
-unset echoupcase
-echoupcase () {
-    echo "$@" | tr '[[:lower:]]' '[[:upper:]]'
+# Function elog - echoes a string to standard error.
+unset elog
+elog () {
+
+    typeset msgtype="INFO"
+    typeset pname
+    typeset verbosecondition
+
+    # Options:
+    while getopts ':dfin:svw' opt ; do
+        case "${opt}" in
+        d) msgtype="DEBUG" ;;
+        f) msgtype="FATAL" ;;
+        i) msgtype="INFO" ;;
+        n) pname="${OPTARG}" ;;
+        s) msgtype="SKIP" ;;
+        v) verbosecondition=true ;;
+        w) msgtype="WARNING" ;;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND=1
+
+    if [ -z "${verbosecondition}" -o -n "${DS_VERBOSE}" ] ; then 
+        echo "${pname:+${pname}:}${msgtype:+${msgtype}:}" "$@" 1>&2
+    fi
 }
 
 # Function fixeof - Fix and add final EOL (end-of-line) when missing.
@@ -859,36 +891,6 @@ printawk () {
         "${pattern}${pattern:+ }{print ${printargs};}"
 }
 
-# Function progmiss - Checks 'which' programs and prints missing programs.
-unset progmiss
-progmiss () {
-    typeset misslist prog
-
-    if [[ -z ${1} ]] ; then
-        echo 'No-op. Must input at least one argument.'
-        return
-    fi
-
-    for prog in "$@" ; do
-        which "${prog}" >/dev/null 2>&1 || misslist="${misslist:+${misslist} }${prog}"
-    done
-
-    misslist="${misslist% }"
-
-    if [[ -n ${misslist} ]] ; then
-        echo "Missing binaries: ${misslist}"
-        return
-    fi
-
-    return 1
-}
-
-# Function - Wrapper function for a tr call from [[:lower:]] to [[:upper:]].
-unset upcase
-upcase () {
-    tr '[[:lower:]]' '[[:upper:]]'
-}
-
 # ##############################################################################
 # Testing functions
 
@@ -965,6 +967,4 @@ _any_not_w () {
 # ##############################################################################
 # Bootstrap calls:
 
-if [ -n "${DS_VERBOSE}" ] ; then
-    dsinfo 1>&2
-fi
+if [ -n "${DS_VERBOSE}" ] ; then dsinfo 1>&2 ; fi
