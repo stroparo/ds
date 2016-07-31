@@ -7,21 +7,26 @@
 
 # Program pushl - push files to specific target environments using LFTP program.
 
-usage="$(basename "$0") [-e {env-regex}] [-f {local-globs}] [-p] [-r] {srcdir} {site} [site2 [site3 ...]]
+export USAGE="
+NAME
+    pushl - Push files to an environment via lftp program.
 
-Remarks:
-1) The environment list must be in the TGT{env} variable.
-      Each entry in the env list must be formatted like this:
-      {environment-name}:{user}:{pass}:{host}:{destination-path}
-2) TGTGLOB{env} variable might contain additional space-separated globs.
-      But when globs are passed via the -f option (-f \"glob1 glob2 ...\")
-      only those are going to be considered as TGTGLOB will
-      only serve as the default/fallback.
-3) -r option
-      Reset files, i.e. deletes them from destination before copying.
-4) -p option
-      Causes pushl to only purge all files in the destination
-      Usage of -r is redundant here.
+SYNOPSIS
+    pushl $(basename "$0") [-e {env-regex}] [-f {local-globs}] [-p] [-r] {srcdir} {site} [site2 [site3 ...]]
+
+DESCRIPTION
+    1) The environment list must be in the TGT{env} variable.
+        Each entry in the env list must be formatted like this:
+        {environment-name}:{user}:{pass}:{host}:{destination-path}
+    2) TGTGLOB{env} variable might contain additional space-separated globs.
+        But when globs are passed via the -f option (-f \"glob1 glob2 ...\")
+        only those are going to be considered as TGTGLOB will
+        only serve as the default/fallback.
+    3) -r option
+        Reset files, i.e. deletes them from destination before copying.
+    4) -p option
+        Causes pushl to only purge all files in the destination
+        Usage of -r is redundant here.
 "
 
 # ##############################################################################
@@ -41,29 +46,18 @@ export SRCDIR=''
 # ##############################################################################
 # Prep args
 
-while getopts ':c:d:e:f:prx:' opt ; do
+# Options:
+OPTIND=1
+while getopts ':c:d:e:f:hprx:' opt ; do
     case ${opt} in
-    c)
-        export CONNOPT="${OPTARG}"
-        ;;
-    d)
-        export DESTDIR="${OPTARG}"
-        ;;
-    e)
-        export ENVREGEX="${OPTARG}"
-        ;;
-    f)
-        export GLOBSOPT="${OPTARG}"
-        ;;
-    p)
-        export PURGE_ONLY=true
-        ;;
-    r)
-        export RESET_FILES=true
-        ;;
-    x)
-        export EXCLUDE="${OPTARG}"
-        ;;
+    c) export CONNOPT="${OPTARG}";;
+    d) export DESTDIR="${OPTARG}";;
+    e) export ENVREGEX="${OPTARG}";;
+    f) export GLOBSOPT="${OPTARG}";;
+    h) echo "$USAGE" ; exit ;;
+    p) export PURGE_ONLY=true ;;
+    r) export RESET_FILES=true ;;
+    x) export EXCLUDE="${OPTARG}";;
     esac
 done
 shift $((OPTIND - 1))
