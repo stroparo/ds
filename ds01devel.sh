@@ -15,10 +15,6 @@ grepfu () {
 # ##############################################################################
 # Git
 
-# Function gitr - exec git for all repos descending from current directory.
-# Syntax: [-c command] [-s] [command subcommands arguments etc.]
-# Remark: GGIGNORE global can have an egrep regex for git repos to be ignored.
-# Rmk #2: -s causes the command to be displayed only when its output is non-empty.
 unset gitr
 gitr () {
     typeset oldind="${OPTIND}"
@@ -26,37 +22,50 @@ gitr () {
 
     typeset cmdout
     typeset gitcmdmsg
-    typeset gitcmd='git'
-    typeset statusopt=false
-    typeset usage="Usage: [-c newCommandInsteadOfGit] [-s] [command args]"
 
+    # Options:
+    typeset gitcmd='git'
+    typeset verbose=false
+    typeset usage="Function gitr - exec git for all descending gits from current directory.
+
+Usage:
+
+gitr -h
+gitr [-c newCommandInsteadOfGit] [-v] [command args]
+
+Remark:
+    GGIGNORE global can have an egrep regex for git repos to be ignored.
+
+Rmk #2:
+    -v shows command even if its output is empty (pull|push not up to date).
+"
     OPTIND=1
-    while getopts ':c:hs' opt ; do
+    while getopts ':c:hv' opt ; do
         case "${opt}" in
         c) gitcmd="${OPTARG}";;
         h) elog -i -n "${pname}" "${usage}" ; OPTIND=1 ; return ;;
-        s) statusopt=true;;
+        v) verbose=true;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
     typeset gitrcmd="$(cat <<EOF
 cd {}/..
-
 gitcmdmsg="==> ${gitcmd} $@ # At '\${PWD}'"
+cmdout="\$(eval ${gitcmd} $@ 2>&1)"
 
-if ${statusopt} ; then
-
-    cmdout="\$(eval ${gitcmd} $@ 2>&1)"
-
-    if [ -n "\${cmdout}" ] ; then
-        echo "\${gitcmdmsg}"
-        echo "\${cmdout}"
-        echo ''
-    fi
+if [ -z "\$cmdout" ] || \
+    ([ "\${1}" = 'pull' ] && [ "\$cmdout" = 'Already up-to-date.']) || \
+    ([ "\${1}" = 'push' ] && [ "\$cmdout" = 'Everything up-to-date'])
+then
+    hasoutput=false
 else
+    hasoutput=true
+fi
+
+if ${verbose:-false} || \${hasoutput:-false} ; then
     echo "\${gitcmdmsg}"
-    eval ${gitcmd} $@ 2>&1
+    echo "\${cmdout}"
     echo ''
 fi
 EOF
