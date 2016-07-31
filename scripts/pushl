@@ -5,11 +5,9 @@
 #   See README.md document in projects page at
 #   https://github.com/stroparo/ds
 
-# Program pushl - push files to specific target environments using LFTP program.
-
 export USAGE="
 NAME
-    pushl - Push files to an environment via lftp program.
+    pushl - push files to target environments using LFTP program
 
 SYNOPSIS
     pushl $(basename "$0") [-e {env-regex}] [-f {local-globs}] [-p] [-r] {srcdir} {site} [site2 [site3 ...]]
@@ -50,11 +48,11 @@ export SRCDIR=''
 OPTIND=1
 while getopts ':c:d:e:f:hprx:' opt ; do
     case ${opt} in
+    h) echo "$USAGE" ; exit ;;
     c) export CONNOPT="${OPTARG}";;
     d) export DESTDIR="${OPTARG}";;
     e) export ENVREGEX="${OPTARG}";;
     f) export GLOBSOPT="${OPTARG}";;
-    h) echo "$USAGE" ; exit ;;
     p) export PURGE_ONLY=true ;;
     r) export RESET_FILES=true ;;
     x) export EXCLUDE="${OPTARG}";;
