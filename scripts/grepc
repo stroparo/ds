@@ -10,7 +10,7 @@
 # Default context i.e. before and after is 10 lines
 # around the matching position.
 
-usage="$(basename "$0") [-a afterlines] [-b beforelines] [-c contextlines]"
+export USAGE="$(basename "$0") [-a afterlines] [-b beforelines] [-c contextlines]"
 
 # ##############################################################################
 # Functions
