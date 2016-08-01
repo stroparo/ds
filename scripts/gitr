@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+
+# DS - Daily Shells Library
+# License:
+#   See README.md document in projects page at
+#   https://github.com/stroparo/ds
+
+export PNAME="$(basename "$0")"
+export USAGE="
+NAME
+    ${PNAME} - exec git for all descending gits from current directory
+
+SYNOPSIS
+    ${PNAME} 
+    ${PNAME} -h
+    ${PNAME} [-c newCommandInsteadOfGit] [-v] [command args]
+
+DESCRIPTION
+
+Remark:
+    GGIGNORE global can have an egrep regex for git repos to be ignored.
+
+Rmk #2:
+    -v shows command even if its output is empty (pull|push not up to date).
+"
+
+# ##############################################################################
+# Globals
+
+# ##############################################################################
+# Prep args
+
+# Options:
+
+export FULL=false
+export PROGRAM='git'
+export VERBOSE=false
+
+OPTIND=1
+while getopts ':c:fhv' opt ; do
+    case "${opt}" in
+    c) PROGRAM="${OPTARG}";;
+    f) full=true;;
+    h) elog -i -n "${pname}" "${usage}" ; OPTIND=1 ; return ;;
+    v) verbose=true;;
+    esac
+done
+shift $((OPTIND-1))
+
+# ##############################################################################
+# Prep
+
+export GITCMD="$1"
+shift
+
+# ##############################################################################
+# Functions
+
+prep () {
+
+    if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1 || \
+        [ -z "${DS_LOADED}" ]
+    then
+        echo "${PNAME}: FATAL: Could not load DS - Daily Shells." 1>&2
+        exit 1
+    fi
+
+}
+
+cmdexpand () {
+    if echogrep -q '^g?ss$' "$GITCMD" ; then GITCMD='status -s'
+    elif echogrep -q '^g?st$' "$GITCMD" ; then GITCMD='status'
+    elif echogrep -q '^g?l$' "$GITCMD" ; then GITCMD='pull'
+    elif echogrep -q '^g?p$' "$GITCMD" ; then GITCMD='pgush'
+    fi
+}
+
+rcmdset () {
+
+    export GITRCMD="$(cat <<EOF
+cd {}/..
+export HEADERMSG="==> ${PROGRAM} $@ # At '\${PWD}'"
+export CMDOUT="\$(eval ${PROGRAM} ${GITCMD} $@ 2>&1)"
+
+if [ -z "\$CMDOUT" ] || \
+    ([ "\${1}" = 'pull' ] && [ "\$CMDOUT" = 'Already up-to-date.']) || \
+    ([ "\${1}" = 'push' ] && [ "\$CMDOUT" = 'Everything up-to-date'])
+then
+    hasoutput=false
+else
+    hasoutput=true
+fi
+
+if ${verbose:-false} || \${hasoutput:-false} ; then
+    echo "\${HEADERMSG}"
+    echo "\${CMDOUT}"
+    echo ''
+fi
+EOF
+)"
+}
+
+rcmdcall () {
+(paralleljobs -p 32 -q -t -z "$PROGRAM" "$GITRCMD" <<EOF
+$(
+if ${full:-false} ; then
+    find . -type d -name ".git"
+else
+    find . -type d -name ".git" | egrep -i -v "${GGIGNORE}/[.]git"
+fi
+)
+EOF
+)
+}
+
+gitr () {
+    cmdexpand
+    rcmdset
+    rcmdcall
+}
+
+# ##############################################################################
+# Main
+
+prep
+gitr "$@"
+exit "$?"

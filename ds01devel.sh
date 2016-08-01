@@ -15,68 +15,6 @@ grepfu () {
 # ##############################################################################
 # Git
 
-unset gitr
-gitr () {
-    typeset oldind="${OPTIND}"
-    typeset pname=gitr
-
-    typeset cmdout
-    typeset gitcmdmsg
-
-    # Options:
-    typeset gitcmd='git'
-    typeset verbose=false
-    typeset usage="Function gitr - exec git for all descending gits from current directory.
-
-Usage:
-
-gitr -h
-gitr [-c newCommandInsteadOfGit] [-v] [command args]
-
-Remark:
-    GGIGNORE global can have an egrep regex for git repos to be ignored.
-
-Rmk #2:
-    -v shows command even if its output is empty (pull|push not up to date).
-"
-    OPTIND=1
-    while getopts ':c:hv' opt ; do
-        case "${opt}" in
-        c) gitcmd="${OPTARG}";;
-        h) elog -i -n "${pname}" "${usage}" ; OPTIND=1 ; return ;;
-        v) verbose=true;;
-        esac
-    done
-    shift $((OPTIND-1)) ; OPTIND="${oldind}"
-
-    typeset gitrcmd="$(cat <<EOF
-cd {}/..
-gitcmdmsg="==> ${gitcmd} $@ # At '\${PWD}'"
-cmdout="\$(eval ${gitcmd} $@ 2>&1)"
-
-if [ -z "\$cmdout" ] || \
-    ([ "\${1}" = 'pull' ] && [ "\$cmdout" = 'Already up-to-date.']) || \
-    ([ "\${1}" = 'push' ] && [ "\$cmdout" = 'Everything up-to-date'])
-then
-    hasoutput=false
-else
-    hasoutput=true
-fi
-
-if ${verbose:-false} || \${hasoutput:-false} ; then
-    echo "\${gitcmdmsg}"
-    echo "\${cmdout}"
-    echo ''
-fi
-EOF
-)"
-
-    (paralleljobs -p 32 -q -t -z "$gitcmd" "$gitrcmd" <<EOF
-$(find . -type d -name ".git" | egrep -i -v "${GGIGNORE}/[.]git" | sort)
-EOF
-)
-}
-
 # Function gitclones - Clone repos passed in the argument, one per line (quote it).
 # Syntax: {repositories-one-per-line}
 unset gitclones
