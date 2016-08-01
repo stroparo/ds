@@ -39,10 +39,10 @@ export VERBOSE=false
 OPTIND=1
 while getopts ':c:fhv' opt ; do
     case "${opt}" in
-    c) PROGRAM="${OPTARG}";;
-    f) full=true;;
+    c) export PROGRAM="${OPTARG}";;
+    f) export FULL=true;;
     h) echo "$USAGE" ; exit ;;
-    v) verbose=true;;
+    v) export VERBOSE=true;;
     esac
 done
 shift $((OPTIND-1))
@@ -68,30 +68,30 @@ prep () {
 }
 
 cmdexpand () {
-    if echogrep -q '^g?ss$' "$GITCMD" ; then GITCMD='status -s'
-    elif echogrep -q '^g?st$' "$GITCMD" ; then GITCMD='status'
-    elif echogrep -q '^g?l$' "$GITCMD" ; then GITCMD='pull'
-    elif echogrep -q '^g?p$' "$GITCMD" ; then GITCMD='pgush'
+    if echogrep -q '^g?ss$' "$GITCMD" ; then export GITCMD='status -s'
+    elif echogrep -q '^g?st$' "$GITCMD" ; then export GITCMD='status'
+    elif echogrep -q '^g?l$' "$GITCMD" ; then export GITCMD='pull'
+    elif echogrep -q '^g?p$' "$GITCMD" ; then export GITCMD='pgush'
     fi
 }
 
 rcmdset () {
-
     export GITRCMD="$(cat <<EOF
 cd {}/..
+
 export HEADERMSG="==> ${PROGRAM} $@ # At '\${PWD}'"
 export CMDOUT="\$(eval ${PROGRAM} ${GITCMD} $@ 2>&1)"
 
 if [ -z "\$CMDOUT" ] || \
-    ([ "\${1}" = 'pull' ] && [ "\$CMDOUT" = 'Already up-to-date.']) || \
-    ([ "\${1}" = 'push' ] && [ "\$CMDOUT" = 'Everything up-to-date'])
+    ([ "${GITCMD}" = 'pull' ] && [ "\$CMDOUT" = 'Already up-to-date.' ]) || \
+    ([ "${GITCMD}" = 'push' ] && [ "\$CMDOUT" = 'Everything up-to-date' ])
 then
     hasoutput=false
 else
     hasoutput=true
 fi
 
-if ${verbose:-false} || \${hasoutput:-false} ; then
+if ${VERBOSE:-false} || \${hasoutput:-false} ; then
     echo "\${HEADERMSG}"
     echo "\${CMDOUT}"
     echo ''
@@ -103,7 +103,7 @@ EOF
 rcmdcall () {
 (paralleljobs -p 32 -q -t -z "$PROGRAM" "$GITRCMD" <<EOF
 $(
-if ${full:-false} ; then
+if ${FULL:-false} ; then
     find . -type d -name ".git"
 else
     find . -type d -name ".git" | egrep -i -v "${GGIGNORE}/[.]git"
@@ -115,7 +115,7 @@ EOF
 
 gitr () {
     cmdexpand
-    rcmdset
+    rcmdset "$@"
     rcmdcall
 }
 
