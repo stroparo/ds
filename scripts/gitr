@@ -71,7 +71,7 @@ cmdexpand () {
     if echogrep -q '^g?ss$' "$GITCMD" ; then export GITCMD='status -s'
     elif echogrep -q '^g?st$' "$GITCMD" ; then export GITCMD='status'
     elif echogrep -q '^g?l$' "$GITCMD" ; then export GITCMD='pull'
-    elif echogrep -q '^g?p$' "$GITCMD" ; then export GITCMD='pgush'
+    elif echogrep -q '^g?p$' "$GITCMD" ; then export GITCMD='push'
     fi
 }
 
