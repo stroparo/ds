@@ -274,7 +274,7 @@ aliasnoext () {
     for dir in "$@" ; do
         if ! _any_dir_not_w "${dir}" ; then
             while read script ; do
-                if [ -x "${script}" ] ; then
+                if [[ $script = *.* ]] && [ -x "${script}" ] ; then
                     aliasname="${script##*/}"
                     aliasname="${aliasname%%.*}"
                     eval unalias "${aliasname}" 2>/dev/null
