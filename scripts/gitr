@@ -41,7 +41,7 @@ while getopts ':c:fhv' opt ; do
     case "${opt}" in
     c) PROGRAM="${OPTARG}";;
     f) full=true;;
-    h) elog -i -n "${pname}" "${usage}" ; OPTIND=1 ; return ;;
+    h) echo "$USAGE" ; exit ;;
     v) verbose=true;;
     esac
 done
