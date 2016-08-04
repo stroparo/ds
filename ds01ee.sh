@@ -71,6 +71,29 @@ ${EEPATH}
 EOF
 }
 
+# Function eeg
+# Purpose:
+#   Display ee groups
+eeg () {
+    typeset eegroups
+
+    while read eefile ; do
+
+        eegroups="$(getsection "groups" "$eefile" | \
+            grep -v '^sectionname' | \
+            sed -e 's/=/: /')"
+
+        if [ -n "$eegroups" ] ; then
+            echo "$eegroups"
+            return
+        fi
+    done <<EOF
+$(eefiles)
+EOF
+
+    return 1
+}
+
 # Enter environment list available in EEPATH ee.txt files:
 eel () {
     while IFS=: read eepath ; do
