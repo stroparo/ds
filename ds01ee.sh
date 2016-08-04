@@ -119,7 +119,8 @@ eesel () {
             eval "$section"
         fi
         if [ -n "${sectionname}" ] ; then
-            echo "Selected env '${eedesc:-${sectionname}}': ${eeu}@${eeh}" 1>&2
+            echo "Selected env '${eedesc:-${sectionname}}' - ee=${eeu}@${eeh}" 1>&2
+            ee="${eeu}@${eeh}"
             break
         fi
     done <<EOF
