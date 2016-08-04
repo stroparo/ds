@@ -25,6 +25,14 @@
 
 alias eep='scp ${eeid:+ -i "${eeid}"}'
 
+# Function eeauth
+# Purpose:
+#   Push identity file to ee environments.
+# Usage:
+#   eeauth [-e envregex] [-i]
+# Remark:
+#   -i
+#       Interactive ie ask for user confirmation for each environment.
 eeauth () {
 
     typeset oldind="${OPTIND}"
