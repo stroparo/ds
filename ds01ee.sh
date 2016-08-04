@@ -84,7 +84,9 @@ eel () {
                 }
                 gsub(/[][]/, "")
                 name = $0;
-                waitingdesc = 1;
+                if (name !~ /^groups$/) {
+                    waitingdesc = 1;
+                }
             }
 
             /^ *eedesc *=/ {
