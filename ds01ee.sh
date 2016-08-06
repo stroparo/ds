@@ -58,8 +58,8 @@ eeauth () {
         return 1
     fi
 
-    for env in $(eel | cut -d: -f1) ; do
-        if [ -n "$expression" ] && ! echogrep "${expression}" "${env}" ; then
+    for env in $(eeln) ; do
+        if [ -n "$expression" ] && ! echogrep -q "${expression}" "${env}" ; then
             continue
         fi
         if $interactive && ! userconfirm "Push to '${env}' env?" ; then
@@ -99,17 +99,15 @@ eeauthrm () {
         return 1
     fi
 
-    for env in $(eel | cut -d: -f1) ; do
-        if [ -n "$expression" ] && ! echogrep "${expression}" "${env}" ; then
+    for env in $(eeln) ; do
+        if [ -n "$expression" ] && ! echogrep -q "${expression}" "${env}" ; then
             continue
         fi
         if $interactive && ! userconfirm "Remove from '${env}' env?" ; then
             continue
         fi
 
-        ee -s $env
-
-        eex <<EOF
+        ee "$env" <<EOF
 lineno=\$(fgrep -n '${keytext}' ~/.ssh/authorized_keys | cut -d: -f1)
 if [ -n "\$lineno" ] ; then
     ex - ~/.ssh/authorized_keys <<END
@@ -250,6 +248,7 @@ eesel () {
             eval "$section"
         fi
         if [ -n "${sectionname}" ] ; then
+            echo
             echo "==> Selected '${eedesc:-${sectionname}}', ee='${eeu}@${eeh}' <==" 1>&2
             export ee="${eeu}@${eeh}"
             break
