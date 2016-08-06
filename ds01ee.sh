@@ -72,66 +72,112 @@ eeauth () {
 
 # Function eefiles - Expand ee.txt filenames from paths in EEPATH
 eefiles () {
-    while IFS=: read eepath ; do
+    while read eepath ; do
         find "${eepath}" -type f -name 'ee.txt'
     done <<EOF
-${EEPATH}
+$(echo "${EEPATH}" | tr -s : '\n')
 EOF
 }
 
 # Function eeg
 # Purpose:
-#   Display ee groups
+#   Display ee groups or when using -g eegroup, fetch only that group's env names.
+# Syntax:
+#   eeg [-g eegroup]
 eeg () {
     typeset eegroups
+    typeset eegroup
+    typeset res=1
+
+    # Options:
+    typeset oldind="${OPTIND}"
+    OPTIND=1
+    while getopts ':g:' option ; do
+        case "${option}" in
+        g) eegroup="${OPTARG}";;
+        esac
+    done
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"   
 
     while read eefile ; do
 
-        eegroups="$(getsection "groups" "$eefile" | \
-            grep -v '^sectionname' | \
-            sed -e 's/=/: /')"
+        if [ -n "$eegroup" ] ; then
+            # Looking for a specific group only:
 
-        if [ -n "$eegroups" ] ; then
-            echo "$eegroups"
-            return
+            eegroups="$(getsection "groups" "$eefile" | \
+                grep -v '^sectionname' | \
+                grep "^${eegroup}=" | \
+                sed -e 's/^[^=]*=//')"
+
+            if [ -n "$eegroups" ] ; then
+                echo "$eegroups"
+                return 0
+            fi
+        else # No eegroup, so task is to print all groups in friendly format.
+            eegroups="$(getsection "groups" "$eefile" | \
+                grep -v '^sectionname' | \
+                sed -e 's/=/: /')"
+
+            if [ -n "$eegroups" ] ; then
+                res=0
+                echo "$eegroups"
+            fi
         fi
     done <<EOF
 $(eefiles)
 EOF
-
-    return 1
+    return ${res:-1}
 }
 
-# Enter environment list available in EEPATH ee.txt files:
+# Function eel
+# Purpose:
+#   Enter environment - List available environments in EEPATH's ee.txt files:
 eel () {
-    while IFS=: read eepath ; do
-        # Search for the entry in EEPATH ee.txt files and setup variables if found:
-        while read eefile ; do
-            echo "==> '${eefile}' <==" 1>&2
+    while read eefile ; do
 
-            awk '/^ *\[.*\] *$/ {
-                if (waitingdesc) {
-                    print name;
-                }
-                gsub(/[][]/, "")
-                name = $0;
-                if (name !~ /^groups$/) {
-                    waitingdesc = 1;
-                }
+        echo "==> '${eefile}' <==" 1>&2
+
+        awk '/^ *\[.*\] *$/ {
+            if (waitingdesc) {
+                print name;
             }
+            gsub(/[][]/, "");
+            name = $0;
+            if (name !~ /^groups$/) {
+                waitingdesc = 1;
+            }
+        }
 
-            /^ *eedesc *=/ {
-                gsub(/'"'"'| *eedesc= */, "");
-                desc = $0;
-                print name ": " desc;
-                waitingdesc = 0;
-            }' \
-            "${eefile}"
-        done <<EOF
-$(find "${eepath}" -type f -name 'ee.txt')
-EOF
+        /^ *eedesc *=/ {
+            gsub(/'"'"'| *eedesc= */, "");
+            desc = $0;
+            print name ": " desc;
+            waitingdesc = 0;
+        }' \
+        "${eefile}"
     done <<EOF
-${EEPATH}
+$(eefiles)
+EOF
+}
+
+# Function eeln
+# Purpose:
+#   Enter environment list env names only (no description).
+eeln () {
+    while read eefile ; do
+
+        echo "==> '${eefile}' <==" 1>&2
+
+        awk '/^ *\[.*\] *$/ {
+            gsub(/[][]/, "");
+            name = $0;
+            if (name !~ /^groups$/) {
+                print;
+            }
+        }' \
+        "${eefile}"
+    done <<EOF
+$(eefiles)
 EOF
 }
 
@@ -150,7 +196,7 @@ eesel () {
             eval "$section"
         fi
         if [ -n "${sectionname}" ] ; then
-            echo "Selected env '${eedesc:-${sectionname}}' - ee=${eeu}@${eeh}" 1>&2
+            echo "==> Selected '${eedesc:-${sectionname}}', ee='${eeu}@${eeh}' <==" 1>&2
             ee="${eeu}@${eeh}"
             break
         fi
@@ -182,14 +228,16 @@ eex () {
     fi
 }
 
-# Function ees
+# Function ee
 # Purpose:
-#   Enter-Environment select environment (sets up env. variables).
+#   Enter-Environment main function. Uses eesel and eex helpers.
+# Syntax:
+#   ee -
 ee () {
-
-    typeset oldind="${OPTIND}"
-
+    typeset doall=false
     typeset eefile eepath
+    typeset eegroup
+    typeset envre
     typeset searchterm
     typeset selectonly=false
     typeset useentrycmd=false
@@ -202,31 +250,50 @@ ee () {
     export eeid=""
     export eecmd=""
 
+    typeset oldind="${OPTIND}"
     OPTIND=1
-    while getopts ':cs' opt ; do
+    while getopts ':ae:g:cs' opt ; do
         case "${opt}" in
+        a) doall=true;;
+        e) envre="${OPTARG}";;
+        g) eegroup="${OPTARG}";;
         c) useentrycmd=true;;
         s) selectonly=true;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
-    searchterm="$1"
-    shift
+    if [ -z "$eegroup" ] && ! $doall ; then
+        searchterm="$1"
+        shift
+    fi
 
-    if [ -z "${searchterm}" ] ; then
-        echo 'FAIL: Must pass a nonempty environment name/id.' 1>&2
+    if [ -z "${searchterm}" ] && [ -z "$eegroup" ] && ! $doall ; then
+        echo 'FAIL: Must pass an env name, or -g eegroup, or -a.' 1>&2
         return 1
     fi
 
-    eesel "$searchterm"
+    if [ -n "$searchterm" ] ; then
+        eesel "$searchterm"
 
-    # Execute if the environment was found:
-    if ! ${selectonly} ; then
-        if $useentrycmd && [ "${eecmd}" != "" ] ; then
-            eex ${eecmd}
-        else
-            eex "$@"
+        if ! ${selectonly} ; then
+            if $useentrycmd && [ "${eecmd}" != "" ] ; then
+                eex ${eecmd}
+            else
+                eex "$@"
+            fi
         fi
+    elif [ -n "$eegroup" ] ; then
+        for i in $(eeg -g "$eegroup") ; do
+            if echogrep -q "$envre" "$i" ; then
+                ee "$i" "$@"
+            fi
+        done
+    elif $doall ; then
+        for i in $(eeln) ; do
+            if echogrep -q "$envre" "$i" ; then
+                ee "$i" "$@"
+            fi
+        done
     fi
 }
