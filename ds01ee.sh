@@ -35,13 +35,13 @@ alias eep='scp ${eeid:+ -i "${eeid}"}'
 #       Interactive ie ask for user confirmation for each environment.
 eeauth () {
 
-    typeset oldind="${OPTIND}"
     typeset pname=eeauth
 
     typeset expression
     typeset identfile
     typeset interactive=false
 
+    typeset oldind="${OPTIND}"
     OPTIND=1
     while getopts ':e:i' opt ; do
         case "${opt}" in
@@ -59,16 +59,70 @@ eeauth () {
     fi
 
     for env in $(eel | cut -d: -f1) ; do
-        if $interactive && ! userconfirm "Push to '${env}' env?" ; then
-            continue
-        fi
         if [ -n "$expression" ] && ! echogrep "${expression}" "${env}" ; then
             continue
         fi
+        if $interactive && ! userconfirm "Push to '${env}' env?" ; then
+            continue
+        fi
         ee -s $env
-        ssh-copy-id -i "$identfile" "${eeu}@${eeh}"
+        ssh-copy-id -i "$identfile" "${ee}"
     done
 }
+
+# Function eeauthrm
+# Purpose:
+#   Remove authorized key from hosts.
+unset eeauthrm
+eeauthrm () {
+
+    typeset pname=eeauthrm
+
+    typeset expression
+    typeset interactive=false
+    typeset keytext
+
+    typeset oldind="${OPTIND}"
+    OPTIND=1
+    while getopts ':e:i' opt ; do
+        case "${opt}" in
+        e) expression="$OPTARG";;
+        i) interactive=true;;
+        esac
+    done
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
+
+    keytext="$(cat "$(cygpath "$1")")"
+
+    if [ -z "$keytext" ] ; then
+        echo "$pname:FATAL: Nil public key text." 1>&2
+        return 1
+    fi
+
+    for env in $(eel | cut -d: -f1) ; do
+        if [ -n "$expression" ] && ! echogrep "${expression}" "${env}" ; then
+            continue
+        fi
+        if $interactive && ! userconfirm "Remove from '${env}' env?" ; then
+            continue
+        fi
+
+        ee -s $env
+
+        eex <<EOF
+lineno=\$(fgrep -n '${keytext}' ~/.ssh/authorized_keys | cut -d: -f1)
+if [ -n "\$lineno" ] ; then
+    ex - ~/.ssh/authorized_keys <<END
+\${lineno}
+d
+w
+quit
+END
+fi
+EOF
+    done
+}
+
 
 # Function eefiles - Expand ee.txt filenames from paths in EEPATH
 eefiles () {
@@ -197,7 +251,7 @@ eesel () {
         fi
         if [ -n "${sectionname}" ] ; then
             echo "==> Selected '${eedesc:-${sectionname}}', ee='${eeu}@${eeh}' <==" 1>&2
-            ee="${eeu}@${eeh}"
+            export ee="${eeu}@${eeh}"
             break
         fi
     done <<EOF
@@ -242,6 +296,7 @@ ee () {
     typeset selectonly=false
     typeset useentrycmd=false
 
+    export ee=""
     export eecodename=""
     export eedesc=""
     export eedomain=""
