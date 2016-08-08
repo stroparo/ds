@@ -107,7 +107,7 @@ eeauthrm () {
             continue
         fi
 
-        ee "$env" <<EOF
+        ee "$env" bash <<EOF
 lineno=\$(fgrep -n '${keytext}' ~/.ssh/authorized_keys | cut -d: -f1)
 if [ -n "\$lineno" ] ; then
     ex - ~/.ssh/authorized_keys <<END
