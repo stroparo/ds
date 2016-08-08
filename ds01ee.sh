@@ -58,7 +58,7 @@ eeauth () {
         return 1
     fi
 
-    for env in $(eeln) ; do
+    for env in $(eeln -q) ; do
         if [ -n "$expression" ] && ! echogrep -q "${expression}" "${env}" ; then
             continue
         fi
@@ -99,7 +99,7 @@ eeauthrm () {
         return 1
     fi
 
-    for env in $(eeln) ; do
+    for env in $(eeln -q) ; do
         if [ -n "$expression" ] && ! echogrep -q "${expression}" "${env}" ; then
             continue
         fi
@@ -185,9 +185,24 @@ EOF
 # Purpose:
 #   Enter environment - List available environments in EEPATH's ee.txt files:
 eel () {
+
+    typeset quiet=false
+
+    # Options:
+    typeset oldind="${OPTIND}"
+    OPTIND=1
+    while getopts ':q' option ; do
+        case "${option}" in
+        q) quiet=true;;
+        esac
+    done
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
+
     while read eefile ; do
 
-        echo "==> '${eefile}' <==" 1>&2
+        if ! $quiet ; then
+            echo "==> '${eefile}' <==" 1>&2
+        fi
 
         awk '/^ *\[.*\] *$/ {
             if (waitingdesc) {
@@ -216,9 +231,24 @@ EOF
 # Purpose:
 #   Enter environment list env names only (no description).
 eeln () {
+
+    typeset quiet=false
+
+    # Options:
+    typeset oldind="${OPTIND}"
+    OPTIND=1
+    while getopts ':q' option ; do
+        case "${option}" in
+        q) quiet=true;;
+        esac
+    done
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
+
     while read eefile ; do
 
-        echo "==> '${eefile}' <==" 1>&2
+        if ! $quiet ; then
+            echo "==> '${eefile}' <==" 1>&2
+        fi
 
         awk '/^ *\[.*\] *$/ {
             gsub(/[][]/, "");
