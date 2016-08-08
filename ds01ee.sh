@@ -232,13 +232,15 @@ EOF
 #   Enter environment list env names only (no description).
 eeln () {
 
+    typeset envre
     typeset quiet=false
 
     # Options:
     typeset oldind="${OPTIND}"
     OPTIND=1
-    while getopts ':q' option ; do
+    while getopts ':e:q' option ; do
         case "${option}" in
+        e) envre="$OPTARG";;
         q) quiet=true;;
         esac
     done
@@ -257,7 +259,9 @@ eeln () {
                 print;
             }
         }' \
-        "${eefile}"
+        "${eefile}" | \
+            egrep -i "$envre"
+
     done <<EOF
 $(eefiles)
 EOF
