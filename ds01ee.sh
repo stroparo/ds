@@ -276,13 +276,14 @@ eesel () {
 
     while read eefile ; do
 
-        section="$(getsection "$section_search_term" "$eefile" | sed -e 's/^/export /')"
+        section="$(getsection "$section_search_term" "$eefile" | \
+                    sed -e 's/[][]//g' -e 's/^/export /')"
 
         if [ -n "$section" ] ; then
             eval "$section"
         fi
         if [ -n "${sectionname}" ] ; then
-            echo
+            echo 1>&2
             echo "==> Selected '${eedesc:-${sectionname}}', ee='${eeu}@${eeh}' <==" 1>&2
             export ee="${eeu}@${eeh}"
             break
@@ -290,7 +291,6 @@ eesel () {
     done <<EOF
 $(eefiles)
 EOF
-
 }
 
 # Function eex
