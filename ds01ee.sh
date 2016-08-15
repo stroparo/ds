@@ -135,21 +135,11 @@ EOF
 # Purpose:
 #   Display ee groups or when using -g eegroup, fetch only that group's env names.
 # Syntax:
-#   eeg [-g eegroup]
+#   eeg [eegroup]
 eeg () {
     typeset eegroups
-    typeset eegroup
+    typeset eegroup="$1"
     typeset res=1
-
-    # Options:
-    typeset oldind="${OPTIND}"
-    OPTIND=1
-    while getopts ':g:' option ; do
-        case "${option}" in
-        g) eegroup="${OPTARG}";;
-        esac
-    done
-    shift $((OPTIND-1)) ; OPTIND="${oldind}"   
 
     while read eefile ; do
 
@@ -318,13 +308,18 @@ eex () {
 # Function ee
 # Purpose:
 #   Enter-Environment main function. Uses eesel and eex helpers.
-# Syntax:
-#   ee -
+# Syntax (TODO):
+#   ee [-c] [-s] [-a | -g eegroup | -h hostname [-l login]] [ee-search-term]
+# Remarks:
+#   -h will override everything (search term, -a, and -g).
+#       -l will only function to supply the username for the hostname in -h.
+#   -s will only select the environment and will work only when search term is given.
 ee () {
     typeset doall=false
     typeset eefile eepath
     typeset eegroup
     typeset envre
+    typeset hostarg loginarg
     typeset searchterm
     typeset selectonly=false
     typeset useentrycmd=false
@@ -340,28 +335,38 @@ ee () {
 
     typeset oldind="${OPTIND}"
     OPTIND=1
-    while getopts ':ae:g:cs' opt ; do
+    while getopts ':ace:g:h:l:s' opt ; do
         case "${opt}" in
         a) doall=true;;
+        c) useentrycmd=true;;
         e) envre="${OPTARG}";;
         g) eegroup="${OPTARG}";;
-        c) useentrycmd=true;;
+        h) hostarg="${OPTARG}";;
+        l) loginarg="${OPTARG}";;
         s) selectonly=true;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
-    if [ -z "$eegroup" ] && ! $doall ; then
+    if [ -z "$hostarg" ] && [ -z "$eegroup" ] && ! $doall ; then
         searchterm="$1"
         shift
     fi
 
-    if [ -z "${searchterm}" ] && [ -z "$eegroup" ] && ! $doall ; then
-        echo 'FAIL: Must pass an env name, or -g eegroup, or -a.' 1>&2
+    if [ -z "${searchterm}" ] && [ -z "$hostarg" ] && [ -z "$eegroup" ] && ! $doall ; then
+        echo 'FAIL: Must pass an env name, or one of -g eegroup, -h hostname, -a.' 1>&2
         return 1
     fi
 
-    if [ -n "$searchterm" ] ; then
+    if [ -n "$hostarg" ] ; then
+        export eeh="$hostarg"
+
+        if [ -n "$loginarg" ] ; then
+            export eeu="$loginarg"
+        else
+            export eeu="$USER"
+        fi
+    elif [ -n "$searchterm" ] ; then
         eesel "$searchterm"
 
         if ! ${selectonly} ; then
