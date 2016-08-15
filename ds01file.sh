@@ -236,6 +236,13 @@ loc () {
   locate -bi "${locvalue}"
 }
 
+unset lsrecent
+lsrecent () {
+    while read prefix ; do
+        ls -1t "${prefix}"* | head -1
+    done
+}
+
 unset lstgz
 lstgz () {
     for f in "$@" ; do
@@ -506,6 +513,7 @@ EOF
 #            cd - >/dev/null 2>&1
 #        fi
 #    done
+
 }
 
 # ##############################################################################
