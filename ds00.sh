@@ -264,7 +264,9 @@ loop () {
 }
 
 # Function pathmunge - prepend (-a causes to append) directory to PATH global.
-# Syntax: [-v varname] {path}1+
+# Syntax: [-v varname] [-x] {path}1+
+# Remark:
+#   -x causes variable to be exported.
 unset pathmunge
 pathmunge () {
     typeset oldind="${OPTIND}"
