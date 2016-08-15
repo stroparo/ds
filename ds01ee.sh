@@ -312,6 +312,7 @@ eex () {
 #   ee [-c] [-e envregex] [-s] ...
 #   ... [-a | -g eegroup | -h hostname [-l login]] [ee-search-term]
 # Remarks:
+#   -e will only affect -a ang -g options.
 #   -h will override everything (search term, -a, and -g).
 #       -l will only function to supply the username for the hostname in -h.
 #   -s will only select the environment and will work only when search term is given.
