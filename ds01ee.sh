@@ -309,7 +309,8 @@ eex () {
 # Purpose:
 #   Enter-Environment main function. Uses eesel and eex helpers.
 # Syntax (TODO):
-#   ee [-c] [-s] [-a | -g eegroup | -h hostname [-l login]] [ee-search-term]
+#   ee [-c] [-e envregex] [-s] ...
+#   ... [-a | -g eegroup | -h hostname [-l login]] [ee-search-term]
 # Remarks:
 #   -h will override everything (search term, -a, and -g).
 #       -l will only function to supply the username for the hostname in -h.
