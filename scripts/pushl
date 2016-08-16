@@ -68,6 +68,11 @@ shift $((OPTIND - 1))
 export SRCDIR="$(cd ${1}; echo "$PWD")"
 shift
 
+if [ ! -d "$SRCDIR" ] || [ ! -r "$SRCDIR" ] ; then
+    echo "$PNAME: FATAL: Dir '$SRCDIR' not present or not readable."
+    exit 1
+fi
+
 # ##############################################################################
 # Prep
 
@@ -104,7 +109,7 @@ setglobs () {
         export GLOBSVAL="$1"
     fi
 
-    export GLOBSFINAL="$(cd "$SRCDIR" && eval echo "${GLOBSVAL}" | sed -e "s/${EXCLUDE}//g")"
+    export GLOBSFINAL="$(cd "$SRCDIR" && eval ls -1 "${GLOBSVAL}" | sed -e "s/${EXCLUDE}//g")"
     ckglobs
 }
 
@@ -136,20 +141,30 @@ pushl () {
                     dest="${dest}/${DESTDIR}"
                 fi
             fi
+            CONNROOT="sftp://${h}/"
             CONN="sftp://${h}/${dest}"
 
             echo "${environ} => $(${PURGE_ONLY} && echo "rm in ")path: '${u}@${h}:${dest}'."
 
             if ${RESET_FILES:-false} || ${PURGE_ONLY:-false} ; then
-                lftp -e 'set sftp:auto-confirm yes ; mrm -f '"${GLOBSFINAL}"' ; exit' -u "${u},${pw}" "${CONN}"
+                lftp -u "${u},${pw}" "${CONN}" <<EOF
+set sftp:auto-confirm yes ; mrm -f ${GLOBSFINAL}
+EOF
             fi
             ${PURGE_ONLY:-false} && continue
 
             # Put files:
-            (cd "${SRCDIR:-err}" && \
-                lftp -e 'set sftp:auto-confirm yes ; mkdir -p '"${dest}"' ; mput '"${GLOBSFINAL}"' ; exit' \
-                     -u "${u},${pw}" \
-                    "${CONN}")
+            (
+                cd "${SRCDIR:-err}" && \
+                    lftp -u "${u},${pw}" "${CONNROOT}" 2>/dev/null <<EOF
+set sftp:auto-confirm yes ; mkdir -p ${dest}
+EOF
+                if [ $? -eq 0 ] ; then
+                    lftp -u "${u},${pw}" "${CONN}" <<EOF
+set sftp:auto-confirm yes ; mput ${GLOBSFINAL}
+EOF
+                fi
+            )
 
             if [ "$?" != 0 ] ; then
                 echo "${environ} => error"\! 1>&2

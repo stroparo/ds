@@ -27,7 +27,7 @@ pushds () {
 
     pushl -r -e "$envre" -d '.ds/' -f "${DS_GLOB}" -x "$exc" "${DS_HOME}" "$@"
 
-    pushl -e "$envre" -d '.ds/scripts' -f "*" -x "$exc" "${DS_HOME}/scripts" "$@"
+    pushl -r -e "$envre" -d '.ds/scripts' -f "*" -x "$exc" "${DS_HOME}/scripts" "$@"
 }
 
 # Function screenb - run a bash shell in a screen session.
