@@ -414,7 +414,9 @@ unarchive () {
         
         esac
 
-        [ "$?" -eq 0 ] && [ -n "${verbose:-}" ] && echo "OK: '${f}'" 1>&2
+        if [ "$?" -eq 0 ] && [ -n "${verbose:-}" ] ; then
+            echo "OK: '${f}'" 1>&2
+        fi
     done
 }
 
