@@ -15,5 +15,5 @@ aixloadbull () {
 
     pathmunge -x $(find "$bullpath" -name 'bin*' -type d)
     pathmunge -a -x -v LIBPATH $(find "$bullpath" -name 'lib*' -type d)
-    export LD_LIBRARY_PATH="$LIBPATH"
+    export LD_LIBRARY_PATH="$LIBPATH${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
 }
