@@ -174,8 +174,9 @@ main () {
         elog "Processing last batch of `jobs -p | wc -l` jobs.."
     fi
 
+    wait || return 1
+
     if $DOTEE ; then
-        wait || return 1
         for log in ${LOGS[@]} ; do
             echo "$(ex "$log" <<EOF
             :/{res}$/+1,$p
