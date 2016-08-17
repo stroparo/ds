@@ -109,7 +109,6 @@ setglobs () {
         export GLOBSVAL="$1"
     fi
 
-    echo "SRCDIR='$SRCDIR'"
     export GLOBSFINAL="$(cd "$SRCDIR" && eval ls -1 "${GLOBSVAL}" | tr -s '\n' ' ' | sed -e "s/${EXCLUDE}//g")"
     ckglobs
 }
