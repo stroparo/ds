@@ -130,8 +130,14 @@ childrentgz () {
     srcdir="$(cd "${1}"; echo "$PWD")"
     destdir="$(cd "${2}"; echo "$PWD")"
 
-    [ -r "${srcdir}" ] || return 20
-    [ -w "${destdir}" ] || return 30
+    if [ ! -d "$1" ] || [ ! -r "${srcdir}" ] ; then
+        echo "Not a readable source dir ('$1'). Aborted." 1>&2
+        return 20
+    fi
+    if [ ! -d "$2" ] || [ -w "${destdir}" ] ; then
+        echo "Not a writable destination dir ('$2'). Aborted." 1>&2
+        return 30
+    fi
 
     # Main:
 
