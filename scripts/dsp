@@ -92,7 +92,7 @@ prep () {
 
 }
 
-main () {
+dsp () {
 
     typeset argcount=0
     typeset cmd flatentry iargs icmd ilog ilogsuffix
@@ -191,6 +191,6 @@ EOF
 # Main
 
 prep
-main "$@"
+dsp "$@"
 exit "$?"
 
