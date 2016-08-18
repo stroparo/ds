@@ -121,7 +121,10 @@ childrentgz () {
         echo "INFO: Compression level is ${gziplevel}" 1>&2
     fi
 
-    [ -e "${2}" ] && echo "FAIL: Target '${2}' already exists." 1>&2 && return 1
+    if [ -e "${2}" ] ; then
+        echo "FAIL: Target '${2}' already exists." 1>&2
+        return 1
+    fi
     mkdir -p "${2}" || return 10
 
     srcdir="$(cd "${1}"; echo "$PWD")"
