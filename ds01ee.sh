@@ -137,37 +137,40 @@ EOF
 # Syntax:
 #   eeg [eegroup]
 eeg () {
-    typeset eegroups
-    typeset eegroup="$1"
+    typeset eegroupsect
+    typeset eegroup
     typeset res=1
 
-    while read eefile ; do
+    for eegroup in "$@" ; do
+        while read eefile ; do
+            if [ -n "$eegroup" ] ; then
+                eegroupsect="$(getsection "groups" "$eefile" | \
+                    grep -v '^sectionname' | \
+                    grep "^${eegroup}=" | \
+                    sed -e 's/^[^=]*=//')"
 
-        if [ -n "$eegroup" ] ; then
-            # Looking for a specific group only:
-
-            eegroups="$(getsection "groups" "$eefile" | \
-                grep -v '^sectionname' | \
-                grep "^${eegroup}=" | \
-                sed -e 's/^[^=]*=//')"
-
-            if [ -n "$eegroups" ] ; then
-                echo "$eegroups"
-                return 0
+                if [ -n "$eegroupsect" ] ; then
+                        echo "$eegroupsect"
+                        res=0
+                fi
             fi
-        else # No eegroup, so task is to print all groups in friendly format.
-            eegroups="$(getsection "groups" "$eefile" | \
-                grep -v '^sectionname' | \
-                sed -e 's/=/: /')"
-
-            if [ -n "$eegroups" ] ; then
-                res=0
-                echo "$eegroups"
-            fi
-        fi
-    done <<EOF
+        done <<EOF
 $(eefiles)
 EOF
+    done
+
+    # Print all when no args:
+    if [ "$#" -eq 0 ] ; then
+        eegroupsect="$(getsection "groups" "$eefile" | \
+            grep -v '^sectionname' | \
+            sed -e 's/=/: /')"
+
+        if [ -n "$eegroupsect" ] ; then
+            echo "$eegroupsect"
+            res=0
+        fi
+    fi
+
     return ${res:-1}
 }
 
@@ -306,20 +309,31 @@ eex () {
 }
 
 # Function ee
+#
 # Purpose:
 #   Enter-Environment main function. Uses eesel and eex helpers.
+#
 # Syntax (TODO):
-#   ee [-c] [-e envregex] [-s] ...
+#   ee [-c] [-e envregex] [-i] [-s] ...
 #   ... [-a | -g eegroup | -h hostname [-l login]] [ee-search-term]
+#
 # Remarks:
-#   -e will only affect -a ang -g options.
+#
+#   -c (use eecmd as the command)
+#       Will only affect when calling with an ee-search-term ie for a specific env.
+#
 #   -h will override everything (search term, -a, and -g).
 #       -l will only function to supply the username for the hostname in -h.
+#
+#   -e will only affect -a ang -g options.
+#   -i will forward stdin to all calls' standard inputs.
 #   -s will only select the environment and will work only when search term is given.
 ee () {
     typeset doall=false
     typeset eefile eepath
     typeset eegroup
+    typeset eestdin
+    typeset eestdinon=false
     typeset envre
     typeset hostarg loginarg
     typeset searchterm
@@ -337,13 +351,14 @@ ee () {
 
     typeset oldind="${OPTIND}"
     OPTIND=1
-    while getopts ':ace:g:h:l:s' opt ; do
+    while getopts ':ace:g:h:il:s' opt ; do
         case "${opt}" in
         a) doall=true;;
         c) useentrycmd=true;;
         e) envre="${OPTARG}";;
         g) eegroup="${OPTARG}";;
         h) hostarg="${OPTARG}";;
+        i) eestdinon=true;;
         l) loginarg="${OPTARG}";;
         s) selectonly=true;;
         esac
@@ -360,6 +375,10 @@ ee () {
         return 1
     fi
 
+    if ${eestdinon} ; then
+        eestdin=$(cat)
+    fi
+
     if [ -n "$hostarg" ] ; then
         export eeh="$hostarg"
 
@@ -368,26 +387,50 @@ ee () {
         else
             export eeu="$USER"
         fi
+
+        if ${eestdinon} ; then
+            eex "$@" <<EOF
+${eestdin}
+EOF
+        else
+            eex "$@"
+        fi
     elif [ -n "$searchterm" ] ; then
         eesel "$searchterm"
 
         if ! ${selectonly} ; then
             if $useentrycmd && [ "${eecmd}" != "" ] ; then
                 eex ${eecmd}
+            elif ${eestdinon} ; then
+                eex "$@" <<EOF
+${eestdin}
+EOF
             else
                 eex "$@"
             fi
         fi
     elif [ -n "$eegroup" ] ; then
-        for i in $(eeg -g "$eegroup") ; do
+        for i in $(eeg $(echo ${eegroup})) ; do
             if echogrep -q "$envre" "$i" ; then
-                ee "$i" "$@"
+                if ${eestdinon} ; then
+                    ee "$i" "$@" <<EOF
+${eestdin}
+EOF
+                else
+                    ee "$i" "$@"
+                fi
             fi
         done
     elif $doall ; then
         for i in $(eeln) ; do
             if echogrep -q "$envre" "$i" ; then
-                ee "$i" "$@"
+                if ${eestdinon} ; then
+                    ee "$i" "$@" <<EOF
+${eestdin}
+EOF
+                else
+                    ee "$i" "$@"
+                fi
             fi
         done
     fi
