@@ -134,7 +134,7 @@ dsp () {
                 [ "${argcount}" -lt "${N}" ] && continue
             fi
         else
-            $quiet || elog -f -n "${PNAME}" \
+            $QUIET || elog -f -n "${PNAME}" \
                 "Invalid number of args per process in n option, must be positive."
             return 20
         fi
@@ -142,13 +142,13 @@ dsp () {
         # Halting control is best when processing multi-args at a time (n > 1):        
         if [ "${entry}" = "${HALTSTRING}" ] ; then
             if [ "${argcount:-0}" -eq 0 ] ; then
-                $quiet || elog -w "Halt string found but no arguments pending,"
-                $quiet || elog -w " ie either the input was empty or the number"
-                $quiet || elog -w " of entries was a multiple of n.."
+                $QUIET || elog -w "Halt string found but no arguments pending,"
+                $QUIET || elog -w " ie either the input was empty or the number"
+                $QUIET || elog -w " of entries was a multiple of n.."
                 break
             fi
 
-            $quiet || elog -w "Halt string found; calling last job of this set.."
+            $QUIET || elog -w "Halt string found; calling last job of this set.."
         fi
 
         # Prep command and its log filename:
@@ -169,7 +169,7 @@ dsp () {
         nohup $SUBSHELL -c "${icmd}" >> "${ilog}" 2>&1 &
     done
 
-    if ! $quiet && [ "${pcount}" -gt 0 ] ; then
+    if ! $QUIET && [ "${pcount}" -gt 0 ] ; then
         elog "Finished launching a total of ${pcount} processes for this jobset."
         elog "Processing last batch of `jobs -p | wc -l` jobs.."
     fi
