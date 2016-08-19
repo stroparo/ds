@@ -134,7 +134,7 @@ childrentgz () {
         echo "Not a readable source dir ('$1'). Aborted." 1>&2
         return 20
     fi
-    if [ ! -d "$2" ] || [ -w "${destdir}" ] ; then
+    if [ ! -d "$2" ] || [ ! -w "${destdir}" ] ; then
         echo "Not a writable destination dir ('$2'). Aborted." 1>&2
         return 30
     fi
