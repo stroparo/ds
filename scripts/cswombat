@@ -123,14 +123,16 @@ main () {
             if (tablabels) {
                 count++;
                 if (count == 1) {
-                    sub(/[[].*[]]/, "[160, 160, 160]")
+                    sub(/[[].*[]]/, "[190, 190, 190]");
                 } else if (count == 2) {
-                    sub(/[[].*[]]/, "[200, 220, 200]")
+                    sub(/[[].*[]]/, "[200, 220, 200]");
                 } else if (count == 3) {
-                    sub(/[[].*[]]/, "[220, 240, 220]")
+                    sub(/[[].*[]]/, "[220, 240, 220]");
                 }
             }
         }
+
+        { print; }
     ' 'Wombat.sublime-theme' \
     > 'Wombat.sublime-theme_'
 
