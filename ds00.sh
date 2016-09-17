@@ -741,16 +741,15 @@ printawk () {
 'Syntax: printawk -F fieldsep -O outsep -p pattern {1st field} [2nd field [3rd ...]]'
 
     OPTIND=1
-    while getopts ':F:O:p:' opt ; do
+    while getopts ':F:hO:p:' opt ; do
         case "${opt}" in
         F) fieldsep="${OPTARG}" ;;
+        h) echo "${usage}" ; return ;;
         O) outsep="${OPTARG}" ;;
         p) pattern="${OPTARG}" ;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
-
-    [ "$#" -eq 0 ] && echo "${usage}" 1>&2 && return
 
     for i in "$@" ; do
         printargs="${printargs:+${printargs}, }\$${i}"
