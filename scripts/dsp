@@ -99,7 +99,7 @@ dsp () {
     typeset cmd flatentry iargs icmd ilog ilogsuffix
     typeset pcount=0
 
-    cmd="${1} ; res=\$? ; echo \$(date '+%Y%m%d-%OH%OM%OS') ; echo \${res}"
+    cmd="${@} ; res=\$? ; echo \$(date '+%Y%m%d-%OH%OM%OS') ; echo \${res}"
     : ${CMDZERO:=${1%% *}}
     setlogdir "${LOGDIR}" || return 10
 
