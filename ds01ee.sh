@@ -141,8 +141,8 @@ eeg () {
     typeset eegroup
     typeset res=1
 
-    for eegroup in "$@" ; do
-        while read eefile ; do
+    while read eefile ; do
+        for eegroup in "$@" ; do
             if [ -n "$eegroup" ] ; then
                 eegroupsect="$(getsection "groups" "$eefile" | \
                     grep -v '^sectionname' | \
@@ -154,22 +154,22 @@ eeg () {
                         res=0
                 fi
             fi
-        done <<EOF
+        done
+
+        # Print all when no args:
+        if [ "$#" -eq 0 ] ; then
+            eegroupsect="$(getsection "groups" "$eefile" | \
+                grep -v '^sectionname' | \
+                sed -e 's/=/: /')"
+
+            if [ -n "$eegroupsect" ] ; then
+                echo "$eegroupsect"
+                res=0
+            fi
+        fi
+    done <<EOF
 $(eefiles)
 EOF
-    done
-
-    # Print all when no args:
-    if [ "$#" -eq 0 ] ; then
-        eegroupsect="$(getsection "groups" "$eefile" | \
-            grep -v '^sectionname' | \
-            sed -e 's/=/: /')"
-
-        if [ -n "$eegroupsect" ] ; then
-            echo "$eegroupsect"
-            res=0
-        fi
-    fi
 
     return ${res:-1}
 }
@@ -179,14 +179,16 @@ EOF
 #   Enter environment - List available environments in EEPATH's ee.txt files:
 eel () {
 
+    typeset envre
     typeset quiet=false
 
     # Options:
     typeset oldind="${OPTIND}"
     OPTIND=1
-    while getopts ':q' option ; do
+    while getopts ':e:q' option ; do
         case "${option}" in
-        q) quiet=true;;
+            e) envre="$OPTARG";;
+            q) quiet=true;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
