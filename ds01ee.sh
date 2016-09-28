@@ -128,15 +128,32 @@ $(echo "${EEPATH}" | tr -s : '\n')
 EOF
 }
 
-# Function eeg
-# Purpose:
-#   Display ee groups or when using -g eegroup, fetch only that group's env names.
-# Syntax:
-#   eeg [eegroup]
 eeg () {
     typeset eegroupsect
     typeset eegroup
     typeset res=1
+    typeset usage="
+eeg - Display all ee groups in the environment or hosts of a specific group
+
+Syntax
+    eeg [eegroup]
+
+Description
+    Display ee groups or when using -g eegroup, fetch only that group's env names.
+"
+
+    # Options:
+    typeset oldind="${OPTIND}"
+    OPTIND=1
+    while getopts ':h' option ; do
+        case "${option}" in
+            h)
+                echo "$usage"
+                return
+                ;;
+        esac
+    done
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
     while read eefile ; do
         for eegroup in "$@" ; do
