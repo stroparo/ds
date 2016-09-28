@@ -58,10 +58,7 @@ eeauth () {
         return 1
     fi
 
-    for env in $(eeln -q) ; do
-        if [ -n "$expression" ] && ! echogrep -q "${expression}" "${env}" ; then
-            continue
-        fi
+    for env in $(eeln -q | egrep "${expression}") ; do
         if $interactive && ! userconfirm "Push to '${env}' env?" ; then
             continue
         fi
@@ -216,7 +213,8 @@ eel () {
             print name ": " desc;
             waitingdesc = 0;
         }' \
-        "${eefile}"
+            "${eefile}" | \
+            egrep -i "$envre"
     done <<EOF
 $(eefiles)
 EOF
@@ -254,7 +252,7 @@ eeln () {
                 print;
             }
         }' \
-        "${eefile}" | \
+            "${eefile}" | \
             egrep -i "$envre"
 
     done <<EOF
