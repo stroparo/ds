@@ -10,6 +10,8 @@
 cthttpd () { sudo "/etc/init.d/apache${2:-2}"  "${1:-restart}" ; }
 ctlamp ()  { sudo "${LAMPHOME}/ctlscript.sh"   "${1:-restart}" ; }
 ctpg ()    { sudo "/etc/init.d/postgresql${2}" "${1:-restart}" ; }
+setbash () { appendunique 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' ~/.profile ; }
+setvi ()   { appendunique 'set -o vi' "$@" ; }
 
 # Function drop_caches_3: drop I/O caches etcetera TODO review this text.
 unset drop_caches_3
@@ -26,9 +28,10 @@ makeat () {
     ./configure --prefix="${1:-${HOME}/opt/root}" && \
     make && \
     make install
-  
+
     echo "Exit status: ""$?"
 }
+
 
 # ##############################################################################
 # Java
@@ -49,24 +52,24 @@ loadjava () {
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
-  
+
     if [ -x "${1}/bin/java" ] ; then
         export JAVA_HOME="${1}"
     elif [ ! -x "${JAVA_HOME}/bin/java" ] ; then
         return 1
     fi
-  
+
     if [ -n "${doverbose:-}" ] ; then
         echo "JAVA_HOME=${JAVA_HOME}" 1>&2
     fi
-  
+
     # For JDK also add its root bin and lib subdirectories:
     if [[ ${JAVA_HOME} = *jdk* ]] ; then
         isjdk=true
         PATH="${JAVA_HOME}/lib:${PATH}"
         PATH="${JAVA_HOME}/bin:${PATH}"
     fi
-  
+
     # For JDK the basic JRE binaries are inside the jre subdirectory:
     CLASSPATH="${JAVA_HOME:+${JAVA_HOME}/${isjdk:+jre/}lib/rt.jar}:${CLASSPATH}"
     LD_LIBRARY_PATH="${JAVA_HOME}/${isjdk:+jre/}lib:${LD_LIBRARY_PATH}"
@@ -81,7 +84,7 @@ loadjava () {
     export LD_LIBRARY_PATH="${LD_LIBRARY_PATH%:}"
     export LIBPATH="${LIBPATH}:${LD_LIBRARY_PATH}"
     export PATH="${PATH%:}"
-  
+
     unset isjdk
 }
 
