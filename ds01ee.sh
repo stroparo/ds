@@ -133,12 +133,13 @@ eeg () {
     typeset eegroup
     typeset res=1
     typeset usage="
-eeg - Display all ee groups in the environment or hosts of a specific group
+NAME
+    eeg - Display all ee groups in the environment or hosts of a specific group
 
-Syntax
+SYNOPSIS
     eeg [eegroup]
 
-Description
+DESCRIPTION
     Display ee groups or when using -g eegroup, fetch only that group's env names.
 "
 
