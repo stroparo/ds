@@ -217,16 +217,16 @@ EOF
     cd - >/dev/null 2>&1
 }
 
-# Function chmodr - Recursively change file mode/permissions. 
+# Function chmodr - Recursively change file mode/permissions.
 # Syntax: dir filename_glob [mode=600]
 unset chmodr
 chmodr () {
     typeset dir fglob mode
-    
+
     dir="${1}"
     fglob="${2}"
     [ ! -d "${dir}" -o -z "${fglob}" ] && return 1
-  
+
     mode="${3:-600}"
     [ -z "$3" ] && echo "Using default mode=${mode}"
 
@@ -399,21 +399,21 @@ unarchive () {
         [ -n "${verbose:-}" ] && echo "INFO: Unarchiving '${f}'.." 1>&2
 
         case "${f}" in
-        
+
         *.7z)
             ! which 7z >/dev/null 2>&1 && echo "SKIP: '${f}'. 7z program not available." 1>&2 && continue
             7z x -o"${outd}" "${f}"
             ;;
-        
+
         *.tar.bz2|*tbz2)
             ! which bunzip2 >/dev/null 2>&1 && echo "SKIP: '${f}'. bunzip2 program not available." 1>&2 && continue
             (cd "${outd}" ; bunzip2 -c "${f}" | tar -x${verbose:+v}f -)
             ;;
-        
+
         *.tar.gz|*tgz)
             (cd "${outd}" ; gunzip -c "${f}" | tar -x${verbose:+v}f -)
             ;;
-        
+
         *.tar.xz|*txz)
             (cd "${outd}" ; xz -c -d "${f}" | tar -x${verbose:+v}f -)
             ;;
@@ -422,7 +422,7 @@ unarchive () {
             ! which unzip >/dev/null 2>&1 && echo "SKIP: '${f}'. unzip program not available." 1>&2 && continue
             unzip "${f}" -d "${outd}"
             ;;
-        
+
         esac
 
         if [ "$?" -eq 0 ] && [ -n "${verbose:-}" ] ; then
@@ -517,7 +517,7 @@ EOF
 
     # Dirs:
 #    for d in "$@" ; do
-#        if [ -d "$d" ] ; then 
+#        if [ -d "$d" ] ; then
 #            cd "${d}"
 #            # cat <<EOF
 #            paralleljobs -p "${maxprocs}" -z xz "${cmd}" <<EOF
