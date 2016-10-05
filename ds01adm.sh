@@ -10,10 +10,8 @@ alias edhosts='sudo vi /etc/hosts'
 
 # Service script wrapper functions:
 cthttpd () { sudo "/etc/init.d/apache${2:-2}"  "${1:-restart}" ; }
-ctlamp ()  { sudo "${LAMPHOME}/ctlscript.sh"   "${1:-restart}" ; }
-ctpg ()    { sudo "/etc/init.d/postgresql${2}" "${1:-restart}" ; }
-setbash () { appendunique 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' ~/.profile ; }
-setvi ()   { appendunique 'set -o vi' "$@" ; }
+ctlamp () { sudo "${LAMPHOME}/ctlscript.sh"   "${1:-restart}" ; }
+ctpg () { sudo "/etc/init.d/postgresql${2}" "${1:-restart}" ; }
 
 # Function drop_caches_3: drop I/O caches etcetera TODO review this text.
 unset drop_caches_3
@@ -34,6 +32,24 @@ makeat () {
     echo "Exit status: ""$?"
 }
 
+unset setautobash
+setautobash () {
+    appendunique 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' \
+        "$HOME/.profile"
+}
+
+unset setvi
+setvi () {
+
+    typeset file
+
+    while [ ! -f "$file" ] ; do
+        echo 'Type in the shell profile in which to activate the vi option:'
+        read file
+    done
+
+    appendunique 'set -o vi' "$@"
+}
 
 # ##############################################################################
 # Java
