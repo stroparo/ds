@@ -47,18 +47,18 @@ pushds () {
     pushl -r -e "$envre" -d '.ds/scripts' -f "*" -x "$exc" "${DS_HOME}/scripts" "$@"
 }
 
-# Function screenb - run a bash shell in a screen session.
+# Function sbash - run a bash shell in a screen session.
 # Syntax: [sessionname]
-unset screenb
-screenb () {
-    screen -S "${1:-screenbash}" bash
+unset sbash
+sbash () {
+    screen -S "${1:-sbash}" bash
 }
 
-# Function screenk - run a ksh shell in a screen session.
+# Function sksh - run a ksh shell in a screen session.
 # Syntax: [sessionname]
-unset screenk
-screenk () {
-    env ENV="${HOME}/.kshrc" screen -S "${1:-screenksh}" ksh
+unset sksh
+sksh () {
+    env ENV="${HOME}/.kshrc" screen -S "${1:-sksh}" ksh
 }
 
 # Function sshkeygenrsa
@@ -95,4 +95,11 @@ sshkeygenrsa () {
         # Call the agent to add the newly generated key:
         sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/sshagent.sh"
     fi
+}
+
+# Function iwf - Show iwconfig and ifconfig in given interface (1st arg; default=wlan0).
+unset iwf
+iwf () {
+    iwconfig "${1:-wlan0}"
+    ifconfig "${1:-wlan0}"
 }
