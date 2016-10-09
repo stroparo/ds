@@ -41,7 +41,7 @@ m3uzer () {
     typeset m3ufile mediafile
     typeset rootdir="$(cd "${1:-.}" ; echo "${PWD}")"
 
-    if [ ! -d "${1}" ] ; then
+    if [ ! -d "${rootdir}" ] ; then
         echo "Aborted because the argument is not a directory." 1>&2
         return 1
     fi
