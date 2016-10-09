@@ -34,12 +34,12 @@ getmp3 () {
     done
 }
 
-# Function m3uzer: create m3u files inside the specified directory tree.
-# Syntax: {root-directory}
+# Function m3uzer - create m3u files inside the specified directory tree.
+# Syntax: {root-directory:-.}
 unset m3uzer
 m3uzer () {
     typeset m3ufile mediafile
-    typeset rootdir="$(cd "${1}" ; echo "${PWD}")"
+    typeset rootdir="$(cd "${1:-.}" ; echo "${PWD}")"
 
     if [ ! -d "${1}" ] ; then
         echo "Aborted because the argument is not a directory." 1>&2
