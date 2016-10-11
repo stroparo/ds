@@ -57,7 +57,7 @@ chmodshells () {
     for dir in "$@" ; do
         if ! _any_dir_not_w "${dir}" ; then
             # [[ -n $ZSH_VERSION ]] && set -o shwordsplit
-            chmod ${verbose} "${mode}" $(findscripts "${dir}")                    
+            chmod ${verbose} "${mode}" $(findscripts "${dir}")
             # [[ -n $ZSH_VERSION ]] && set +o shwordsplit
         fi
     done
