@@ -97,6 +97,8 @@ dsp () {
 
     typeset argcount=0
     typeset cmd flatentry iargs icmd ilog ilogsuffix
+    typeset logstartline
+    typeset logtext
     typeset pcount=0
 
     cmd="${@} ; res=\$? ; echo \$(date '+%Y%m%d-%OH%OM%OS') ; echo \${res}"
@@ -140,7 +142,7 @@ dsp () {
             return 20
         fi
 
-        # Halting control is best when processing multi-args at a time (n > 1):        
+        # Halting control is best when processing multi-args at a time (n > 1):
         if [ "${entry}" = "${HALTSTRING}" ] ; then
             if [ "${argcount:-0}" -eq 0 ] ; then
                 $QUIET || elog -w "Halt string found but no arguments pending,"
@@ -163,6 +165,7 @@ dsp () {
         if $DOTEE ; then LOGS=(${LOGS[@]} "$ilog") ; fi
 
         echo "Command: ${icmd}" > "${ilog}" || return 40
+        echo "Output of dsp job:" >> "${ilog}" || return 40
 
         # Wait for a vacant pool slot:
         while [ `jobs -r | wc -l` -ge ${MAXPROCS} ] ; do true ; done
@@ -179,11 +182,23 @@ dsp () {
 
     if $DOTEE ; then
         for log in ${LOGS[@]} ; do
-            echo "$(ex "$log" <<EOF
-            :/{res}$/+1,$p
-EOF
-            )" | \
-                head -n -2
+
+            logstartline=$(grep -n 'Output of dsp job:$' "$log" | cut -d: -f1)
+            logstartline=$((logstartline+1))
+
+            logtext="$(awk "NR >= ${logstartline}" "$log")"
+
+            if echo "$logtext" | tail -n 2 | head -n 1 | egrep -q '^.......[0-9]-[0-9].....$' ; then
+                if echo "$logtext" | tail -n 1 | egrep -q '^0$' ; then
+                    if [[ $(uname) = *[Aa][Ii][Xx]* ]] ; then
+                        logtext="$(echo "${logtext}" | tail -r | tail -n +3 | tail -r)"
+                    else
+                        logtext="$(echo "${logtext}" | head -n -2)"
+                    fi
+                fi
+            fi
+
+            if [ -n "$logtext" ] ; then echo "$logtext" ; fi
         done
     fi
 }
