@@ -22,10 +22,22 @@ alias findf='find . -type f'
 alias nhr='rm nohup.out'
 alias nht='tail -9999f nohup.out'
 alias sb='subl'
-alias ya='youtube-dl -f mp4'
+alias ya='youtube-dl -f m4a'
 alias yabest='youtube-dl -f bestaudio'
 alias yd='youtube-dl'
 alias yx='youtube-dl -x'
+
+# Debian admin
+alias apd='sudo aptitude update && sudo aptitude'
+alias apdnoup='sudo aptitude'
+alias api='sudo aptitude update && sudo aptitude install -y'
+alias aps='apt-cache search'
+alias apshow='apt-cache show'
+alias apshowpkg='apt-cache showpkg'
+alias dpkgl='dpkg -L'
+alias dpkgs='dpkg -s'
+alias dpkgsel='dpkg --get-selections | egrep -i'
+alias upalt='sudo update-alternatives'
 
 # Grep color:
 if [[ $(grep --version 2>/dev/null) = *GNU* ]] ; then
