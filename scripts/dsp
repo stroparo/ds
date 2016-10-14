@@ -188,6 +188,7 @@ dsp () {
 
             logtext="$(awk "NR >= ${logstartline}" "$log")"
 
+            # Omit timestamp and return code when the latter is zero ie success.
             if echo "$logtext" | tail -n 2 | head -n 1 | egrep -q '^.......[0-9]-[0-9].....$' ; then
                 if echo "$logtext" | tail -n 1 | egrep -q '^0$' ; then
                     if [[ $(uname) = *[Aa][Ii][Xx]* ]] ; then

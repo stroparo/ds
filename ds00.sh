@@ -573,21 +573,23 @@ dos2unix () {
 # Function echogrep - grep echoed arguments instead of files.
 unset echogrep
 echogrep () {
-    typeset iopt qopt re
+    typeset re
+    typeset iopt qopt vopt
     typeset oldind="$OPTIND"
 
     OPTIND=1
-    while getopts ':iq' opt ; do
+    while getopts ':iqv' opt ; do
         case "${opt}" in
         i) iopt='-i';;
         q) qopt='-q';;
+        v) vopt='-v';;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     re="$1" ; shift
 
-    egrep ${iopt} ${qopt} "$re" <<EOF
+    egrep ${iopt} ${qopt} ${vopt} "$re" <<EOF
 $(for i in "$@" ; do echo "${i}" ; done)
 EOF
 }
