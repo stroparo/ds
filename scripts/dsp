@@ -199,7 +199,7 @@ dsp () {
                 fi
             fi
 
-            if [ -n "$logtext" ] ; then echo "$logtext" ; fi
+            if [ -n "$logtext" ] ; then echo "$logtext" ; echo '---' ; fi
         done
     fi
 }
