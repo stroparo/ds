@@ -6,23 +6,23 @@
 # ##############################################################################
 # Aliases
 
-alias tpf='typeset -f'
-alias tps='typeset'
-alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
-alias xgit="alias | grep 'git '"
-
-# Common:
 alias cls='clear'
 alias dfg='df -gP'
 alias dfh='df -hP'
 alias dums='du -ma | sort -n'
 alias dumg='du -ma | sort -rn'
+alias edhosts='sudo vi /etc/hosts'
 alias findd='find . -type d'
 alias findf='find . -type f'
 alias nhr='rm nohup.out'
 alias nht='tail -9999f nohup.out'
+alias pgc='sudo -u postgres psql postgres'
 alias sb='subl'
-alias ya='youtube-dl -f m4a'
+alias tpf='typeset -f'
+alias tps='typeset'
+alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
+alias xgit="alias | grep 'git '"
+alias ya='youtube-dl -f mp3'
 alias yabest='youtube-dl -f bestaudio'
 alias yd='youtube-dl'
 alias yx='youtube-dl -x'

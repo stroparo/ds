@@ -6,8 +6,6 @@
 # ##############################################################################
 # Admin & ops functions
 
-alias edhosts='sudo vi /etc/hosts'
-
 # Service script wrapper functions:
 cthttpd () { sudo "/etc/init.d/apache${2:-2}"  "${1:-restart}" ; }
 ctlamp () { sudo "${LAMPHOME}/ctlscript.sh"   "${1:-restart}" ; }
