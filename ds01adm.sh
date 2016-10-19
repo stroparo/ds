@@ -32,6 +32,19 @@ makeat () {
     echo "Exit status: ""$?"
 }
 
+unset mungebinlib
+mungebinlib () {
+    typeset mungeroot="$1"
+
+    if [ ! -e "$mungeroot" ] ; then
+        return
+    fi
+
+    pathmunge -x $(find "$mungeroot" -name 'bin*' -type d)
+    pathmunge -a -x -v LIBPATH $(find "$mungeroot" -name 'lib*' -type d)
+    export LD_LIBRARY_PATH="$LIBPATH${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+}
+
 unset setautobash
 setautobash () {
     appendunique 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' \
