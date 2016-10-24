@@ -6,16 +6,13 @@
 # ##############################################################################
 # Admin & ops functions
 
-# Service script wrapper functions:
 cthttpd () { sudo "/etc/init.d/apache${2:-2}"  "${1:-restart}" ; }
 ctlamp () { sudo "${LAMPHOME}/ctlscript.sh"   "${1:-restart}" ; }
 ctpg () { sudo "/etc/init.d/postgresql${2}" "${1:-restart}" ; }
-
-# Function drop_caches_3: drop I/O caches etcetera TODO review this text.
-unset drop_caches_3
-drop_caches_3 () {
-    echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null
-}
+dropcaches3 () { echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null ; }
+pgr () { ps -ef | egrep -i ${options} "$@" | egrep -v "grep.*(${1})" ; }
+setautobash () { echo 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' >> "$HOME/.profile" ; }
+setvi () { echo 'set -o vi' | tee -a "$HOME/.profile" "$HOME/.bashrc" ; }
 
 # Function makeat - run configure, make & makeinstall for custom dir/prefix.
 # Default directory will be ~/opt/root
@@ -32,34 +29,14 @@ makeat () {
 
 unset mungebinlib
 mungebinlib () {
+
     typeset mungeroot="$1"
 
-    if [ ! -e "$mungeroot" ] ; then
-        return
-    fi
+    if [ ! -e "$mungeroot" ] ; then return ; fi
 
     pathmunge -x $(find "$mungeroot" -name 'bin*' -type d)
     pathmunge -a -x -v LIBPATH $(find "$mungeroot" -name 'lib*' -type d)
     export LD_LIBRARY_PATH="$LIBPATH${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
-}
-
-unset setautobash
-setautobash () {
-    appendunique 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' \
-        "$HOME/.profile"
-}
-
-unset setvi
-setvi () {
-
-    typeset file
-
-    while [ ! -f "$file" ] ; do
-        echo 'Type in the shell profile in which to activate the vi option:'
-        read file
-    done
-
-    appendunique 'set -o vi' "$@"
 }
 
 # ##############################################################################
