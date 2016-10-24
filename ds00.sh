@@ -6,7 +6,7 @@
 # ##############################################################################
 # DS base objects
 
-# Aliases to directories:
+# Changedir:
 alias cdbak='d "${BACKUP_DIRECTORY}" -A'
 alias cde='d "${DS_ENV}" -A'
 alias cdl='cd "${DS_ENV_LOG}" && (ls -AFlrt | tail -n 64)'
@@ -15,9 +15,6 @@ alias cdlgt='cd "${DS_ENV_LOG}" && (ls -AFlrt | grep "$(date +"%b %d")")'
 alias cdlt='cd "${DS_ENV_LOG}" && cd "$(ls -1d */|sort|tail -n 1)" && ls -AFlrt'
 alias ds='d "${DS_HOME}" -Ah ; [ -n "$(git status -s)" ] && git diff'
 alias t='d "${TEMP_DIRECTORY}" -A'
-
-# ##############################################################################
-# Backward compatibility
 
 paralleljobs () { dsp "$@" ; }
 
@@ -64,49 +61,15 @@ chmodshells () {
 }
 
 # Function enforcedir - Tries to create the directory and fails if not rwx.
-unset enforcedir
 enforcedir () {
-    typeset pname=enforcedir
-
-    for d in "$@" ; do
-        mkdir -p "${d}" 2>/dev/null
-
-        if _any_dir_not_rwx "${d}" ; then
-            elog -f -n "$pname" "You do not have rwx mode for '${d}' directory."
-            return 1
-        fi
-    done
+    mkdir -p "$@" 2>/dev/null
+    if _any_dir_not_rwx "$@" ; then return 1 ; fi
 }
 
-unset findscripts
 findscripts () {
-
-    typeset pname=findscripts
-
-    typeset re_scripts="perl|python|ruby|sh"
-
-    awk 'FNR == 1 && $0 ~ /^#!.*('"${re_scripts}"') */ {
-        print FILENAME;
-    }' \
+    typeset re_shells='perl|python|ruby|sh'
+    awk 'FNR == 1 && $0 ~ /^#!.*('"$re_shells"') */ { print FILENAME; }' \
         $(find "$@" -type f | egrep -v '[.](git|hg|svn)')
-}
-
-# ##############################################################################
-# Process management
-
-# Function pgr - pgrep emulator.
-# Syntax: [egrep-pattern]
-unset pgr
-pgr () {
-    typeset options
-
-    # Options:
-    while getopts ':' opt ; do
-        options="${options} -${opt} ${OPTARG:-'${OPTARG}'}"
-    done
-    shift $((OPTIND - 1)) ; OPTIND=1
-
-    ps -ef | egrep -i ${options} "$@" | egrep -v "grep.*(${1})"
 }
 
 # ##############################################################################
@@ -294,30 +257,6 @@ pathmunge () {
     if ${doexport} ; then eval export "${varname}" ; fi
 }
 
-# Function progmiss - Checks 'which' programs and prints missing programs.
-unset progmiss
-progmiss () {
-    typeset misslist prog
-
-    if [[ -z ${1} ]] ; then
-        echo 'No-op. Must input at least one argument.'
-        return
-    fi
-
-    for prog in "$@" ; do
-        which "${prog}" >/dev/null 2>&1 || misslist="${misslist:+${misslist} }${prog}"
-    done
-
-    misslist="${misslist% }"
-
-    if [[ -n ${misslist} ]] ; then
-        echo "Missing binaries: ${misslist}"
-        return
-    fi
-
-    return 1
-}
-
 # Function ps1enhance - make PS1 better, displaying user, host, time, $? and the
 #   current directory.
 unset ps1enhance
@@ -327,19 +266,6 @@ ps1enhance () {
     elif [[ $0 = *ksh* ]] && [[ ${SHELL} = *ksh ]] ; then
         export PS1='[${USER}@$(hostname) $(date '+%OH:%OM:%OS') \$=$? ${PWD##*/}]\$ '
     fi
-}
-
-# Function runcommands - calls commands in the argument ( one per line), in order.
-unset runcommands
-runcommands () {
-    typeset commandlist="${1}"
-    typeset nextcommand
-
-    while read nextcommand ; do
-        eval "${nextcommand}"
-done <<EOF
-${commandlist}
-EOF
 }
 
 # Function setlogdir - create and check log directory.

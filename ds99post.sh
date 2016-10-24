@@ -19,4 +19,9 @@ unalias d 2>/dev/null
 
 chmodshells -a -p "${DS_HOME}/bin" "${DS_HOME}/scripts"
 
-runcommands "${DS_POST_CALLS}"
+# Post-calls: Evaluate each line in the DS_POST_CALLS variable:
+while read nextcommand ; do
+    eval "${nextcommand}"
+done <<EOF
+"${DS_POST_CALLS:-:}"
+EOF
