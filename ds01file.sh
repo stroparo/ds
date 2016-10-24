@@ -247,13 +247,6 @@ loc () {
   locate -bi "${locvalue}"
 }
 
-unset lsrecent
-lsrecent () {
-    while read prefix ; do
-        ls -1t "${prefix}"* | head -1
-    done
-}
-
 unset lstgz
 lstgz () {
     for f in "$@" ; do
@@ -596,26 +589,6 @@ dugt10 () {
 unset dugt10desc
 dugt10desc () {
     dubulk | sed -n -e '/^[1-9][0-9][0-9]*[.]/p' | sort -rn
-}
-
-# ##############################################################################
-# Virtualbox
-
-# Function mountvboxsf - Mount virtualbox shared folder.
-# Syntax: path-to-dir (sharing will be named as its basename)
-unset mountvboxsf
-mountvboxsf () {
-
-    [ -n "${1}" ] || return 1
-    [ -d "${1}" ] || sudo mkdir "${1}"
-
-    sudo mount -t vboxsf -o rw,uid="${USER}",gid="$(id -gn)" "$(basename ${1})" "${1}"
-
-    if [ "$?" -eq 0 ] ; then
-        cd "${1}"
-        pwd
-        ls -FlA
-    fi
 }
 
 # ##############################################################################
