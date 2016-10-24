@@ -4,9 +4,11 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
-# Networking facilities
+# Networking
 
-# Syntax: getcookiesmozilla {agent_cookies_sqlite_filename} {target_cookies_filename} {domain_regex}
+# Function getcookiesmozilla - Get firefox cookies and write them to a
+#   file in old netscape format, suitable for usage with wget.
+# Syntax: {mozilla's cookies sqlite db} {target cookies filename} {domain pattern/regex}
 getcookiesmozilla () {
     typeset agent_cookies="${1}"
     typeset target_cookies="${2}"
@@ -22,6 +24,9 @@ select basedomain, 'TRUE', path, 'FALSE', expiry, name, value from moz_cookies w
 EOF
     fi
 }
+
+# Function iwf - Show iwconfig and ifconfig in given interface (1st arg; default=wlan0).
+iwf () { iwconfig "${1:-wlan0}" ; ifconfig "${1:-wlan0}" ; }
 
 # Function pushds
 # Purpose:
@@ -45,20 +50,6 @@ pushds () {
     pushl -r -e "$envre" -d '.ds/' -f "${DS_GLOB}" -x "$exc" "${DS_HOME}" "$@"
 
     pushl -r -e "$envre" -d '.ds/scripts' -f "*" -x "$exc" "${DS_HOME}/scripts" "$@"
-}
-
-# Function sbash - run a bash shell in a screen session.
-# Syntax: [sessionname]
-unset sbash
-sbash () {
-    screen -S "${1:-sbash}" bash
-}
-
-# Function sksh - run a ksh shell in a screen session.
-# Syntax: [sessionname]
-unset sksh
-sksh () {
-    env ENV="${HOME}/.kshrc" screen -S "${1:-sksh}" ksh
 }
 
 # Function sshkeygenrsa
@@ -97,9 +88,4 @@ sshkeygenrsa () {
     fi
 }
 
-# Function iwf - Show iwconfig and ifconfig in given interface (1st arg; default=wlan0).
-unset iwf
-iwf () {
-    iwconfig "${1:-wlan0}"
-    ifconfig "${1:-wlan0}"
-}
+# ##############################################################################
