@@ -4,7 +4,7 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
-# Desktop functions
+# Desktop routines
 
 # Function getmp3 - Extracts argument file mp3 to arg.mp3 via avconv utility.
 unset getmp3
@@ -77,3 +77,5 @@ screenshot () {
     sleep "${1:-5}"
     import -window root "${HOME}/screenshot-${date_ymd_hms}.png"
 }
+
+# ##############################################################################
