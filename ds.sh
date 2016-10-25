@@ -41,17 +41,7 @@ dsinfo () {
 }
 
 # ##############################################################################
-# Stage for removal
-
-# Functions pnamesave and pnamerestore  - handle pname param backup and restore.
-#  Used at the beginning and end of routines such as functions.
-#  Also the pname param is used by some functions like elog.
-unset pnamesave pnamerestore
-pnamesave () { oldpname="$pname" ; }
-pnamerestore () { pname="$oldpname" ; }
-
-# ##############################################################################
-# Main
+# Execute
 
 # DS init:
 . "${DS_HOME}/ds00.sh" || return 10
@@ -66,3 +56,5 @@ sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/ds99post.sh"
 sourcefiles ${DS_VERBOSE:+-v} -q "${DS_HOME}/aliases*sh"
 sourcefiles ${DS_VERBOSE:+-v} -q "${DS_HOME}/ee.sh"
 sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/sshagent.sh"
+
+# ##############################################################################
