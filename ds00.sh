@@ -61,11 +61,14 @@ chmodshells () {
 }
 
 # Function enforcedir - Tries to create the directory and fails if not rwx.
+unset enforcedir
 enforcedir () {
     mkdir -p "$@" 2>/dev/null
     if _any_dir_not_rwx "$@" ; then return 1 ; fi
 }
 
+# Function findscripts - Finds script type files in root dirs passed as arguments.
+unset findscripts
 findscripts () {
     typeset re_shells='perl|python|ruby|sh'
     awk 'FNR == 1 && $0 ~ /^#!.*('"$re_shells"') */ { print FILENAME; }' \
@@ -365,18 +368,12 @@ EOF
 # Function userconfirm - Ask a question and yield success if user responded [yY]*
 unset userconfirm
 userconfirm () {
-
     typeset confirm
-
+    typeset result=1
     echo ${BASH_VERSION:+-e} "$@" "[y/N] \c"
-
     read confirm
-
-    if [[ $confirm = [yY]* ]] ; then
-        return 0
-    else
-        return 1
-    fi
+    if [[ $confirm = [yY]* ]] ; then return 0 ; fi
+    return 1
 }
 
 # Function userinput - Read value to variable userinput.
@@ -392,9 +389,7 @@ userinput () {
 # ##############################################################################
 # Text processing functions
 
-# TODO rename to tailnum
-catnum () { mutail -n1 "$@" | grep '^[0-9][0-9]*$' ; }
-
+catnum () { mutail -n1 "$@" | grep '^[0-9][0-9]*$' ; } # TODO rename to tailnum
 echoupcase () { echo "$@" | tr '[[:lower:]]' '[[:upper:]]' ; }
 locase () { tr '[[:upper:]]' '[[:lower:]]' ; }
 upcase () { tr '[[:lower:]]' '[[:upper:]]' ; }
