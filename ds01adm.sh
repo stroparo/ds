@@ -14,6 +14,14 @@ pgr () { ps -ef | egrep -i ${options} "$@" | egrep -v "grep.*(${1})" ; }
 setautobash () { echo 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' >> "$HOME/.profile" ; }
 setvi () { echo 'set -o vi' | tee -a "$HOME/.profile" "$HOME/.bashrc" ; }
 
+# Function alertdeadproc - Starts beeping alert on process death.
+unset alertdeadproc
+alertdeadproc () {
+  [ -z "${1}" ] && echo 'Usage: {pid}' 1>&2 && return 1
+  while [ "$(ps -T "${1}" | wc -l | cut -d' ' -f1)" -gt 0 ] ; do sleep 1 ; done
+  while true ; do echo '\a' ; sleep 8 ; done
+}
+
 # Function makeat - run configure, make & makeinstall for custom dir/prefix.
 # Default directory will be ~/opt/root
 unset makeat
@@ -27,6 +35,8 @@ makeat () {
     echo "Exit status: ""$?"
 }
 
+# Function mungebinlib - munge bin* dirs to PATH and lib* to library
+#   variables which descend from the root directory argument.
 unset mungebinlib
 mungebinlib () {
 
@@ -37,6 +47,16 @@ mungebinlib () {
     pathmunge -x $(find "$mungeroot" -name 'bin*' -type d)
     pathmunge -a -x -v LIBPATH $(find "$mungeroot" -name 'lib*' -type d)
     export LD_LIBRARY_PATH="$LIBPATH${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+}
+
+# Function topu - top user processes, or topas when working in AIX.
+unset topu
+topu () {
+    if _is_aix ; then
+        topas -U "${USER}" -P
+    else
+        top -U "${UID:-$(id -u)}"
+    fi
 }
 
 # ##############################################################################
