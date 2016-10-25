@@ -64,4 +64,5 @@ sourcefiles ${DS_VERBOSE:+-v} -q -t -n 'Specialized routines etcetera' "${DS_HOM
 sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/ds99post.sh"
 
 sourcefiles ${DS_VERBOSE:+-v} -q "${DS_HOME}/aliases*sh"
+sourcefiles ${DS_VERBOSE:+-v} -q "${DS_HOME}/ee.sh"
 sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/sshagent.sh"
