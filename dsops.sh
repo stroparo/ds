@@ -7,7 +7,6 @@
 # Admin & ops functions
 
 cthttpd () { sudo "/etc/init.d/apache${2:-2}"  "${1:-restart}" ; }
-ctlamp () { sudo "${LAMPHOME}/ctlscript.sh"   "${1:-restart}" ; }
 ctpg () { sudo "/etc/init.d/postgresql${2}" "${1:-restart}" ; }
 dropcaches3 () { echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null ; }
 pgr () { ps -ef | egrep -i ${options} "$@" | egrep -v "grep.*(${1})" ; }
@@ -15,16 +14,22 @@ setautobash () { echo 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash
 setvi () { echo 'set -o vi' | tee -a "$HOME/.profile" "$HOME/.bashrc" ; }
 
 # Function alertdeadproc - Starts beeping alert on process death.
-unset alertdeadproc
 alertdeadproc () {
   [ -z "${1}" ] && echo 'Usage: {pid}' 1>&2 && return 1
   while [ "$(ps -T "${1}" | wc -l | cut -d' ' -f1)" -gt 0 ] ; do sleep 1 ; done
   while true ; do echo '\a' ; sleep 8 ; done
 }
 
+ctlamp () {
+    if _is_linux; then
+        sudo "${LAMPHOME}/ctlscript.sh" "${1:-restart}"
+    else
+        "${LAMPHOME}/ctlscript.sh" "${1:-restart}"
+    fi
+}
+
 # Function makeat - run configure, make & makeinstall for custom dir/prefix.
 # Default directory will be ~/opt/root
-unset makeat
 makeat () {
 
     mkdir "${1:-${HOME}/opt/root}" 2> /dev/null || return
@@ -37,7 +42,6 @@ makeat () {
 
 # Function mungebinlib - munge bin* dirs to PATH and lib* to library
 #   variables which descend from the root directory argument.
-unset mungebinlib
 mungebinlib () {
 
     typeset mungeroot="$1"
@@ -50,7 +54,6 @@ mungebinlib () {
 }
 
 # Function topu - top user processes, or topas when working in AIX.
-unset topu
 topu () {
     if _is_aix ; then
         topas -U "${USER}" -P
@@ -65,7 +68,6 @@ topu () {
 # Function loadjava - load environment variables based on JAVA_HOME path.
 #  Option -v displays JAVA_HOME.
 # Syntax: [-v] [JAVA_HOME override]
-unset loadjava
 loadjava () {
     typeset oldind="${OPTIND}"
     typeset doverbose
