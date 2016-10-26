@@ -21,10 +21,10 @@ alertdeadproc () {
 }
 
 ctlamp () {
-    if _is_linux; then
-        sudo "${LAMPHOME}/ctlscript.sh" "${1:-restart}"
-    else
+    if _is_cygwin; then
         "${LAMPHOME}/ctlscript.sh" "${1:-restart}"
+    else
+        sudo "${LAMPHOME}/ctlscript.sh" "${1:-restart}"
     fi
 }
 
