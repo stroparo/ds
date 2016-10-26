@@ -112,10 +112,13 @@ setglobs () {
         export GLOBSVAL="$1"
     fi
 
-    export GLOBSFINAL="$(cd "$SRCDIR" && \
-                            eval ls -1 "${GLOBSVAL}" | \
-                            egrep -v "${EXCLUDE}" | \
-                            tr -s '\n' ' ')"
+    # export GLOBSFINAL="$(cd "$SRCDIR" && \
+    #                         eval ls -1 "${GLOBSVAL}" | \
+    #                         egrep -v "${EXCLUDE}" | \
+    #                         tr -s '\n' ' ')"
+
+    export GLOBSFINAL="$GLOBSVAL"
+
     ckglobs
 }
 

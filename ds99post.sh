@@ -25,5 +25,5 @@ chmodshells -a -p "${DS_HOME}/bin" "${DS_HOME}/scripts"
 while read nextcommand ; do
     eval "${nextcommand}"
 done <<EOF
-"${DS_POST_CALLS:-:}"
+${DS_POST_CALLS:-:}
 EOF
