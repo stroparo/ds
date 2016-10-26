@@ -1,3 +1,4 @@
+
 # DS - Daily Shells Library
 # License:
 #  See README.md document in projects page at
@@ -11,12 +12,10 @@ alias dfg='df -gP'
 alias dfh='df -hP'
 alias dums='du -ma | sort -n'
 alias dumg='du -ma | sort -rn'
-alias edhosts='sudo vi /etc/hosts'
 alias findd='find . -type d'
 alias findf='find . -type f'
 alias nhr='rm nohup.out'
 alias nht='tail -9999f nohup.out'
-alias pgc='sudo -iu postgres psql postgres'
 alias sb='subl'
 alias tpf='typeset -f'
 alias tps='typeset'
@@ -27,7 +26,11 @@ alias yabest='youtube-dl -f bestaudio'
 alias yd='youtube-dl'
 alias yx='youtube-dl -x'
 
-# Debian admin
+# Ops
+alias edhosts='sudo vi /etc/hosts'
+alias pgc='sudo -iu postgres psql postgres'
+
+# Ops for Debian
 alias apd='sudo aptitude update && sudo aptitude'
 alias apdnoup='sudo aptitude'
 alias apti='sudo aptitude update && sudo aptitude install -y'
