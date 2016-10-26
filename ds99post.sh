@@ -9,7 +9,7 @@
 # ##############################################################################
 # Globals
 
-DS_GLOB="ds*sh aliases.sh ee.sh sshagent.sh"
+DS_GLOB="ds*sh aliases.sh ee.sh setup.sh sshagent.sh"
 DS_LOADED=true
 
 export DS_GLOB
