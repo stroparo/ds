@@ -9,8 +9,10 @@
 # ##############################################################################
 # Globals
 
-DS_GLOB="ds.sh ds[0-9]*sh aliases.sh sshagent.sh"
+DS_GLOB="ds*sh aliases.sh ee.sh sshagent.sh"
 DS_LOADED=true
+
+export DS_GLOB
 
 # ##############################################################################
 # Main
