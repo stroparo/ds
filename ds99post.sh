@@ -19,7 +19,8 @@ export DS_GLOB
 
 unalias d 2>/dev/null
 
-chmodshells -a -p "${DS_HOME}/bin" "${DS_HOME}/scripts"
+chmodshells -a "${DS_HOME}"
+pathmunge -x "${DS_HOME}/bin" "${DS_HOME}/scripts"
 
 # Post-calls: Evaluate each line in the DS_POST_CALLS variable:
 while read nextcommand ; do
