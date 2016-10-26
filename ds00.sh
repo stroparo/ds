@@ -16,7 +16,7 @@ alias cdlt='cd "${DS_ENV_LOG}" && cd "$(ls -1d */|sort|tail -n 1)" && ls -AFlrt'
 alias ds='d "${DS_HOME}" -Ah ; [ -n "$(git status -s)" ] && git diff'
 if ! ls -h >/dev/null 2>&1 ; then
     unalias ds
-    alias ds='d "${DS_HOME}" -A ; which git 2>dev/null && [ -n "$(git status -s)" ] && git diff'
+    alias ds='d "${DS_HOME}" -A ; which git >/dev/null 2>&1 && [ -n "$(git status -s)" ] && git diff'
 fi
 alias t='d "${TEMP_DIRECTORY}" -A'
 
