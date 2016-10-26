@@ -16,7 +16,13 @@ elif [ ! -r "${PROFILE_PATH}" -o ! -w "${PROFILE_PATH}" ] ; then
 elif . "${DS_HOME}/ds.sh" "${DS_HOME}" && ${DS_LOADED:-false}; then
 
     # Sourced DS, so now append it to the profile:
-    appendunique ". '${DS_HOME}/ds.sh' '${DS_HOME}'" "${PROFILE_PATH}"
+
+    if grep 'ds.sh' "${PROFILE_PATH}" /dev/null ; then
+        echo "SKIP: DS already exists in the profile. Nothing done." 1>&2
+        exit
+    else
+        appendunique ". '${DS_HOME}/ds.sh' '${DS_HOME}'" "${PROFILE_PATH}"
+    fi
 
 else
 
