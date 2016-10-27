@@ -408,7 +408,11 @@ appendunique () {
     typeset text="${1}" ; shift
 
     for f in "$@" ; do
+
+        [ -e "$f" ] || touch "$f"
+
         if ! fgrep -q "${text}" "${f}" ; then
+
             if ! echo "${text}" >> "${f}" ; then
                 failedsome=true
                 echo "${msgerrforfile} '${f}' .." 1>&2
