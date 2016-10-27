@@ -32,23 +32,17 @@ DESCRIPTION
 "
 
 export CONN=''
-export ENVPATHS=''
-export GLOBSFINAL=''
-
-export DESTDIR=''
-export SRCDIR=''
-
-# ##############################################################################
-# Prep args
-
-# Options:
-
 export CONNOPT=''
+export ENVPATHS=''
 export ENVREGEX=''
 export EXCLUDE='@@@@EXCLUDEDUMMY@@@@'
+export GLOBSFINAL=''
 export GLOBSOPT=''
 export PURGE_ONLY=false
 export RESET_FILES=''
+
+export DESTDIR=''
+export SRCDIR=''
 
 OPTIND=1
 while getopts ':c:d:e:f:hprx:' opt ; do
@@ -68,30 +62,33 @@ shift $((OPTIND - 1))
 export SRCDIR="$(cd ${1}; echo "$PWD")"
 shift
 
-if [ ! -d "$SRCDIR" ] || [ ! -r "$SRCDIR" ] ; then
-    echo "$PNAME: FATAL: Dir '$SRCDIR' not present or not readable."
-    exit 1
-fi
-
-# ##############################################################################
-# Prep
-
-# Check available lftp program:
-which lftp >/dev/null 2>&1 || exit 10
-
 # ##############################################################################
 # Functions
 
-prep () {
+checkEnv () {
 
-    typeset oldpwd="$PWD"
-
-    if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1 || [ -z "${DS_LOADED}" ] ; then
-        echo "${PNAME}: FATAL: Could not load DS - Daily Shells." 1>&2
+    if [ ! -d "$SRCDIR" ] || [ ! -r "$SRCDIR" ] ; then
+        echo "$PNAME: FATAL: Dir '$SRCDIR' not present or not readable."
         exit 1
     fi
 
-    cd "$oldpwd"
+    # Check available lftp program:
+    if ! which lftp >/dev/null 2>&1 ; then
+        echo "FATAL: lftp program not found. Aborted."
+        exit 10
+    fi
+
+}
+
+sourceds () {
+
+    typeset dshome="${1:-${DS_HOME}}"
+
+    if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1 || [ -z "${DS_LOADED}" ] ; then
+        echo "${PNAME:+${PNAME}: }FATAL: Could not load DS - Daily Shells." 1>&2
+        exit 1
+    fi
+
 }
 
 ckglobs () {
@@ -193,6 +190,13 @@ EOF
 # ##############################################################################
 # Main
 
-prep
+checkEnv
+
+# Load DS:
+oldpwd="$PWD"
+sourceds
+cd "$oldpwd"
+unset oldpwd
+
 pushl "$@"
 exit "$?"
