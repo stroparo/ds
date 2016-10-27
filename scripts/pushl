@@ -84,9 +84,9 @@ sourceds () {
 
     typeset dshome="${1:-${DS_HOME}}"
 
-    if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1 || [ -z "${DS_LOADED}" ] ; then
+    if ! . "${dshome}/ds.sh" "${dshome}" 1>&2 || [ -z "${DS_LOADED}" ] ; then
         echo "${PNAME:+${PNAME}: }FATAL: Could not load DS - Daily Shells." 1>&2
-        exit 1
+        return 1
     fi
 
 }
@@ -194,7 +194,7 @@ checkEnv
 
 # Load DS:
 oldpwd="$PWD"
-sourceds
+sourceds || exit "$?"
 cd "$oldpwd"
 unset oldpwd
 
