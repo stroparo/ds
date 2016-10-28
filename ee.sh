@@ -293,20 +293,28 @@ EOF
 #   Select ee environment from first occurrence in ee.txt files found in EEPATH.
 eesel () {
     typeset section_search_term="$1"
-    typeset section
+    typeset section_exports
 
     while read eefile ; do
 
-        section="$(getsection "$section_search_term" "$eefile" | \
+        section_exports="$(getsection "$section_search_term" "$eefile" | \
                     sed -e 's/[][]//g' -e 's/^/export /')"
 
-        if [ -n "$section" ] ; then
-            eval "$section"
-        fi
-        if [ -n "${sectionname}" ] ; then
+        if [ -n "$section_exports" ] ; then
+
+            # The egrep below is not unnecessary redundancy, it is for security:
+            eval "$(echo "${section_exports}" | egrep '^export (sectionname=|ee[_a-zA-Z0-9]*=)')"
+
+            if [ -z "${sectionname}" -o -z "$eeh" -o -z "$eeu" ] ; then
+                echo "FATAL: Some of sectionname, eeh, eeu are empty." 1>&2
+                return 1
+            fi
+
             echo 1>&2
             echo "==> Selected '${eedesc:-${sectionname}}', ee='${eeu}@${eeh}' <==" 1>&2
+
             export ee="${eeu}@${eeh}"
+
             break
         fi
     done <<EOF

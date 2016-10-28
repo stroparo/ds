@@ -84,7 +84,7 @@ sourceds () {
 
     typeset dshome="${1:-${DS_HOME}}"
 
-    if ! . "${dshome}/ds.sh" "${dshome}" 1>&2 || [ -z "${DS_LOADED}" ] ; then
+    if ! . "${dshome}/ds.sh" "${dshome}" 1>&2 2>/dev/null || [ -z "${DS_LOADED}" ] ; then
         echo "${PNAME:+${PNAME}: }FATAL: Could not load DS - Daily Shells." 1>&2
         return 1
     fi
@@ -123,15 +123,13 @@ pushl () {
 
     setglobs
 
-    for envgroup in "$@" ; do
+    for envname in "$@" ; do
 
-        export ENVUPPER="$(echoupcase "$envgroup")"
+        [[ -z $GLOBSOPT ]] && setglobs "$(eval echo "\${TGTGLOB${envname}}")"
 
-        [[ -z $GLOBSOPT ]] && setglobs "$(eval echo "\${TGTGLOB${ENVUPPER}}")"
+        export ENVPATHS="$(eval echo "\"\${TGT${envname}}\"")"
 
-        export ENVPATHS="$(eval echo "\"\${TGT${ENVUPPER}}\"")"
-
-        echo "==> Env '${ENVUPPER}', files: '${GLOBSFINAL}' <=="
+        echo "==> Env '${envname}', files: '${GLOBSFINAL}' <=="
 
         while IFS=':' read environ u pw h dest ; do
             [[ -z "${u}" ]] && continue
