@@ -584,8 +584,7 @@ getsection () {
     typeset filename="$2"
     typeset sectionsearch="$1"
 
-    awk -vsectionsearch="${sectionsearch}" '
-
+    awk '
     # Find the entry:
     /^ *\['"${sectionsearch}"'\] *$/ { found = 1; print "sectionname=" $0; }
 
