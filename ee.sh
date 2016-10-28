@@ -347,22 +347,18 @@ eex () {
 #
 # Remarks:
 #
-#   -c (use eecmd as the command)
-#       Will only affect when calling with an ee-search-term ie for a specific env.
+#   -c will use eecmd as the command. Only works when a search term is passed.
 #
 #   -h will override everything (search term, -a, and -g).
-#       -l will only function to supply the username for the hostname in -h.
+#   -l will only function to supply the username for the hostname in -h.
 #
 #   -e will only affect -a ang -g options.
 #   -i will forward stdin to all calls' standard inputs.
 #   -s will only select the environment and will work only when search term is given.
 ee () {
     typeset doall=false
-    typeset eefile eepath
-    typeset eegroup
-    typeset eestdin
+    typeset eefile eegroup eepath eestdin envre
     typeset eestdinon=false
-    typeset envre
     typeset hostarg loginarg
     typeset searchterm
     typeset selectonly=false
@@ -394,14 +390,16 @@ ee () {
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
     if [ -z "$hostarg" ] && [ -z "$eegroup" ] && ! $doall ; then
+
         searchterm="$1"
         shift
+
+        if [ -z "${searchterm}" ] ; then
+            echo 'FAIL: Must pass an env name, or one of -g eegroup, -h hostname, -a.' 1>&2
+            return 1
+        fi
     fi
 
-    if [ -z "${searchterm}" ] && [ -z "$hostarg" ] && [ -z "$eegroup" ] && ! $doall ; then
-        echo 'FAIL: Must pass an env name, or one of -g eegroup, -h hostname, -a.' 1>&2
-        return 1
-    fi
 
     if ${eestdinon} ; then
         eestdin=$(cat)
