@@ -33,7 +33,9 @@ main () {
 
         # Sourced DS, so now append it to the profile:
 
-        if grep -q 'ds.sh' "${PROFILE_PATH}" /dev/null 2>/dev/null ; then
+        if egrep -q '([.]|source) .*/ds.sh' "${PROFILE_PATH}" 2>/dev/null && \
+            egrep -q '^[^#]*/ds.sh' "${PROFILE_PATH}" 2>/dev/null
+        then
             echo "SKIP: DS already exists in the profile. Nothing done." 1>&2
             exit
         else
