@@ -157,9 +157,16 @@ pushl () {
 
     while read envname ; do
 
-        ! eesel "$envname" && echo "SKIP: env '${envname}' not found." 1>&2 && continue
+        if [ "$envname" != nil ] ; then
+            if ! eesel "$envname" ; then
+                echo "SKIP: env '${envname}' not found." 1>&2
+                continue
+            fi
+        fi
 
-        if ! ckeeu || ! ckeeh ; then continue ; fi
+        if ! ckeeu || ! ckeeh ; then
+            continue
+        fi
 
         echo "    Files: '${GLOBSFINAL}'" 1>&2
 
