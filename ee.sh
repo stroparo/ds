@@ -295,6 +295,13 @@ eesel () {
     typeset section_search_term="$1"
     typeset section_exports
 
+    export ee=''
+    export eedesc=''
+    export eeu=''
+    export eeh=''
+    export eepw=''
+    export eepath=''
+
     while read eefile ; do
 
         section_exports="$(getsection "$section_search_term" "$eefile" | \
