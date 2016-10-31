@@ -174,7 +174,7 @@ pushl () {
         CONNROOT="sftp://${eeh}/"
         CONN="sftp://${eeh}/${DESTDIR}"
 
-        echo "    $(${PURGE_ONLY} && echo "(Purge files in) ")Path: '${DESTDIR}'."
+        echo "    $(${PURGE_ONLY} && echo "(Purge files in) ")Path: '${DESTDIR}'." 1>&2
 
         if ${PURGE_ONLY} || ${RESET_FILES} ; then
             lftp -u "${eeu},${eepw}" "${CONN}" <<EOF
