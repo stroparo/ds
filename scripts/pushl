@@ -190,15 +190,13 @@ EOF
 
         if [ "$?" != 0 ] ; then
             echo "FATAL: error pushing to '${envname}'." 1>&2
-            echo 1>&2
             return 1
         fi
     done <<EOF
 ${1}
 EOF
 
-    echo 'INFO: Pushing process complete.'
-    echo ''
+    echo 'INFO: Pushing process complete.' 1>&2
 }
 
 # ##############################################################################

@@ -66,7 +66,7 @@ pushds () {
 
     # Main:
 
-    tar -C "${dsparent}" -cf - $(cd "${dsparent}" && find "${dsbase}" | egrep -v "/[.]git|$excere") | \
+    tar -C "${dsparent}" -cf - $(cd "${dsparent}" && find "${dsbase}" -type f | egrep -v "/[.]git|$excere") | \
         gzip -c - > "${dsarchive}"
 
     pushl -r -e "$envre" -f "${dsarchive##*/}" -s "${dsarchive%/*}" "$@"
