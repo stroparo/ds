@@ -68,7 +68,7 @@ shift
 checkEnv () {
 
     if [ ! -d "$SRCDIR" ] || [ ! -r "$SRCDIR" ] ; then
-        echo "$PNAME: FATAL: Dir '$SRCDIR' not present or not readable."
+        echo "$PNAME: FATAL: Dir '$SRCDIR' should be readable."
         exit 1
     fi
 
