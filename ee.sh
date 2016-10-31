@@ -315,11 +315,13 @@ eesel () {
 
             export ee="${eeu}@${eeh}"
 
-            break
+            return 0
         fi
     done <<EOF
 $(eefiles)
 EOF
+
+    return 1
 }
 
 # Function eex
