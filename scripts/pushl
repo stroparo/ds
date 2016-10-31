@@ -14,19 +14,28 @@ NAME
     ${PNAME} - push files to target environments using LFTP program
 
 SYNOPSIS
-    ${PNAME} $(basename "$0") [-e {env-regex}] [-f {local-globs}] [-p] [-r] {srcdir} {site} [site2 [site3 ...]]
+    ${PNAME} [-e {env-regex}] [-f {local-globs}] [-p] [-r] [-s {srcdir}] {site} [site2 [site3 ...]]
 
 DESCRIPTION
-    1) The environment list must be in the TGT{env} variable.
-        Each entry in the env list must be formatted like this:
-        {environment-name}:{user}:{pass}:{host}:{destination-path}
-    2) TGTGLOB{env} variable might contain additional space-separated globs.
-        But when globs are passed via the -f option (-f \"glob1 glob2 ...\")
-        only those are going to be considered as TGTGLOB will
-        only serve as the default/fallback.
-    3) -r option
+
+    The environment list containing all possible sites lie in ee.txt files
+    inside directory trees whose roots are specified by the Daily Shells'
+    EEPATH environment variable (all this environment logic is in ee.sh).
+
+    -e env-regex
+
+        If and only if env-regex is non-empty, this program will override all site
+        arguments, filtering ee.txt lists instead. The regex will be used.
+
+        Remark:
+
+        Directories containing ee.txt lists are the ones specified in the
+        EEPATH environment variable.
+
+    -r option
         Reset files, i.e. deletes them from destination before copying.
-    4) -p option
+
+    -p option
         Causes ${PNAME} to only purge all files in the destination
         Usage of -r is redundant here.
 "
@@ -35,17 +44,16 @@ export CONN=''
 export CONNOPT=''
 export ENVPATHS=''
 export ENVREGEX=''
-export EXCLUDE='@@@@EXCLUDEDUMMY@@@@'
 export GLOBSFINAL=''
 export GLOBSOPT=''
 export PURGE_ONLY=false
-export RESET_FILES=''
+export RESET_FILES=false
 
-export DESTDIR=''
-export SRCDIR=''
+export DESTDIR='~'
+export SRCDIR="$(echo "$PWD")"
 
 OPTIND=1
-while getopts ':c:d:e:f:hprx:' opt ; do
+while getopts ':c:d:e:f:hprs:' opt ; do
     case ${opt} in
     h) echo "$USAGE" ; exit ;;
     c) export CONNOPT="${OPTARG}";;
@@ -54,13 +62,10 @@ while getopts ':c:d:e:f:hprx:' opt ; do
     f) export GLOBSOPT="${OPTARG}";;
     p) export PURGE_ONLY=true ;;
     r) export RESET_FILES=true ;;
-    x) export EXCLUDE="${OPTARG}";;
+    s) export SRCDIR="${OPTARG}";;
     esac
 done
 shift $((OPTIND - 1))
-
-export SRCDIR="$(cd ${1}; echo "$PWD")"
-shift
 
 # ##############################################################################
 # Functions
@@ -91,6 +96,26 @@ sourceds () {
 
 }
 
+ckeeu () {
+
+    if [ -z "$eeu" ] ; then
+        echo "SKIP: env '${envname}' because of empty username (eeu variable)." 1>&2
+        return 1
+    fi
+
+    return 0
+}
+
+ckeeh () {
+
+    if [ -z "$eeh" ] ; then
+        echo "SKIP: env '${envname}' because of empty hostname (eeh variable)." 1>&2
+        return 1
+    fi
+
+    return 0
+}
+
 ckglobs () {
     if [[ -z $GLOBSFINAL ]]; then
         elog -f -n "$pname" "Empty value in GLOBSFINAL."
@@ -103,16 +128,11 @@ setglobs () {
     if [[ -n $GLOBSOPT ]] ; then
         export GLOBSVAL="$GLOBSOPT"
     elif [ -z "$1" ] ; then
-        echo 'setglobs:SKIP: Nor a glob option neither an argument was passed so set to "*".' 1>&2
+        echo 'setglobs:INFO: Glob set to "*" as no -f globsopt was passed.' 1>&2
         export GLOBSVAL="*"
     else
         export GLOBSVAL="$1"
     fi
-
-    # export GLOBSFINAL="$(cd "$SRCDIR" && \
-    #                         eval ls -1 "${GLOBSVAL}" | \
-    #                         egrep -v "${EXCLUDE}" | \
-    #                         tr -s '\n' ' ')"
 
     export GLOBSFINAL="$GLOBSVAL"
 
@@ -123,65 +143,61 @@ pushl () {
 
     setglobs
 
-    for envname in "$@" ; do
+    if [ -z "$1" ] ; then
+        echo "FATAL: No environments passed to pushl function." 1>&2
+        return 1
+    fi
 
-        [[ -z $GLOBSOPT ]] && setglobs "$(eval echo "\${TGTGLOB${envname}}")"
+    cd "$SRCDIR"
 
-        export ENVPATHS="$(eval echo "\"\${TGT${envname}}\"")"
+    if [ "$PWD" != "$SRCDIR" ] ; then
+        echo "FATAL: Could not cd into SRCDIR='${SRCDIR}'." 1>&2
+        return 1
+    fi
 
-        echo "==> Env '${envname}', files: '${GLOBSFINAL}' <=="
+    while read envname ; do
 
-        while IFS=':' read environ u pw h dest ; do
-            [[ -z "${u}" ]] && continue
+        ! eesel "$envname" && echo "SKIP: env '${envname}' not found." 1>&2 && continue
 
-            # Filter host name:
-            echogrep "${ENVREGEX}" "${environ}" > /dev/null 2>&1 || continue
+        if ! ckeeu || ! ckeeh ; then continue ; fi
 
-            # Prep path
-            if [ -n "$DESTDIR" ] ; then
-                if [[ $DESTDIR = /* ]] ; then
-                    dest="$DESTDIR"
-                else
-                    dest="${dest}/${DESTDIR}"
-                fi
-            fi
-            CONNROOT="sftp://${h}/"
-            CONN="sftp://${h}/${dest}"
+        echo "    Files: '${GLOBSFINAL}'" 1>&2
 
-            echo "${environ} => $(${PURGE_ONLY} && echo "rm in ")path: '${u}@${h}:${dest}'."
+        # Prep path
+        CONNROOT="sftp://${eeh}/"
+        CONN="sftp://${eeh}/${DESTDIR}"
 
-            if ${RESET_FILES:-false} || ${PURGE_ONLY:-false} ; then
-                lftp -u "${u},${pw}" "${CONN}" <<EOF
+        echo "    $(${PURGE_ONLY} && echo "(Purge files in) ")Path: '${DESTDIR}'."
+
+        if ${PURGE_ONLY} || ${RESET_FILES} ; then
+            lftp -u "${eeu},${eepw}" "${CONN}" <<EOF
 set sftp:auto-confirm yes ; mrm -f ${GLOBSFINAL}
 EOF
-            fi
-            ${PURGE_ONLY:-false} && continue
+        fi
+        ${PURGE_ONLY} && continue
 
-            # Put files:
-            (
-                if cd "${SRCDIR:-err}" ; then
-                    lftp -u "${u},${pw}" "${CONNROOT}" 2>/dev/null <<EOF
-set sftp:auto-confirm yes ; mkdir -p ${dest} ; cd ${dest}
+        # Put files:
+        (
+            lftp -u "${eeu},${eepw}" "${CONNROOT}" 2>/dev/null <<EOF
+set sftp:auto-confirm yes ; mkdir -p ${DESTDIR} ; cd ${DESTDIR}
 EOF
-                    if [ $? -eq 0 ] ; then
-                        lftp -u "${u},${pw}" "${CONN}" <<EOF
+            if [ $? -eq 0 ] ; then
+                lftp -u "${eeu},${eepw}" "${CONN}" <<EOF
 set sftp:auto-confirm yes ; mput ${GLOBSFINAL}
 EOF
-                    fi
-                fi
-            )
-
-            if [ "$?" != 0 ] ; then
-                echo "${environ} => error"\! 1>&2
-                echo 1>&2
-                return 1
             fi
-        done <<EOF
-${ENVPATHS}
-EOF
-    done
+        )
 
-    echo 'Pushing process complete.'
+        if [ "$?" != 0 ] ; then
+            echo "FATAL: error pushing to '${envname}'." 1>&2
+            echo 1>&2
+            return 1
+        fi
+    done <<EOF
+${1}
+EOF
+
+    echo 'INFO: Pushing process complete.'
     echo ''
 }
 
@@ -191,10 +207,13 @@ EOF
 checkEnv
 
 # Load DS:
-oldpwd="$PWD"
 sourceds || exit "$?"
-cd "$oldpwd"
-unset oldpwd
 
-pushl "$@"
+if [ -n "${ENVREGEX}" ] ; then
+    envlist="$(eel -e "${ENVREGEX}" | cut -d: -f1)"
+else
+    envlist="$(for envname in "$@" ; do echo "${envname}" ; done)"
+fi
+
+pushl "${envlist}"
 exit "$?"
