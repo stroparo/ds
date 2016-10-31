@@ -45,7 +45,7 @@ main () {
     else
         echo "DS_HOME=${DS_HOME}" 1>&2
         echo "PROFILE_PATH=${PROFILE_PATH}" 1>&2
-        echo "FATAL: DS could not be setup into the environment's profile." 1>&2
+        echo "FATAL: DS could not be loaded for this setup.sh's execution." 1>&2
     fi
 }
 
