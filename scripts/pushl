@@ -93,7 +93,7 @@ sourceds () {
 
 ckglobs () {
     if [[ -z $GLOBSFINAL ]]; then
-        elog -f -n "$pname" "Failed expanding GLOBSFINAL."
+        elog -f -n "$pname" "Empty value in GLOBSFINAL."
         exit 1
     fi
 }
