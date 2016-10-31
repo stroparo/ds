@@ -52,7 +52,7 @@ pushds () {
     done
     shift $((OPTIND - 1)) ; OPTIND="$oldind"
 
-    for dsdir in $(echo "$optdirs" | tr -s , ' ') ; do
+    while read dsdir ; do
 
         if [ -n "${dsdir}" ] && [ ! -d "${dsdir}" -o ! -r "${dsdir}" ] ; then
             echo "FATAL: dsdir='${dsdir}' is not a valid directory." 1>&2
@@ -71,11 +71,13 @@ pushds () {
         tar -C "${dsparent}" -cf - \
             $(cd "${dsparent}" && find "${dsbase}" -type f | egrep -v "/[.]git|$excere") | \
             gzip -c - > "${dsarchive}"
-    done
+    done <<EOF
+$(echo "$optdirs" | tr -s , '\n')
+EOF
 
     pushl -r -e "$envre" -f "ds*${extension}" -s "${dsarchivedir}" "$@"
     res=$?
-    (cd "${dsarchivedir}" && rm -f ds*"${extension}")
+    ([ "$res" -eq 0 ] && cd "${dsarchivedir}" && rm -f ds*"${extension}")
     return ${res:-1}
 }
 
