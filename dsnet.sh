@@ -30,26 +30,51 @@ iwf () { iwconfig "${1:-wlan0}" ; ifconfig "${1:-wlan0}" ; }
 
 # Function pushds
 # Purpose:
-#   Push ds scripts and source files to envs pointed to by arguments.
+#   Push ds scripts and source files to envs pointed to by arguments packed into.
+#   an archive whose filename starts with DS directory's basename eg 'ds.tar.gz'.
+# Option -d new-ds-home overrides DS_HOME as the default DS directory.
 pushds () {
-
+    typeset dsarchive dsbase dsparent
+    typeset dsdir="$DS_HOME"
+    typeset envre
+    typeset excere='====@@@@DUMMYEXCLUDE@@@@===='
     typeset oldind="$OPTIND"
 
-    typeset envre
-    typeset exc
-
     OPTIND=1
-    while getopts ':e:x:' opt ; do
+    while getopts ':d:e:x:' opt ; do
         case ${opt} in
+        d) dsdir="$OPTARG";;
         e) envre="$OPTARG";;
-        x) exc="$OPTARG";;
+        x) excere="$OPTARG";;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND="$oldind"
 
-    pushl -r -e "$envre" -d '.ds/' -f "${DS_GLOB}" -x "$exc" "${DS_HOME}" "$@"
+    if [ ! -d "${dsdir}" -o ! -r "${dsdir}" ] ; then
+        echo "FATAL: dsdir='${dsdir}' is not a valid directory." 1>&2
+        return 1
+    fi
 
-    pushl -r -e "$envre" -d '.ds/scripts' -f "*" -x "$exc" "${DS_HOME}/scripts" "$@"
+    dsarchive="${HOME}/$(basename "${dsdir}").tar.gz"
+    dsbase="$(basename "${dsdir}")"
+    dsparent="$(cd "${dsdir}" && cd .. && echo "$PWD")"
+
+    if [ -z "$dsbase" -o -z "$dsparent" ] ; then
+        echo "FATAL: Could not obtain dirname and basename of dsdir='${dsdir}'." 1>&2
+        return 1
+    fi
+
+    # Main:
+
+    tar -C "${dsparent}" -cf - $(cd "${dsparent}" && find "${dsbase}" | egrep -v "/[.]git|$excere") | \
+        gzip -c - > "${dsarchive}"
+
+    pushl -r -e "$envre" -f "${dsarchive##*/}" -s "${dsarchive%/*}" "$@"
+    res=$?
+
+    rm -f "${dsarchive}"
+
+    return ${res:-1}
 }
 
 # Function sshkeygenrsa

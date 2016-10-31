@@ -288,6 +288,20 @@ $(eefiles)
 EOF
 }
 
+# Function eereset
+# Purpose:
+#   Reset ee* environment variables.
+eereset () {
+    export ee=''
+    export eedesc=''
+    export eeu=''
+    export eeh=''
+    export eecmd=''
+    export eeid=''
+    export eepath=''
+    export eepw=''
+}
+
 # Function eesel
 # Purpose:
 #   Select ee environment from first occurrence in ee.txt files found in EEPATH.
@@ -295,12 +309,7 @@ eesel () {
     typeset section_search_term="$1"
     typeset section_exports
 
-    export ee=''
-    export eedesc=''
-    export eeu=''
-    export eeh=''
-    export eepw=''
-    export eepath=''
+    eereset
 
     while read eefile ; do
 
@@ -360,7 +369,10 @@ eex () {
 #
 # Syntax (TODO):
 #   ee [-c] [-e envregex] [-i] [-s] ...
-#   ... [-a | -g eegroup | -h hostname [-l login]] [ee-search-term]
+#   ... [-a | -g eegroup | -h hostname [-l login]] [ee-search-term] command args
+#
+# IMPORTANT:
+#   ee-search-term must be informed only when not specifying one of -a, -g or -h.
 #
 # Remarks:
 #
@@ -381,14 +393,7 @@ ee () {
     typeset selectonly=false
     typeset useentrycmd=false
 
-    export ee=""
-    export eecodename=""
-    export eedesc=""
-    export eedomain=""
-    export eeu=""
-    export eeh=""
-    export eeid=""
-    export eecmd=""
+    eereset
 
     typeset oldind="${OPTIND}"
     OPTIND=1
@@ -417,7 +422,6 @@ ee () {
         fi
     fi
 
-
     if ${eestdinon} ; then
         eestdin=$(cat)
     fi
@@ -439,7 +443,10 @@ EOF
             eex "$@"
         fi
     elif [ -n "$searchterm" ] ; then
-        eesel "$searchterm"
+
+        if ! eesel "$searchterm" ; then
+            return 1
+        fi
 
         if ! ${selectonly} ; then
             if $useentrycmd && [ "${eecmd}" != "" ] ; then
