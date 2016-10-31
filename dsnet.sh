@@ -34,46 +34,48 @@ iwf () { iwconfig "${1:-wlan0}" ; ifconfig "${1:-wlan0}" ; }
 #   an archive whose filename starts with DS directory's basename eg 'ds.tar.gz'.
 # Option -d new-ds-home overrides DS_HOME as the default DS directory.
 pushds () {
-    typeset dsarchive dsbase dsparent
-    typeset dsdir="$DS_HOME"
+    typeset dsarchive dsbase dsdir dsparent
+    typeset dsarchivedir="$HOME"
     typeset envre
+    typeset extension='.tar.gz'
     typeset excere='====@@@@DUMMYEXCLUDE@@@@===='
     typeset oldind="$OPTIND"
+    typeset optdirs="${DS_HOME}"
 
     OPTIND=1
     while getopts ':d:e:x:' opt ; do
         case ${opt} in
-        d) dsdir="$OPTARG";;
+        d) optdirs="$OPTARG";;
         e) envre="$OPTARG";;
         x) excere="$OPTARG";;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND="$oldind"
 
-    if [ ! -d "${dsdir}" -o ! -r "${dsdir}" ] ; then
-        echo "FATAL: dsdir='${dsdir}' is not a valid directory." 1>&2
-        return 1
-    fi
+    for dsdir in $(echo "$optdirs" | tr -s , ' ') ; do
 
-    dsarchive="${HOME}/$(basename "${dsdir}").tar.gz"
-    dsbase="$(basename "${dsdir}")"
-    dsparent="$(cd "${dsdir}" && cd .. && echo "$PWD")"
+        if [ -n "${dsdir}" ] && [ ! -d "${dsdir}" -o ! -r "${dsdir}" ] ; then
+            echo "FATAL: dsdir='${dsdir}' is not a valid directory." 1>&2
+            return 1
+        fi
 
-    if [ -z "$dsbase" -o -z "$dsparent" ] ; then
-        echo "FATAL: Could not obtain dirname and basename of dsdir='${dsdir}'." 1>&2
-        return 1
-    fi
+        dsarchive="${dsarchivedir}/$(basename "${dsdir}")${extension}"
+        dsbase="$(basename "${dsdir}")"
+        dsparent="$(cd "${dsdir}" && cd .. && echo "$PWD")"
 
-    # Main:
+        if [ -z "$dsbase" -o -z "$dsparent" ] ; then
+            echo "FATAL: Could not obtain dirname and basename of dsdir='${dsdir}'." 1>&2
+            return 1
+        fi
 
-    tar -C "${dsparent}" -cf - $(cd "${dsparent}" && find "${dsbase}" -type f | egrep -v "/[.]git|$excere") | \
-        gzip -c - > "${dsarchive}"
+        tar -C "${dsparent}" -cf - \
+            $(cd "${dsparent}" && find "${dsbase}" -type f | egrep -v "/[.]git|$excere") | \
+            gzip -c - > "${dsarchive}"
+    done
 
-    pushl -r -e "$envre" -f "${dsarchive##*/}" -s "${dsarchive%/*}" "$@"
+    pushl -r -e "$envre" -f "ds*${extension}" -s "${dsarchivedir}" "$@"
     res=$?
-
-    rm -f "${dsarchive}"
-
+    (cd "${dsarchivedir}" && rm -f ds*"${extension}")
     return ${res:-1}
 }
 
