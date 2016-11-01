@@ -40,7 +40,7 @@ userconfirm () {
 # Purpose:
 #   Push identity file to ee environments.
 # Usage:
-#   eeauth [-e envregex] [-i]
+#   eeauth [-e ee-envregex] [-i] {identfile}
 # Remark:
 #   -i
 #       Interactive ie ask for user confirmation for each environment.
@@ -64,7 +64,8 @@ eeauth () {
 
     identfile="$1"
 
-    if ! [ -f "$identfile" ] ; then
+    if [ ! -f "$identfile" ] ; then
+        ls -l "$identfile"
         echo "$pname:FATAL: Bad ident file argument." 1>&2
         return 1
     fi
@@ -314,7 +315,7 @@ eesel () {
     while read eefile ; do
 
         section_exports="$(getsection "$section_search_term" "$eefile" | \
-                    sed -e 's/[][]//g' -e 's/^/export /')"
+                    sed -e 's/^[[]//g' -e 's/[]]$//g' -e 's/^/export /')"
 
         if [ -n "$section_exports" ] ; then
 
@@ -381,7 +382,7 @@ eex () {
 #   -h will override everything (search term, -a, and -g).
 #   -l will only function to supply the username for the hostname in -h.
 #
-#   -e will only affect -a ang -g options.
+#   -e will need and only affect -a ang -g options.
 #   -i will forward stdin to all calls' standard inputs.
 #   -s will only select the environment and will work only when search term is given.
 ee () {
@@ -417,7 +418,12 @@ ee () {
         shift
 
         if [ -z "${searchterm}" ] ; then
-            echo 'FAIL: Must pass an env name, or one of -g eegroup, -h hostname, -a.' 1>&2
+            echo 'FATAL: Must pass an env name, or one of -a, -g eegroup, -h hostname.' 1>&2
+
+            if [ -n "${envre}" ] ; then
+                echo "FATAL: -e needs and only affects -a ang -g options." 1>&2
+            fi
+
             return 1
         fi
     fi
