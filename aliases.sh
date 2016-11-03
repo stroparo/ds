@@ -16,21 +16,24 @@ alias findd='find . -type d'
 alias findf='find . -type f'
 alias nhr='rm nohup.out'
 alias nht='tail -9999f nohup.out'
-alias sb='subl'
 alias tpf='typeset -f'
 alias tps='typeset'
 alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
 alias xgit="alias | grep 'git '"
+
+# ##############################################################################
+# Apps
+
+alias pgc='sudo -iu postgres psql postgres'
+alias sb='subl'
 alias ya='youtube-dl -f mp3'
 alias yabest='youtube-dl -f bestaudio'
 alias yd='youtube-dl'
 alias yx='youtube-dl -x'
 
-# Ops
-alias edhosts='sudo vi /etc/hosts'
-alias pgc='sudo -iu postgres psql postgres'
+# ##############################################################################
+# APT, dpkg etc.
 
-# Ops for Debian
 alias apd='sudo aptitude update && sudo aptitude'
 alias apdnoup='sudo aptitude'
 alias apti='sudo aptitude update && sudo aptitude install -y'
@@ -42,27 +45,8 @@ alias dpkgs='dpkg -s'
 alias dpkgsel='dpkg --get-selections | egrep -i'
 alias upalt='sudo update-alternatives'
 
-# Grep color:
-if [[ $(grep --version 2>/dev/null) = *GNU* ]] ; then
-    alias grep='grep --color=auto'
-    alias egrep='egrep --color=auto'
-    alias fgrep='fgrep --color=auto'
-fi
-
-# Ls:
-if [[ $(ls --version 2>/dev/null) = *GNU* ]] ; then
-    alias ls='ls --color=auto'
-    alias l='ls -Flhi'
-    alias ll='ls -AFlhi'
-    alias lt='ls -Flrthi'
-else
-    alias l='ls -Fl'
-    alias ll='ls -AFl'
-    alias lt='ls -Flrt'
-fi
-
 # ##############################################################################
-# Git:
+# Git
 
 alias gh='git diff HEAD'
 alias gv='git mv'
@@ -95,8 +79,57 @@ if [ -n "${BASH_VERSION}" ] ; then
 fi
 
 # ##############################################################################
-# SysAdmin:
+# Grep (+ Ag ...) and ls (+ Exa ...)
 
+alias agas='ag --asm'
+alias agbat='ag --batch'
+alias agcc='ag --cc'
+alias agcl='ag --clojure'
+alias agcpp='ag --cpp'
+alias agcs='ag --csharp'
+alias agcss='ag --css'
+alias agd='ag --delphi'
+alias agel='ag --elixir'
+alias ager='ag --erlang'
+alias agh='ag --html'
+alias agj='ag --js'
+alias agm='ag --md -i'
+alias agmk='ag --mk -i'
+alias agp='ag --php'
+alias agr='ag --ruby'
+alias agrs='ag --rust'
+alias ags='ag --shell'
+alias agsa='ag --sass'
+alias agsc='ag --scala'
+alias agsq='ag --sql'
+alias agv='ag --vim'
+alias agy='ag --python'
+alias agym='ag --yaml'
+alias agx='ag --xml'
+
+# Grep color:
+if [[ $(grep --version 2>/dev/null) = *GNU* ]] ; then
+    alias grep='grep --color=auto'
+    alias egrep='egrep --color=auto'
+    alias fgrep='fgrep --color=auto'
+fi
+
+# Ls:
+if [[ $(ls --version 2>/dev/null) = *GNU* ]] ; then
+    alias ls='ls --color=auto'
+    alias l='ls -Flhi'
+    alias ll='ls -AFlhi'
+    alias lt='ls -Flrthi'
+else
+    alias l='ls -Fl'
+    alias ll='ls -AFl'
+    alias lt='ls -Flrt'
+fi
+
+# ##############################################################################
+# SysAdmin
+
+alias edhosts='sudo vi /etc/hosts'
 alias edkeys='mkdir ~/.ssh 2>/dev/null ; vi ~/.ssh/authorized_keys'
 
 alias psfe='ps -fe'
