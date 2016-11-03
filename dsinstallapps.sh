@@ -6,6 +6,15 @@
 # ##############################################################################
 # Install application scripts
 
+installexa () {
+    _is_linux || return 1
+    mkdir ~/bin || return 1
+    wget 'https://the.exa.website/releases/exa-0.4-linux-x86_64.zip' || return 1
+    unzip 'exa-0.4-linux-x86_64.zip' -d ~/bin || return 1
+    rm -f 'exa-0.4-linux-x86_64.zip'
+    chmod u+x ~/bin/exa-linux-x86_64
+}
+
 # Function installohmyzsh - Install Oh My ZSH.
 unset installohmyzsh
 installohmyzsh () {
