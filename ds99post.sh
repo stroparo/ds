@@ -21,6 +21,7 @@ unalias d 2>/dev/null
 
 chmodshells -a "${DS_HOME}"
 pathmunge -x "${DS_HOME}" "${DS_HOME}/bin" "${DS_HOME}/scripts"
+pathmunge -a -v 'EEPATH' -x "${DS_HOME}"
 
 # Post-calls: Evaluate each line in the DS_POST_CALLS variable:
 while read nextcommand ; do
