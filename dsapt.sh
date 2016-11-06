@@ -32,7 +32,7 @@ ckaptitude () {
         elog -n "$pname" 'Installing aptitude..'
 
         if sudo apt-get update ; then
-            sudo apt-get install -y aptitude 
+            sudo apt-get install -y aptitude
         else
             elog -f -n "$pname" "apt-get update."
             return 1
@@ -100,7 +100,7 @@ aptinstall () {
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
-  
+
     # Prep:
 
     if [[ $1 != dummy ]] && [ ! -r "${1}" ] ; then
@@ -161,7 +161,7 @@ aptdeploy () {
     fi
 
     if [[ $- = *i* ]] && userconfirm 'Upgrade all packages?' ; then
-        upgradeoption='-u'
+        upgradeoption='u'
     fi
 
     elog -n "$pname" 'Started.'
@@ -207,12 +207,13 @@ fixaptmodes () {
 }
 
 # Function installppa - add ubuntu ppa repositories.
+# Usage: {ppa-list-filename}
 unset installppa
 installppa () {
 
     typeset pname=installppa
-
     typeset somefail=false
+
     typeset ppalistfile="$1"
     typeset usage="${pname} {ppa file (one ppa path per line)}"
 
@@ -226,8 +227,7 @@ installppa () {
 
     for ppa in "$(cat "$ppalistfile")" ; do
 
-        if ! (ls -1 /etc/apt/sources.list.d | \
-            grep -q "$(echo "$ppa" | sed -e 's#/#-#g')")
+        if ! (ls -1 /etc/apt/sources.list.d | grep -q "$(echo "$ppa" | sed -e 's#/#-#g')")
         then
             elog -n "$pname" "Adding ppa: ${ppa}"
 

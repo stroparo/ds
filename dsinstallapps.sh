@@ -74,6 +74,14 @@ installtruecrypt () {
 # ##############################################################################
 # Desktop-most software
 
+# Function installdesktopapps - Install packages downloaded from the Internet.
+installdesktopapps () {
+    installdropbox
+    installinputfont "${INPUTFONTPATH}"
+    installpowerfonts
+    installyoutubedl
+}
+
 unset installdropbox
 installdropbox () {
 
