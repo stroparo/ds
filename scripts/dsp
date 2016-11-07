@@ -105,7 +105,7 @@ dsp () {
     : ${CMDZERO:=${1%% *}}
     setlogdir "${LOGDIR}" || return 10
 
-    # Enforce number type: 
+    # Enforce number type:
     [[ ${MAXPROCS} = [1-9]* ]] || MAXPROCS=4
     [[ ${N} = [1-9]* ]] || N=1
 
