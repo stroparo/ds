@@ -644,7 +644,7 @@ mutail () {
     for f in "$@" ; do
         ${first} || echo ''
 
-        echo "==> ${f} <=="
+        echo "==> ${f} <==" 1>&2
         tail -n ${lines:-10} "${f}"
 
         first=false
