@@ -9,7 +9,7 @@
 cthttpd () { sudo "/etc/init.d/apache${2:-2}"  "${1:-restart}" ; }
 ctpg () { sudo "/etc/init.d/postgresql${2}" "${1:-restart}" ; }
 dropcaches3 () { echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null ; }
-pgr () { ps -ef | egrep -i ${options} "$@" | egrep -v "grep.*(${1})" ; }
+pgr () { ps -ef | egrep -i "$1" | egrep -v "grep.*(${1})" ; }
 setautobash () { egrep -qw bash "$HOME/.profile" || echo 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' >> "$HOME/.profile" ; }
 setvi () { echo 'set -o vi' | tee -a "$HOME/.profile" "$HOME/.bashrc" ; }
 
