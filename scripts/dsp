@@ -125,8 +125,7 @@ dsp () {
             ilogsuffix="$(echo "${flatentry}" | \
                 sed -e 's/^[^a-zA-Z0-9_ -]*\([a-zA-Z0-9_ -]*\).*$/\1/' \
                     -e 's/ /_/g' \
-                    -e 's/__*$//' | \
-                tr -s '_')"
+                    -e 's/__*$//')"
 
             iargs="'${entry}'"
 
@@ -176,7 +175,7 @@ dsp () {
             ilogsuffix="${LOGSUFFIXMULTI}${pcount}"
         fi
 
-        ilog="${LOGDIR}/${CMDZERO}_${TIMESTAMP}_${ilogsuffix}.log"
+        ilog="$(echo "${LOGDIR}/${CMDZERO}_${TIMESTAMP}_${ilogsuffix}.log" | tr -s '_')"
 
         if $DOTEE ; then LOGS=(${LOGS[@]} "$ilog") ; fi
 
