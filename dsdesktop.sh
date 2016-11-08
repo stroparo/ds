@@ -7,7 +7,7 @@
 # Desktop routines
 
 cbf () { cb < "$1"; }
-cbssh () { cb < "${HOME}/.ssh/id_rsa.pub" }
+cbssh () { cb < "${HOME}/.ssh/id_rsa.pub" ; }
 
 # Function getmp3 - Extracts argument file mp3 to arg.mp3 via avconv utility.
 unset getmp3
