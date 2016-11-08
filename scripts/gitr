@@ -11,7 +11,7 @@ NAME
     ${PNAME} - exec git for all descending gits from current directory
 
 SYNOPSIS
-    ${PNAME} 
+    ${PNAME}
     ${PNAME} -h
     ${PNAME} [-c newCommandInsteadOfGit] [-v] [command args]
 
@@ -102,7 +102,7 @@ EOF
 }
 
 rcmdcall () {
-(paralleljobs -p 32 -q -t -z "$PROGRAM" "$GITRCMD" <<EOF
+(dsp -p 32 -q -t -z "$PROGRAM" "$GITRCMD" <<EOF
 $(
 if ${FULL:-false} ; then
     find . -type d -name ".git"

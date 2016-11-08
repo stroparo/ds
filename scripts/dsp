@@ -119,11 +119,22 @@ dsp () {
 
         # Argument list:
         if [ "${N}" -eq 1 ] ; then
+
             flatentry="$(echo "${entry}" | sed -e 's#/#_#g')"
-            ilogsuffix="$(echo "${flatentry}" | sed -e 's/\(^[a-zA-Z0-9_ ]*\).*$/\1/' -e 's/ /_/g')"
+
+            ilogsuffix="$(echo "${flatentry}" | \
+                sed -e 's/^[^a-zA-Z0-9_ -]*\([a-zA-Z0-9_ -]*\).*$/\1/' \
+                    -e 's/ /_/g' \
+                    -e 's/__*$//' | \
+                tr -s '_')"
+
             iargs="'${entry}'"
+
         elif [ "${N}" -gt 1 ] ; then
-            [ "${argcount}" -eq "${N}" ] && argcount=0
+
+            if [ "${argcount}" -eq "${N}" ] ; then
+                argcount=0
+            fi
 
             if [ "${entry}" != "${HALTSTRING}" ] ; then
                 argcount=$((argcount+1))
@@ -134,7 +145,9 @@ dsp () {
                     iargs="${iargs} '${entry}'"
                 fi
 
-                [ "${argcount}" -lt "${N}" ] && continue
+                if [ "${argcount}" -lt "${N}" ] ; then
+                    continue
+                fi
             fi
         else
             $QUIET || elog -f -n "${PNAME}" \
