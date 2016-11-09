@@ -140,13 +140,17 @@ alias psu='ps -ef|grep "${USER}"'
 alias psuu='ps -u "${UID:-$(id -u)}" -U "${UID:-$(id -u)}" u'
 alias psuunosh='ps -u "${UID:-$(id -u)}" -U "${UID:-$(id -u)}" u | grep -v bash | grep -v sshd'
 
-# Aliases - admin - Linux & Cygwin:
-if [[ "$(uname -a)" = *[Ll]inux* ]] || [[ "$(uname -a)" = *[Cc]ygwin* ]] ; then
-    echo '' > /dev/null
 # Aliases - admin - IBM AIX platform:
-elif [[ $(uname) = *[Aa][Ii][Xx]* ]] ; then
+if [[ $(uname) = *[Aa][Ii][Xx]* ]] ; then
+
     alias psft='ps -fT1'
     alias psftu='ps -fT1|awk "\$1 ~ /^$USER$/"'
+
+# Aliases - admin - Linux & Cygwin:
+# elif [[ "$(uname -a)" = *[Ll]inux* ]] || [[ "$(uname -a)" = *[Cc]ygwin* ]] ; then
+
+#     ...
+
 fi
 
 # ##############################################################################
