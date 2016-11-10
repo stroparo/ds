@@ -6,10 +6,10 @@ _ssh_agent_start () {
 
     # Make directory if needed:
     [ -d "${SSH_ENV%/*}" ] || mkdir -p "${SSH_ENV%/*}"
-    
+
     ssh-agent | sed 's/^echo/#echo/' > "$SSH_ENV"
 
-    chmod 600 "$SSH_ENV" 
+    chmod 600 "$SSH_ENV"
     . "$SSH_ENV" > /dev/null
 
     ssh-add
@@ -19,12 +19,12 @@ _ssh_agent_start () {
 _ssh_agent_test () {
 
     ssh-add -l > /dev/null 2>&1
-  
+
     if [ $? -eq 2 ]; then
         echo 'Failure: Another login session is already using the ssh-agent.' 1>&2
         return 1
     else
-  
+
         if ssh-add -l | grep -q "The agent has no identities" ; then
             ssh-add
 
@@ -37,14 +37,14 @@ _ssh_agent_test () {
             echo 'SSH agent identities:' 1>&2
             ssh-add -l 1>&2
         fi
-  
+
     fi
 }
 
 _ssh_agent () {
 
     unset _ssh_agent_verbose
-  
+
     OPTIND=1
     while getopts ':v' opt ; do
         case "${opt}" in
