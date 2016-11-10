@@ -4,6 +4,10 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
+# Dependencies:
+# ds00.sh
+
+# ##############################################################################
 # EE - Enter-Environment routines for ssh and scp operations
 
 # Globals:
@@ -23,52 +27,33 @@
 # eecmd='some command'
 # eeid='some .pem or other file to be handled to ssh -i option'
 
-alias eep='scp ${eeid:+ -i "${eeid}"}'
+eecpfrom () { eesel "$1" ; shift ; scp "${ee}:${1}" "$2" ; }
+eecpto () { eesel "$1" ; shift ; scp "$1" "${ee}:${2}" ; }
 
-# Function userconfirm - Ask a question and yield success if user responded [yY]*
-unset userconfirm
-userconfirm () {
-    typeset confirm
-    typeset result=1
-    echo ${BASH_VERSION:+-e} "$@" "[y/N] \c"
-    read confirm
-    if [[ $confirm = [yY]* ]] ; then return 0 ; fi
-    return 1
-}
-
-# Function eeauth
-# Purpose:
-#   Push identity file to ee environments.
-# Usage:
-#   eeauth [-e ee-envregex] [-i] {identfile}
-# Remark:
-#   -i
-#       Interactive ie ask for user confirmation for each environment.
 eeauth () {
 
     typeset pname=eeauth
-
+    typeset usage="Function eeauth - Push identity file to ee environments
+Syntax: [-e ee-envregex] [-i] {identfile}
+Remark: -i option triggers user confirmation for each environment.
+"
     typeset expression
     typeset identfile
     typeset interactive=false
 
     typeset oldind="${OPTIND}"
     OPTIND=1
-    while getopts ':e:i' opt ; do
+    while getopts ':e:hi' opt ; do
         case "${opt}" in
-        e) expression="$OPTARG";;
-        i) interactive=true;;
+            e) expression="$OPTARG";;
+            h) echo "$usage" ; return ;;
+            i) interactive=true;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
     identfile="$1"
-
-    if [ ! -f "$identfile" ] ; then
-        ls -l "$identfile"
-        echo "$pname:FATAL: Bad ident file argument." 1>&2
-        return 1
-    fi
+    ! ls -l "$identfile" && return 1
 
     for env in $(eeln -q | egrep "${expression}") ; do
         if $interactive && ! userconfirm "Push to '${env}' env?" ; then
@@ -79,38 +64,34 @@ eeauth () {
     done
 }
 
-# Function eeauthrm
-# Purpose:
-#   Remove authorized key from hosts.
 eeauthrm () {
 
     typeset pname=eeauthrm
-
+    typeset usage="Function eeauthrm - Remove authorized key from hosts
+Syntax: {pub-key text, literal for the remote fgrep matching}
+"
     typeset expression
     typeset interactive=false
     typeset keytext
 
     typeset oldind="${OPTIND}"
     OPTIND=1
-    while getopts ':e:i' opt ; do
+    while getopts ':e:hi' opt ; do
         case "${opt}" in
-        e) expression="$OPTARG";;
-        i) interactive=true;;
+            e) expression="$OPTARG";;
+            h) echo "$usage" ; return ;;
+            i) interactive=true;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
-    keytext="$(cat "$(cygpath "$1")")"
-
-    if [ -z "$keytext" ] ; then
-        echo "$pname:FATAL: Nil public key text." 1>&2
-        return 1
-    fi
+    keytext="$1"
+    [ -z "$keytext" ] && echo "$usage" && return
 
     for env in $(eeln -q) ; do
-        if [ -n "$expression" ] && ! echogrep -q "${expression}" "${env}" ; then
-            continue
-        fi
+
+        (echo "$env" | grep -q "${expression}") || continue
+
         if $interactive && ! userconfirm "Remove from '${env}' env?" ; then
             continue
         fi
@@ -128,7 +109,6 @@ fi
 EOF
     done
 }
-
 
 # Function eefiles - Expand ee.txt filenames from paths in EEPATH
 eefiles () {
@@ -338,6 +318,7 @@ eesel () {
 $(eefiles)
 EOF
 
+    echo "eesel: WARN: No environment found for '$section_search_term'."
     return 1
 }
 

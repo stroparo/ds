@@ -6,6 +6,11 @@
 # ##############################################################################
 # DS base objects
 
+pfatal="FATAL:"
+pinfo="INFO:"
+pskip="SKIP:"
+pwarn="WARN:"
+
 # Changedir:
 alias cdbak='d "${BACKUP_DIRECTORY}" -A'
 alias cde='d "${DS_ENV}" -A'
@@ -106,7 +111,6 @@ _any_not_w () {
 # Filesystem
 
 # Function chmodshells - Sets mode for scripts inside the specified directories.
-unset chmodshells
 chmodshells () {
     typeset oldind="$OPTIND"
 
@@ -145,14 +149,12 @@ chmodshells () {
 }
 
 # Function enforcedir - Tries to create the directory and fails if not rwx.
-unset enforcedir
 enforcedir () {
     mkdir -p "$@" 2>/dev/null
     if _any_dir_not_rwx "$@" ; then return 1 ; fi
 }
 
 # Function findscripts - Finds script type files in root dirs passed as arguments.
-unset findscripts
 findscripts () {
     typeset re_shells='perl|python|ruby|sh'
     awk 'FNR == 1 && $0 ~ /^#!.*('"$re_shells"') */ { print FILENAME; }' \
@@ -167,7 +169,6 @@ findscripts () {
 # Pick argument directories' scripts and yield corresponding aliases with no extension.
 # Syntax:
 # {directory}1+
-unset aliasnoext
 aliasnoext () {
 
     typeset oldind="${OPTIND}"
@@ -199,7 +200,6 @@ EOF
 }
 
 # Function appendto - Append to variable (arg1), the given text (arg2).
-unset appendto
 appendto () {
     if [ -z "$(eval "echo \"\$${1}\"")" ] ; then
         eval "${1}=\"${2}\""
@@ -211,14 +211,12 @@ ${2}\""
 
 # Function cyd - cd to the disk drive letter argument; fails if not in cygwin.
 # Syntax: cyd {a|b|c|d|e|f|...}
-unset cyd 2>/dev/null
 cyd () {
     _is_cygwin && cd /cygdrive/"${1:-c}" && ls -AFhl 1>&2
 }
 
 # Function ckenv - check number of arguments and sets hasgnu ("GNU is not Unix").
 # Syntax: {min-args} [max-args=min-args]
-unset ckenv
 ckenv () {
     typeset args_slice_min="${1:-0}"
     typeset args_slice_max="${2:-0}"
@@ -240,7 +238,6 @@ ckenv () {
 # Function d - change directory and execute pwd followed by an ls.
 # Syntax: {directory}
 unalias d 2>/dev/null
-unset d
 d () {
     dir="${1}"
     shift
@@ -255,7 +252,6 @@ d () {
 }
 
 # Function echodots - Echoes dots between 200s or number of seconds in arg1.
-unset echodots
 echodots () {
     trap return SIGPIPE
     while sleep "${1:-4}" ; do
@@ -270,7 +266,6 @@ echodots () {
 }
 
 # Function getnow - setup NOW* and TODAY* environment variables.
-unset getnow
 getnow () {
     export NOW_HMS="$(date '+%OH%OM%OS')"
     export NOW_YMDHM="$(date '+%Y%m%d%OH%OM')"
@@ -281,7 +276,6 @@ getnow () {
 
 # Function loop - pass a command to be executed every secs seconds.
 # Syntax: [-d secs] command
-unset loop
 loop () {
     typeset interval=10
 
@@ -309,7 +303,6 @@ loop () {
 # Syntax: [-v varname] [-x] {path}1+
 # Remark:
 #   -x causes variable to be exported.
-unset pathmunge
 pathmunge () {
     typeset oldind="${OPTIND}"
 
@@ -346,7 +339,6 @@ pathmunge () {
 
 # Function ps1enhance - make PS1 better, displaying user, host, time, $? and the
 #   current directory.
-unset ps1enhance
 ps1enhance () {
     if [ -n "${BASH_VERSION}" ] ; then
         export PS1='[\[\e[32m\]\u@\h\[\e[0m\] \t \$?=$? \W]\$ '
@@ -357,14 +349,13 @@ ps1enhance () {
 
 # Function setlogdir - create and check log directory.
 # Syntax: {log-directory}
-unset setlogdir
 setlogdir () {
     typeset logdir="${1}"
 
     mkdir -p "${logdir}" 2>/dev/null
 
     if [ ! -d "${logdir}" -o ! -w "${logdir}" ] ; then
-        echo "FATAL: '$logdir' log dir unavailable." 1>&2
+        echo "$fatal '$logdir' log dir unavailable." 1>&2
         return 10
     fi
 }
@@ -373,19 +364,17 @@ setlogdir () {
 #  Tilde paths are accepted, as the expansion is yielded
 #  via eval. Expanded directories are ignored.
 #  Stdout is fully redirected to stderr.
-unset sourcefiles
 sourcefiles () {
 
-    typeset oldind="${OPTIND}"
     typeset pname='sourcefiles'
     typeset quiet=false
     typeset tolerant=false
     typeset verbose=false
 
-    typeset name src srcresult
+    typeset name src srcs srcresult
     typeset nta='Non-tolerant abort.'
 
-    # Options:
+    typeset oldind="${OPTIND}"
     OPTIND=1
     while getopts ':n:qtv' opt ; do
         case "${opt}" in
@@ -397,17 +386,17 @@ sourcefiles () {
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
-    if $verbose && test -n "${name}" ; then
-        $quiet || elog -n "${pname}" "GROUP '${name}'"
+    if test -n "${name}" && $verbose && ! $quiet ; then
+        echo "==> Sourcing group '${name}'" 1>&2
     fi
 
     for globpattern in "$@" ; do
 
-        if ! eval ls -1d ${globpattern} >/dev/null 2>&1 ; then
-            $quiet || elog -s -n "${pname}" "Glob '${globpattern}' had no matches."
+        srcs="$(eval ls -1d ${globpattern})"
 
+        if [ -z "$srcs" ] ; then
             if ! ${tolerant} ; then
-                $quiet || elog -f -n "${name}" "${nta} Bad glob."
+                $quiet || echo "$pfatal $nta Bad glob." 1>&2
                 return 1
             fi
             continue
@@ -416,14 +405,13 @@ sourcefiles () {
         exec 4<&0
 
         while read src ; do
-            if $verbose ; then
-                $quiet || elog -n "${pname}" "=> '${src}'.."
-            fi
+
+            $verbose && ! $quiet && echo "==> Sourcing '${src}' ..." 1>&2
 
             if [ -r "${src}" ] ; then
                 . "${src}" 1>&2
             else
-                $quiet || elog -w -n "${pname}" "'${src}' was not readable."
+                $quiet || echo "$warn '${src}' is not readable." 1>&2
                 false
             fi
             srcresult=$?
@@ -450,7 +438,6 @@ EOF
 }
 
 # Function userconfirm - Ask a question and yield success if user responded [yY]*
-unset userconfirm
 userconfirm () {
     typeset confirm
     typeset result=1
@@ -461,7 +448,6 @@ userconfirm () {
 }
 
 # Function userinput - Read value to variable userinput.
-unset userinput
 userinput () {
 
     echo ${BASH_VERSION:+-e} "$@: \c"
@@ -480,7 +466,6 @@ upcase () { tr '[[:lower:]]' '[[:upper:]]' ; }
 
 # Function appendunique - If string not present in file, append to it.
 # Syntax: string file1 [file2 ...]
-unset appendunique
 appendunique () {
 
     typeset msgerrforfile="appendunique: ERROR for file"
@@ -501,14 +486,13 @@ appendunique () {
     done
 
     if ${failedsome} ; then
-        echo "appendunique: FATAL: Text was '${text}'." 1>&2
+        echo "appendunique: $fatal Text was '${text}'." 1>&2
         return 1
     fi
 }
 
 # Function ckeof - Check whether final EOL (end-of-line) is missing.
 # Syntax: [file-or-dir1 [file-or-dir2...]]
-unset ckeof
 ckeof () {
     typeset enforcecwd="${1:-.}" ; shift
     typeset files
@@ -535,7 +519,6 @@ EOF
 
 # Function ckwineol - check whether any file has windows end-of-line.
 # Syntax: [file-or-dir1 [file-or-dir2...]]
-unset ckwineol
 ckeolwin () {
     typeset enforcecwd="${1:-.}" ; shift
     typeset files
@@ -562,7 +545,6 @@ EOF
 
 # Function dos2unix - remove CR Windows end-of-line (0x0d) from file.
 # Syntax: [file1 [file2...]]
-unset dos2unix
 dos2unix () {
     for i in "$@" ; do
         echo "Deleting CR chars from '${i}' (temp '${i}.u').."
@@ -572,7 +554,6 @@ dos2unix () {
 }
 
 # Function echogrep - grep echoed arguments instead of files.
-unset echogrep
 echogrep () {
     typeset re
     typeset iopt qopt vopt
@@ -596,7 +577,6 @@ EOF
 }
 
 # Function elog - echoes a string to standard error.
-unset elog
 elog () {
 
     typeset msgtype="INFO"
@@ -624,7 +604,6 @@ elog () {
 
 # Function fixeof - Fix and add final EOL (end-of-line) when missing.
 # Syntax: [file-or-dir1 [file-or-dir2...]]
-unset fixeof
 fixeof () {
     [ "${1}" = '-v' ] && verbose=true && shift
     typeset enforcecwd="${1:-.}" ; shift
@@ -657,7 +636,6 @@ EOF
 # Function getsection
 # Purpose:
 #   Picks up a section from a text file, sections being formatted like old ini files.
-unset getsection
 getsection () {
 
     typeset pname=getsection
@@ -679,7 +657,6 @@ getsection () {
 
 # Function greperr - Checks files' last line is a sole zero.
 # Remark: Common case scenario, an exit status $? logged last by a command.
-unset greperr
 greperr () {
     for f in "$@" ; do
         if tail -n 1 "${f}" | grep -qv '[[:space:]]*0$' ; then
@@ -691,7 +668,6 @@ greperr () {
 
 # Function mucat - cat multiple files.
 # Syntax: mucat file1[ file2[ file3 ...]]
-unset mucat
 mucat () {
     typeset first=true
 
@@ -705,18 +681,20 @@ mucat () {
     done
 }
 
-# Function mutail - tail multiple files.
-# Syntax: mutail [-n lines] file1[ file2[ file3 ...]]
-unset mutail
 mutail () {
+
+    typeset usage="Function mutail - tail multiple files.
+Syntax: mutail [-n lines] file1[ file2[ file3 ...]]
+"
     typeset first=true
     typeset lines=10
 
-    while getopts ':n:' opt ; do
+    while getopts ':hn:' opt ; do
         case "${opt}" in
-        n)
-            lines="${OPTARG}"
-            ;;
+            h) echo "$usage" ; return ;;
+            n)
+                lines="${OPTARG}"
+                ;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND=1
@@ -731,17 +709,17 @@ mutail () {
     done
 }
 
-# Function printawk - Prints fields as read by awk.
-unset printawk
 printawk () {
+
     typeset fieldsep
-    typeset oldind="${OPTIND}"
     typeset outsep
     typeset pattern
     typeset printargs
-    typeset usage=\
-'Syntax: printawk -F fieldsep -O outsep -p pattern {1st field} [2nd field [3rd ...]]'
+    typeset usage="Function printawk - Prints fields as read by awk
+Syntax: printawk -F fieldsep -O outsep -p pattern {1st field} [2nd field [3rd ...]]
+"
 
+    typeset oldind="${OPTIND}"
     OPTIND=1
     while getopts ':F:hO:p:' opt ; do
         case "${opt}" in
