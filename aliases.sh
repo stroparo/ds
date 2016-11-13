@@ -26,7 +26,7 @@ alias xgit="alias | grep 'git '"
 
 alias pgc='sudo -iu postgres psql postgres'
 alias sb='subl'
-alias ya='youtube-dl -f mp3'
+alias ya='youtube-dl -f 140'
 alias yabest='youtube-dl -f bestaudio'
 alias yd='youtube-dl'
 alias yx='youtube-dl -x'
