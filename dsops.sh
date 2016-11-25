@@ -6,55 +6,67 @@
 # ##############################################################################
 # Admin & ops functions
 
-cthttpd () { sudo "/etc/init.d/apache${2:-2}"  "${1:-restart}" ; }
+ctht () { sudo "/etc/init.d/apache${2:-2}"  "${1:-restart}" ; }
+ctlamp () { "${LAMPHOME}/ctlscript.sh" "${1:-restart}" ; }
 ctpg () { sudo "/etc/init.d/postgresql${2}" "${1:-restart}" ; }
-dropcaches3 () { echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null ; }
-pgr () { ps -ef | egrep -i "$1" | egrep -v "grep.*(${1})" ; }
-setautobash () { egrep -qw bash "$HOME/.profile" || echo 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' >> "$HOME/.profile" ; }
-setvi () { echo 'set -o vi' | tee -a "$HOME/.profile" "$HOME/.bashrc" ; }
 
-# Function alertdeadproc - Starts beeping alert on process death.
 alertdeadproc () {
-  [ -z "${1}" ] && echo 'Usage: {pid}' 1>&2 && return 1
-  while [ "$(ps -T "${1}" | wc -l | cut -d' ' -f1)" -gt 0 ] ; do sleep 1 ; done
-  while true ; do echo '\a' ; sleep 8 ; done
+    # Awaits found processes to finish then starts beeping until interrupted.
+    # Syn: {ERE to filter ps output}
+    while pgr "${1}" > /dev/null ; do sleep 1 ; done
+    while true ; do echo '\a' ; sleep 8 ; done
 }
 
-ctlamp () {
-    if _is_cygwin; then
-        "${LAMPHOME}/ctlscript.sh" "${1:-restart}"
-    else
-        sudo "${LAMPHOME}/ctlscript.sh" "${1:-restart}"
-    fi
+autobash () {
+    # Updates $HOME/.profile to call bash on interactive sessions.
+    appendunique \
+        'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' \
+        "$HOME/.profile"
 }
 
-# Function makeat - run configure, make & makeinstall for custom dir/prefix.
-# Default directory will be ~/opt/root
+autovimode () {
+    # Updates .bashrc and .profile at $HOME with 'set -o vi'.
+    appendunique 'set -o vi' "$HOME/.bashrc" "$HOME/.profile"
+}
+
+dropcaches3 () {
+    # (Linux) Drops caches with the '3' command (see 'man drop_caches').
+    _is_linux || return
+    echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null
+}
+
 makeat () {
+    # Call configure, make & makeinstall for custom dir/prefix.
+    # Default prefix is ~/opt/root
+    # Syn: {prefix directory}
 
-    mkdir "${1:-${HOME}/opt/root}" 2> /dev/null || return
+    mkdir "${1:-${HOME}/opt/root}" 2> /dev/null || return 1
+
     ./configure --prefix="${1:-${HOME}/opt/root}" && \
-    make && \
-    make install
-
-    echo "Exit status: ""$?"
+        make && \
+            make install
 }
 
-# Function mungebinlib - munge bin* dirs to PATH and lib* to library
-#   variables which descend from the root directory argument.
 mungebinlib () {
+    # Munge descendant bin* and lib* directories to PATH and library variables.
+    # Syn: {directory}
 
     typeset mungeroot="$1"
-
-    if [ ! -e "$mungeroot" ] ; then return ; fi
+    [ -e "$mungeroot" ] || return 1
 
     pathmunge -x $(find "$mungeroot" -name 'bin*' -type d)
     pathmunge -a -x -v LIBPATH $(find "$mungeroot" -name 'lib*' -type d)
     export LD_LIBRARY_PATH="$LIBPATH${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
 }
 
-# Function topu - top user processes, or topas when working in AIX.
+pgr () {
+    # pgrep emulator.
+    # Syn: {ERE to filter ps output}
+    ps -ef | egrep -i "$1" | egrep -v "grep.*(${1})"
+}
+
 topu () {
+    # Outputs top info for user processes, or topas when called in AIX.
     if _is_aix ; then
         topas -U "${USER}" -P
     else
@@ -65,14 +77,15 @@ topu () {
 # ##############################################################################
 # Java
 
-# Function loadjava - load environment variables based on JAVA_HOME path.
-#  Option -v displays JAVA_HOME.
-# Syntax: [-v] [JAVA_HOME override]
 loadjava () {
-    typeset oldind="${OPTIND}"
-    typeset doverbose
-    typeset isjdk
+    # Loads environment variables based on JAVA_HOME path.
+    # Syn: [-v] [JAVA_HOME override]
+    # -v displays JAVA_HOME.
 
+    typeset doverbose
+    typeset isjdk # false repr must be empty value for later param expansion.
+
+    typeset oldind="${OPTIND}"
     OPTIND=1
     while getopts ':v' opt ; do
         case "${opt}" in
@@ -112,8 +125,6 @@ loadjava () {
     export LD_LIBRARY_PATH="${LD_LIBRARY_PATH%:}"
     export LIBPATH="${LIBPATH}:${LD_LIBRARY_PATH}"
     export PATH="${PATH%:}"
-
-    unset isjdk
 }
 
 # ##############################################################################
