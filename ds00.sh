@@ -45,6 +45,7 @@ _all_not_null () {
 }
 
 _any_dir_not_r () {
+    # Tests if any of the directory arguments are not readable.
     for i in "$@" ; do
         if [ ! -d "${1}" -o ! -r "${1}" ] ; then
             return 0
@@ -54,6 +55,7 @@ _any_dir_not_r () {
 }
 
 _any_dir_not_w () {
+    # Tests if any of the directory arguments are not writable.
     for i in "$@" ; do
         if [ ! -d "${1}" -o ! -w "${1}" ] ; then
             return 0
@@ -63,6 +65,7 @@ _any_dir_not_w () {
 }
 
 _any_dir_not_rwx () {
+    # Tests if any of the directory arguments are neither readable nor w nor x.
     for i in "$@" ; do
         if [ ! -d "${1}" -o ! -r "${1}" -o ! -w "${1}" -o ! -x "${1}" ] ; then
             return 0
@@ -72,6 +75,7 @@ _any_dir_not_rwx () {
 }
 
 _any_exists () {
+    # Tests if any of the arguments exist.
     for i in "$@" ; do
         if [ -e "${1}" ] ; then
             return 0
@@ -81,6 +85,7 @@ _any_exists () {
 }
 
 _any_null () {
+    # Tests if any of the arguments is null.
     for i in "$@" ; do
         if [ -z "${i}" ] ; then
             return 0
@@ -90,6 +95,7 @@ _any_null () {
 }
 
 _any_not_r () {
+    # Tests if any of the arguments is not readable.
     for i in "$@" ; do
         if [ -n "${1}" ] && [ ! -r "${1}" ] ; then
             return 0
@@ -99,6 +105,7 @@ _any_not_r () {
 }
 
 _any_not_w () {
+    # Tests if any of the arguments is not writable.
     for i in "$@" ; do
         if [ -n "${1}" ] && [ ! -w "${1}" ] ; then
             return 0
