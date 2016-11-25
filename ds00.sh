@@ -637,10 +637,8 @@ EOF
 # Purpose:
 #   Picks up a section from a text file, sections being formatted like old ini files.
 getsection () {
-
-    typeset pname=getsection
-    typeset filename="$2"
     typeset sectionsearch="$1"
+    typeset filename="$2"
 
     awk '
     # Find the entry:
@@ -652,7 +650,6 @@ getsection () {
     # Stop on next entry after printing:
     inbody && $0 ~ /^ *\[/ { exit 0; }
     ' "${filename}"
-
 }
 
 # Function greperr - Checks files' last line is a sole zero.
