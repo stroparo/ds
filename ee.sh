@@ -295,7 +295,7 @@ eesel () {
     while read eefile ; do
 
         section_exports="$(getsection "$section_search_term" "$eefile" | \
-                    sed -e 's/^[[]//g' -e 's/[]]$//g' -e 's/^/export /')"
+                    sed -e 's/ *= *[[]/=/' -e 's/[]] *$//' -e 's/^/export /')"
 
         if [ -n "$section_exports" ] ; then
 
