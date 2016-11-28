@@ -399,7 +399,7 @@ sourcefiles () {
 
     for globpattern in "$@" ; do
 
-        srcs="$(eval ls -1d ${globpattern})"
+        srcs="$(eval ls -1d ${globpattern} 2>/dev/null)"
 
         if [ -z "$srcs" ] ; then
             if ! ${tolerant} ; then
@@ -436,7 +436,7 @@ sourcefiles () {
                 fi
             fi
         done <<EOF
-$(eval ls -1d ${globpattern} 2>/dev/null)
+${srcs}
 EOF
     done
     if $verbose && test -n "${name}" ; then
