@@ -223,7 +223,7 @@ eel () {
             waitingdesc = 0;
         }' \
             "${eefile}" | \
-            egrep -i "$envre"
+                egrep -i "$envre"
     done <<EOF
 $(eefiles)
 EOF
