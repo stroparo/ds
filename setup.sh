@@ -15,7 +15,7 @@ checkEnv () {
     elif [ -e "${PROFILE_PATH}" ] ; then
 
         if [ ! -r "${PROFILE_PATH}" -o ! -w "${PROFILE_PATH}" ] ; then
-            echo "FATAL: there is a profile ('${PROFILE_PATH}') already, but it was not fully accessible (rw)." 1>&2
+            echo "FATAL: '${PROFILE_PATH}' exists but no read or write mode enabled." 1>&2
             exit 1
         fi
 
@@ -45,7 +45,7 @@ main () {
     else
         echo "DS_HOME=${DS_HOME}" 1>&2
         echo "PROFILE_PATH=${PROFILE_PATH}" 1>&2
-        echo "FATAL: DS could not be loaded for this setup.sh's execution." 1>&2
+        echo "FATAL: failed setting DS up because it could not be loaded." 1>&2
     fi
 }
 
