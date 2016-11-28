@@ -180,19 +180,18 @@ EOF
     return ${res:-1}
 }
 
-# Function eel
-# Purpose:
-#   Enter environment - List available environments in EEPATH's ee.txt files:
 eel () {
+    # Enter environment - List available environments in EEPATH's ee.txt files.
 
+    typeset dodesc=0
     typeset envre
     typeset quiet=false
 
-    # Options:
     typeset oldind="${OPTIND}"
     OPTIND=1
-    while getopts ':e:q' option ; do
+    while getopts ':de:q' option ; do
         case "${option}" in
+            d) dodesc=1;;
             e) envre="$OPTARG";;
             q) quiet=true;;
         esac
@@ -205,7 +204,9 @@ eel () {
             echo "==> '${eefile}' <==" 1>&2
         fi
 
-        awk '/^ *\[.*\] *$/ {
+        awk -vdodesc=${dodesc} '
+
+        /^ *\[.*\] *$/ {
             if (waitingdesc) {
                 print name;
             }
@@ -219,7 +220,11 @@ eel () {
         /^ *eedesc *=/ {
             gsub(/'"'"'| *eedesc= */, "");
             desc = $0;
-            print name ": " desc;
+            if (dodesc) {
+                print name ": " desc;
+            } else {
+                print name;
+            }
             waitingdesc = 0;
         }' \
             "${eefile}" | \

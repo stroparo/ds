@@ -215,7 +215,7 @@ checkEnv
 sourceds || exit "$?"
 
 if [ -n "${ENVREGEX}" ] ; then
-    envlist="$(eel -e "${ENVREGEX}" | cut -d: -f1)"
+    envlist="$(eel -e "${ENVREGEX}")"
 else
     envlist="$(for envname in "$@" ; do echo "${envname}" ; done)"
 fi
