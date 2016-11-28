@@ -55,7 +55,7 @@ Remark: -i option triggers user confirmation for each environment.
     identfile="$1"
     ! ls -l "$identfile" && return 1
 
-    for env in $(eeln -q | egrep "${expression}") ; do
+    for env in $(eel -q | egrep "${expression}") ; do
         if $interactive && ! userconfirm "Push to '${env}' env?" ; then
             continue
         fi
@@ -88,7 +88,7 @@ Syntax: {pub-key text, literal for the remote fgrep matching}
     keytext="$1"
     [ -z "$keytext" ] && echo "$usage" && return
 
-    for env in $(eeln -q) ; do
+    for env in $(eel -q) ; do
 
         (echo "$env" | grep -q "${expression}") || continue
 
@@ -229,46 +229,6 @@ eel () {
         }' \
             "${eefile}" | \
                 egrep -i "$envre"
-    done <<EOF
-$(eefiles)
-EOF
-}
-
-# Function eeln
-# Purpose:
-#   Enter environment list env names only (no description).
-eeln () {
-
-    typeset envre
-    typeset quiet=false
-
-    # Options:
-    typeset oldind="${OPTIND}"
-    OPTIND=1
-    while getopts ':e:q' option ; do
-        case "${option}" in
-        e) envre="$OPTARG";;
-        q) quiet=true;;
-        esac
-    done
-    shift $((OPTIND-1)) ; OPTIND="${oldind}"
-
-    while read eefile ; do
-
-        if ! $quiet ; then
-            echo "==> '${eefile}' <==" 1>&2
-        fi
-
-        awk '/^ *\[.*\] *$/ {
-            gsub(/[][]/, "");
-            name = $0;
-            if (name !~ /^groups$/) {
-                print;
-            }
-        }' \
-            "${eefile}" | \
-            egrep -i "$envre"
-
     done <<EOF
 $(eefiles)
 EOF
@@ -464,7 +424,7 @@ EOF
             fi
         done
     elif $doall ; then
-        for i in $(eeln) ; do
+        for i in $(eel) ; do
             if echogrep -q "$envre" "$i" ; then
                 if ${eestdinon} ; then
                     ee "$i" "$@" <<EOF
