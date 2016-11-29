@@ -117,16 +117,15 @@ _any_not_w () {
 # ##############################################################################
 # Filesystem
 
-# Function chmodshells - Sets mode for scripts inside the specified directories.
 chmodshells () {
-    typeset oldind="$OPTIND"
+    # Sets mode for scripts inside the specified directories.
 
     typeset addaliases=false
     typeset addpaths=false
     typeset mode='u+rwx'
     typeset verbose
 
-    # Options:
+    typeset oldind="$OPTIND"
     OPTIND=1
     while getopts ':am:pv' opt ; do
         case "${opt}" in
