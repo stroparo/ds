@@ -8,7 +8,6 @@
 
 # Function archive - backup a set of directories which can also be given as variable names.
 # Syntax: [-p prefix] {destination-dir} {src-paths|src-path-variable-names}1+
-unset archive
 archive () {
     typeset oldind="$OPTIND"
     typeset bakpath dest src srcident srcpath
@@ -92,7 +91,6 @@ archive () {
 # Options:
 #   -u triggers uncompressed tars
 #   -w triggers waiting for the last background process
-unset childrentgz
 childrentgz () {
     typeset oldind="$OPTIND"
     typeset srcdir destdir maxprocs paracmd dowait
@@ -166,7 +164,6 @@ EOF
 # Deps: dudesc, dufile, paralleljobs.
 # Remark: abort if destdir already exists.
 # Syntax: [-p maxprocesses] srcdir destdir
-unset childrentgunz
 childrentgunz () {
     typeset oldind="$OPTIND"
     typeset srcdir destdir maxprocs
@@ -219,7 +216,6 @@ EOF
 
 # Function chmodr - Recursively change file mode/permissions.
 # Syntax: dir filename_glob [mode=600]
-unset chmodr
 chmodr () {
     typeset dir fglob mode
 
@@ -239,7 +235,6 @@ chmodr () {
 #  locate with just an '*' i.e. you have to pass at least a
 #  non-empty argument.
 # Syntax: chunk1 [chunk2 ...]
-unset loc
 loc () {
   [[ -z ${1} ]] && return 1
   typeset locvalue='*'
@@ -247,14 +242,12 @@ loc () {
   locate -bi "${locvalue}"
 }
 
-unset lstgz
 lstgz () {
     for f in "$@" ; do
         gunzip -c "${f}" | tar -tf -
     done
 }
 
-unset lstxz
 lstxz () {
     for f in "$@" ; do
         xz -c -d "${f}" | tar -tf -
@@ -264,7 +257,6 @@ lstxz () {
 # Function renymd - Rename a file by appending Ymd of current date as a suffix.
 #  Second argument yield one more string before the extension.
 # Syntax: filenames
-unset renymd
 renymd () {
     typeset ymdname
 
@@ -284,7 +276,6 @@ renymd () {
 }
 
 # Function rentidyedit - rentidy helper.
-unset rentidyedit
 rentidyedit () {
     echo "${1}" | \
         sed -e 's/\([a-z]\)\([A-Z]\)/\1-\2/g' | \
@@ -296,7 +287,6 @@ rentidyedit () {
 
 # Function rentidy - Renames files and directories recursively at the root given by
 #  the argument. The new file is as per the function regex.
-unset rentidy
 rentidy () {
     typeset editspace newfilename prefixintact
 
@@ -332,7 +322,6 @@ EOF
 
 # Function rm1minus2 - Remove arg1's files that are in arg2 (a set op like A1 = A1 - A2).
 # Remark: "<(command)" inline file redirection must be available to your shell.
-unset rm1minus2
 rm1minus2 () {
     while read i ; do
         [ -d "${1}/$i" ] && echo "Ignored directory '${1}/$i'." 1>&2 && continue
@@ -355,7 +344,6 @@ EOF
 #  uncompress command for each. The current directory is the default
 #  output directory.
 # Syntax: [-o outputdir] [file1[ file2 ...]]
-unset unarchive
 unarchive () {
     typeset oldind="$OPTIND"
     typeset pname=unarchive
@@ -424,14 +412,12 @@ unarchive () {
     done
 }
 
-unset untgz
 untgz () {
     for f in "$@" ; do
         gunzip -c "${f}" | tar -xvf -
     done
 }
 
-unset untxz
 untxz () {
     for f in "$@" ; do
         xz -c -d "${f}" | tar -xvf -
@@ -449,7 +435,6 @@ untxz () {
 # Remark: The target root is going to be a common root for several source directories
 #   even when those sources are in separate dir trees in the filesystem all the way up
 #   to the root. Also, a target being specified implies xz's -c (--keep).
-unset xzp
 xzp () {
     typeset cmd copycmd decompress maxprocs target
     typeset compressedfiles files2copy inflatedfiles
@@ -526,7 +511,6 @@ EOF
 # Disk and sizing functions
 
 # Function dfgb - displays free disk space in GB.
-unset dfgb
 dfgb () {
     typeset dfdir="${1:-.}"
     typeset freegb
@@ -541,7 +525,6 @@ dfgb () {
 
 # Function dubulk - Displays disk usage of filenames read from stdin.
 #  Handles massive file lists.
-unset dubulk
 dubulk () {
     while read filename ; do echo "${filename}" ; done \
     | xargs -n 1000 du -sm
@@ -549,7 +532,6 @@ dubulk () {
 
 # Function dudesc - Displays disk usage of filenames read from stdin.
 #  Sorted in descending order.
-unset dudesc
 dudesc () {
     dubulk | sort -rn
 }
@@ -559,34 +541,29 @@ dudesc () {
 # Remarks: The original sorting order read from stdin is kept.
 # Use case #1: pass filenames to another process that
 #  must act on a filesize ordered sequence.
-unset dufile
 dufile () {
     sed -e 's#^[^[:blank:]]*[[:blank:]][[:blank:]]*##'
 }
 
 # Function dugt1 - Displays disk usage of filenames read from stdin which are greater than 1MB.
-unset dugt1
 dugt1 () {
     dubulk | sed -n -e '/^[1-9][0-9]*[.]/p'
 }
 
 # Function dugt1desc - Displays disk usage of filenames read from stdin which are greater than 1MB.
 #  Sorted in descending order.
-unset dugt1desc
 dugt1desc () {
     dubulk | sed -n -e '/^[1-9][0-9]*[.]/p' | sort -rn
 }
 
 # Function dugt10 - Displays disk usage of filenames > 10MBm read from stdin.
 #  Sorted in descending order.
-unset dugt10
 dugt10 () {
     dubulk | sed -n -e '/^[1-9][0-9][0-9]*[.]/p'
 }
 
 # Function dugt10desc - Displays disk usage of filenames > 10MBm read from stdin.
 #  Sorted in descending order.
-unset dugt10desc
 dugt10desc () {
     dubulk | sed -n -e '/^[1-9][0-9][0-9]*[.]/p' | sort -rn
 }

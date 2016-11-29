@@ -31,88 +31,37 @@ paralleljobs () { dsp "$@" ; }
 # ##############################################################################
 # Testing routines
 
+_is_interactive () { [[ "$-" = *i* ]] ; }
+
 _is_aix () { [[ $(uname -a) = *[Aa][Ii][Xx]* ]] ; }
 _is_cygwin () { [[ "$(uname -a)" = *[Cc]ygwin* ]] ; }
 _is_debian () { [[ "$(uname -a)" = *[Db]ebian* ]] ; }
 _is_linux () { [[ "$(uname -a)" = *[Ll]inux* ]] || _is_debian || _is_ubuntu ; }
 _is_ubuntu () { [[ "$(uname -a)" = *[Uu]buntu* ]] ; }
 
-_all_not_null () {
-    for i in "$@" ; do
-        [ -z "${i}" ] && return 1
-    done
-    return 0
-}
-
-_any_dir_not_r () {
-    # Tests if any of the directory arguments are not readable.
-    for i in "$@" ; do
-        if [ ! -d "${1}" -o ! -r "${1}" ] ; then
-            return 0
-        fi
-    done
-    return 1
-}
-
-_any_dir_not_w () {
-    # Tests if any of the directory arguments are not writable.
-    for i in "$@" ; do
-        if [ ! -d "${1}" -o ! -w "${1}" ] ; then
-            return 0
-        fi
-    done
-    return 1
-}
-
-_any_dir_not_rwx () {
+_all_dirs_rwx () {
     # Tests if any of the directory arguments are neither readable nor w nor x.
     for i in "$@" ; do
         if [ ! -d "${1}" -o ! -r "${1}" -o ! -w "${1}" -o ! -x "${1}" ] ; then
-            return 0
+            return 1
         fi
     done
-    return 1
+    return 0
 }
-
-_any_exists () {
-    # Tests if any of the arguments exist.
-    for i in "$@" ; do
-        if [ -e "${1}" ] ; then
-            return 0
-        fi
-    done
-    return 1
-}
-
-_any_null () {
-    # Tests if any of the arguments is null.
-    for i in "$@" ; do
-        if [ -z "${i}" ] ; then
-            return 0
-        fi
-    done
-    return 1
-}
-
-_any_not_r () {
-    # Tests if any of the arguments is not readable.
-    for i in "$@" ; do
-        if [ -n "${1}" ] && [ ! -r "${1}" ] ; then
-            return 0
-        fi
-    done
-    return 1
-}
-
-_any_not_w () {
-    # Tests if any of the arguments is not writable.
-    for i in "$@" ; do
-        if [ -n "${1}" ] && [ ! -w "${1}" ] ; then
-            return 0
-        fi
-    done
-    return 1
-}
+_all_dirs_r () { for i in "$@" ; do [ ! -d "${1}" -o ! -r "${1}" ] && return 1 ; done ; return 0 ; }
+_all_dirs_w () { for i in "$@" ; do [ ! -d "${1}" -o ! -w "${1}" ] && return 1 ; done ; return 0 ; }
+_all_exist () { for i in "$@" ; do [ ! -e "${1}" ] && return 1 ; done ; return 0 ; }
+_all_not_null () { for i in "$@" ; do [ -z "${i}" ] && return 1 ; done ; return 0 ; }
+_all_r () { for i in "$@" ; do [ ! -r "${1}" ] && return 1 ; done ; return 0 ; }
+_all_w () { for i in "$@" ; do [ ! -w "${1}" ] && return 1 ; done ; return 0 ; }
+_any_dir_not_r () { ! _all_dirs_r "$@" ; }
+_any_dir_not_rwx () { ! _all_dirs_rwx "$@" ; }
+_any_dir_not_w () { ! _all_dirs_w "$@" ; }
+_any_exists () { for i in "$@" ; do [ -e "${1}" ] && return 0 ; done ; return 1 ; }
+_any_not_exists () { ! _all_exist "$@" ; }
+_any_not_r () { ! all_r "$@" ; }
+_any_not_w () { ! all_w "$@" ; }
+_any_null () { for i in "$@" ; do [ -z "${i}" ] && return 0 ; done ; return 1 ; }
 
 # ##############################################################################
 # Filesystem
@@ -138,7 +87,7 @@ chmodshells () {
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     for dir in "$@" ; do
-        if ! _any_dir_not_w "${dir}" ; then
+        if _all_dirs_w "${dir}" ; then
             # [[ -n $ZSH_VERSION ]] && set -o shwordsplit
             chmod ${verbose} "${mode}" $(findscripts "${dir}")
             # [[ -n $ZSH_VERSION ]] && set +o shwordsplit
@@ -170,16 +119,14 @@ findscripts () {
 # ##############################################################################
 # Shell functions
 
-# Function aliasnoext
-# Purpose:
-# Pick argument directories' scripts and yield corresponding aliases with no extension.
-# Syntax:
-# {directory}1+
 aliasnoext () {
+    # Pick argument directories' scripts and yield corresponding aliases with no extension.
+    # Syn:
+    # {directory}1+
 
-    typeset oldind="${OPTIND}"
     typeset verbose=false
 
+    typeset oldind="${OPTIND}"
     OPTIND=1
     while getopts ':v' opt ; do
         case "${opt}" in
@@ -189,7 +136,7 @@ aliasnoext () {
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     for dir in "$@" ; do
-        if ! _any_dir_not_w "${dir}" ; then
+        if _all_dirs_w "${dir}" ; then
             while read script ; do
                 if [[ $script = *.* ]] && [ -x "${script}" ] ; then
                     aliasname="${script##*/}"
@@ -205,8 +152,8 @@ EOF
     done
 }
 
-# Function appendto - Append to variable (arg1), the given text (arg2).
 appendto () {
+    # Append to variable (arg1), the given text (arg2).
     if [ -z "$(eval "echo \"\$${1}\"")" ] ; then
         eval "${1}=\"${2}\""
     else
@@ -221,22 +168,22 @@ cyd () {
     _is_cygwin && cd /cygdrive/"${1:-c}" && ls -AFhl 1>&2
 }
 
-# Function ckenv - check number of arguments and sets hasgnu ("GNU is not Unix").
-# Syntax: {min-args} [max-args=min-args]
 ckenv () {
+    # Checks number of arguments and sets hasgnu ("GNU is not Unix").
+    # Syn: {min-args} [max-args=min-args]
+
     typeset args_slice_min="${1:-0}"
     typeset args_slice_max="${2:-0}"
     shift 2
 
-    if ! [ "${#}" -ge "${args_slice_min}" -a \
-           "${#}" -le "${args_slice_max}" ] ; then
+    if [ "${#}" -lt "${args_slice_min}" -o \
+           "${#}" -gt "${args_slice_max}" ] ; then
         echo "Bad arguments:" "$@" 1>&2
         return 1
     fi
 
     # hasgnu - "has GNU?" portability indicator
-    find --version 2> /dev/null | grep -i -q 'gnu'
-    if [ "$?" -eq 0 ] ; then
+    if find --version 2> /dev/null | grep -i -q 'gnu' ; then
         export hasgnu=true
     fi
 }
@@ -257,8 +204,8 @@ d () {
     fi
 }
 
-# Function echodots - Echoes dots between 200s or number of seconds in arg1.
 echodots () {
+    # Echoes dots between 200s or number of seconds in arg1.
     trap return SIGPIPE
     while sleep "${1:-4}" ; do
         if [ -n "${BASH_VERSION}" ] ; then

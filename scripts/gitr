@@ -62,6 +62,7 @@ prep () {
 
     if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1 || [ -z "${DS_LOADED}" ] ; then
         echo "${PNAME}: FATAL: Could not load DS - Daily Shells." 1>&2
+        echo "DS_HOME='${DS_HOME}'" 1>&2
         exit 1
     fi
 
@@ -76,7 +77,7 @@ cmdexpand () {
     fi
 }
 
-rcmdset () {
+setGITRCMD () {
     export GITRCMD="$(cat <<EOF
 cd {}/..
 
@@ -101,7 +102,7 @@ EOF
 )"
 }
 
-rcmdcall () {
+callDsp () {
 (dsp -p 32 -q -t -z "$PROGRAM" "$GITRCMD" <<EOF
 $(
 if ${FULL:-false} ; then
@@ -116,8 +117,8 @@ EOF
 
 gitr () {
     cmdexpand
-    rcmdset "$@"
-    rcmdcall
+    setGITRCMD "$@"
+    callDsp
 }
 
 # ##############################################################################
