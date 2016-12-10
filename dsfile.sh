@@ -214,21 +214,6 @@ EOF
     cd - >/dev/null 2>&1
 }
 
-# Function chmodr - Recursively change file mode/permissions.
-# Syntax: dir filename_glob [mode=600]
-chmodr () {
-    typeset dir fglob mode
-
-    dir="${1}"
-    fglob="${2}"
-    [ ! -d "${dir}" -o -z "${fglob}" ] && return 1
-
-    mode="${3:-600}"
-    [ -z "$3" ] && echo "Using default mode=${mode}"
-
-    find "${dir}" -type f -name "${fglob}" -exec chmod "${mode}" {} \;
-}
-
 # Function loc - search via locate program.
 # Purpose: wrap and interpolate arguments with a literal '*'
 #  and execute 'locate -bi {wrapped_args}'. It avoids running
@@ -240,18 +225,6 @@ loc () {
   typeset locvalue='*'
   for i in "$@" ; do locvalue="${locvalue}${i}*" ; done
   locate -bi "${locvalue}"
-}
-
-lstgz () {
-    for f in "$@" ; do
-        gunzip -c "${f}" | tar -tf -
-    done
-}
-
-lstxz () {
-    for f in "$@" ; do
-        xz -c -d "${f}" | tar -tf -
-    done
 }
 
 # Function renymd - Rename a file by appending Ymd of current date as a suffix.
@@ -409,18 +382,6 @@ unarchive () {
         if [ "$?" -eq 0 ] && [ -n "${verbose:-}" ] ; then
             echo "OK: '${f}'" 1>&2
         fi
-    done
-}
-
-untgz () {
-    for f in "$@" ; do
-        gunzip -c "${f}" | tar -xvf -
-    done
-}
-
-untxz () {
-    for f in "$@" ; do
-        xz -c -d "${f}" | tar -xvf -
     done
 }
 
