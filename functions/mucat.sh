@@ -18,4 +18,3 @@ mucat () {
         first=false
     done
 }
-
