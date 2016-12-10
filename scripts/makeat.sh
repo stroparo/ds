@@ -4,8 +4,8 @@
 #  https://github.com/stroparo/ds
 
 makeat () {
-    # Call configure, make & makeinstall for custom dir/prefix.
-    # Default prefix is ~/opt/root
+    # Info: Call configure, make & makeinstall for custom dir/prefix.
+    # Rmk: Default prefix is ~/opt/root
     # Syn: {prefix directory}
 
     mkdir "${1:-${HOME}/opt/root}" 2> /dev/null || return 1
@@ -14,5 +14,3 @@ makeat () {
         make && \
             make install
 }
-
-makeat "$@" || exit $?
