@@ -203,23 +203,6 @@ EOF
     fi
 }
 
-userconfirm () {
-    # Info: Ask a question and yield success if user responded [yY]*
-    typeset confirm
-    typeset result=1
-    echo ${BASH_VERSION:+-e} "$@" "[y/N] \c"
-    read confirm
-    if [[ $confirm = [yY]* ]] ; then return 0 ; fi
-    return 1
-}
-
-userinput () {
-    # Info: Read value to variable userinput.
-    echo ${BASH_VERSION:+-e} "$@: \c"
-    read userinput
-}
-
-
 # ##############################################################################
 # Text processing functions
 
@@ -419,18 +402,6 @@ getsection () {
     # Stop on next entry after printing:
     inbody && $0 ~ /^ *\[/ { exit 0; }
     ' "${filename}"
-}
-
-greperr () {
-    # Info: Checks files' last line is a sole zero.
-    # Remark: Common case scenario, an exit status $? logged last by a command.
-
-    for f in "$@" ; do
-        if tail -n 1 "${f}" | grep -qv '[[:space:]]*0$' ; then
-            echo "==> ${f} <=="
-            tail -n 1 "${f}" | grep -v '[[:space:]]*0$'
-        fi
-    done
 }
 
 # ##############################################################################
