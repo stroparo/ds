@@ -92,37 +92,30 @@ paralleljobs () { dsp "$@" ; }
 
 # ##############################################################################
 
-ckenv () {
-    # Info: Checks number of arguments and sets hasgnu ("GNU is not Unix").
-    # Syn: {min-args} [max-args=min-args]
+elog () {
+    # Info: Echo a string to standard error.
 
-    typeset args_slice_min="${1:-0}"
-    typeset args_slice_max="${2:-0}"
-    shift 2
+    typeset msgtype="INFO"
+    typeset pname
+    typeset verbosecondition
 
-    if [ "${#}" -lt "${args_slice_min}" -o \
-           "${#}" -gt "${args_slice_max}" ] ; then
-        echo "Bad arguments:" "$@" 1>&2
-        return 1
-    fi
+    typeset oldind="$OPTIND"
+    OPTIND=1
+    while getopts ':dfin:svw' opt ; do
+        case "${opt}" in
+            d) msgtype="DEBUG" ;;
+            f) msgtype="FATAL" ;;
+            i) msgtype="INFO" ;;
+            n) pname="${OPTARG}" ;;
+            s) msgtype="SKIP" ;;
+            v) verbosecondition=true ;;
+            w) msgtype="WARNING" ;;
+        esac
+    done
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
-    # hasgnu - "has GNU?" portability indicator
-    if find --version 2> /dev/null | grep -i -q 'gnu' ; then
-        export hasgnu=true
-    fi
-}
-
-setlogdir () {
-    # Info: Create and check log directory.
-    # Syntax: {log-directory}
-
-    typeset logdir="${1}"
-
-    mkdir -p "${logdir}" 2>/dev/null
-
-    if [ ! -d "${logdir}" -o ! -w "${logdir}" ] ; then
-        echo "$fatal '$logdir' log dir unavailable." 1>&2
-        return 10
+    if [ -z "${verbosecondition}" -o -n "${DS_VERBOSE}" ] ; then
+        echo "${pname:+${pname}:}${msgtype:+${msgtype}:}" "$@" 1>&2
     fi
 }
 
@@ -144,10 +137,10 @@ sourcefiles () {
     OPTIND=1
     while getopts ':n:qtv' opt ; do
         case "${opt}" in
-        n) name="${OPTARG}";;
-        q) quiet=true;;
-        t) tolerant=true;;
-        v) verbose=true;;
+            n) name="${OPTARG}";;
+            q) quiet=true;;
+            t) tolerant=true;;
+            v) verbose=true;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
@@ -200,6 +193,42 @@ EOF
     done
     if $verbose && test -n "${name}" ; then
         elog -n "${pname}" "GROUP COMPLETE."
+    fi
+}
+
+# ##############################################################################
+
+ckenv () {
+    # Info: Checks number of arguments and sets hasgnu ("GNU is not Unix").
+    # Syn: {min-args} [max-args=min-args]
+
+    typeset args_slice_min="${1:-0}"
+    typeset args_slice_max="${2:-0}"
+    shift 2
+
+    if [ "${#}" -lt "${args_slice_min}" -o \
+           "${#}" -gt "${args_slice_max}" ] ; then
+        echo "Bad arguments:" "$@" 1>&2
+        return 1
+    fi
+
+    # hasgnu - "has GNU?" portability indicator
+    if find --version 2> /dev/null | grep -i -q 'gnu' ; then
+        export hasgnu=true
+    fi
+}
+
+setlogdir () {
+    # Info: Create and check log directory.
+    # Syntax: {log-directory}
+
+    typeset logdir="${1}"
+
+    mkdir -p "${logdir}" 2>/dev/null
+
+    if [ ! -d "${logdir}" -o ! -w "${logdir}" ] ; then
+        echo "$fatal '$logdir' log dir unavailable." 1>&2
+        return 10
     fi
 }
 
@@ -325,33 +354,6 @@ echogrep () {
     egrep ${iopt} ${qopt} ${vopt} "$re" <<EOF
 $(for i in "$@" ; do echo "${i}" ; done)
 EOF
-}
-
-elog () {
-    # Info: Echo a string to standard error.
-
-    typeset msgtype="INFO"
-    typeset pname
-    typeset verbosecondition
-
-    typeset oldind="$OPTIND"
-    OPTIND=1
-    while getopts ':dfin:svw' opt ; do
-        case "${opt}" in
-        d) msgtype="DEBUG" ;;
-        f) msgtype="FATAL" ;;
-        i) msgtype="INFO" ;;
-        n) pname="${OPTARG}" ;;
-        s) msgtype="SKIP" ;;
-        v) verbosecondition=true ;;
-        w) msgtype="WARNING" ;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
-
-    if [ -z "${verbosecondition}" -o -n "${DS_VERBOSE}" ] ; then
-        echo "${pname:+${pname}:}${msgtype:+${msgtype}:}" "$@" 1>&2
-    fi
 }
 
 fixeof () {
