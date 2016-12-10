@@ -25,11 +25,25 @@ if ! ls -h >/dev/null 2>&1 ; then
 fi
 alias t='d "${TEMP_DIRECTORY}" -A'
 
-# Retrofit:
-paralleljobs () { dsp "$@" ; }
-
 # ##############################################################################
-# Testing routines
+# Base routines
+
+unalias d 2>/dev/null
+d () {
+    # Info: Change directory and execute pwd followed by an ls.
+    # Syn: {directory}
+
+    dir="${1}"
+    shift
+
+    cd "${dir}" || return 1
+    pwd 1>&2
+    ls -Fl "$@" 1>&2
+
+    if which git >/dev/null 2>&1 && [ -e "${PWD}/.git" ]; then
+        git status -s
+    fi
+}
 
 _is_interactive () { [[ "$-" = *i* ]] ; }
 
@@ -63,100 +77,23 @@ _any_not_r () { ! all_r "$@" ; }
 _any_not_w () { ! all_w "$@" ; }
 _any_null () { for i in "$@" ; do [ -z "${i}" ] && return 0 ; done ; return 1 ; }
 
-# ##############################################################################
-# Filesystem
-
-chmodshells () {
-    # Sets mode for scripts inside the specified directories.
-
-    typeset addaliases=false
-    typeset addpaths=false
-    typeset mode='u+rwx'
-    typeset verbose
-
-    typeset oldind="$OPTIND"
-    OPTIND=1
-    while getopts ':am:pv' opt ; do
-        case "${opt}" in
-        a) addaliases=true ;;
-        m) mode="${OPTARG}" ;;
-        p) addpaths=true ;;
-        v) verbose='-v' ;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
-
-    for dir in "$@" ; do
-        if _all_dirs_w "${dir}" ; then
-            chmod ${verbose} "${mode}" $(findscripts "${dir}")
-        fi
-    done
-
-    if ${addpaths}; then pathmunge -x "$@" ; fi
-    if ${addaliases}; then aliasnoext "$@" ; fi
+ckapt () {
+    which apt > /dev/null || which apt-get > /dev/null
 }
 
-# Function findscripts - Finds script type files in root dirs passed as arguments.
-findscripts () {
-    typeset re_shells='perl|python|ruby|sh'
-    awk 'FNR == 1 && $0 ~ /^#!.*('"$re_shells"') */ { print FILENAME; }' \
-        $(find "$@" -type f | egrep -v '[.](git|hg|svn)')
+ckaptitude () {
+    aptitude -h > /dev/null || \
+        (sudo apt-get update && sudo apt-get install -y aptitude)
 }
 
 # ##############################################################################
-# Shell functions
+# Retrofit
+paralleljobs () { dsp "$@" ; }
 
-aliasnoext () {
-    # Pick argument directories' scripts and yield corresponding aliases with no extension.
-    # Syn:
-    # {directory}1+
-
-    typeset verbose=false
-
-    typeset oldind="${OPTIND}"
-    OPTIND=1
-    while getopts ':v' opt ; do
-        case "${opt}" in
-        v) verbose=true;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
-
-    for dir in "$@" ; do
-        if _all_dirs_w "${dir}" ; then
-            while read script ; do
-                if [[ $script = *.* ]] && [ -x "${script}" ] ; then
-                    aliasname="${script##*/}"
-                    aliasname="${aliasname%%.*}"
-                    eval unalias "${aliasname}" 2>/dev/null
-                    eval alias "${aliasname}=${script}"
-                    $verbose && eval type "${aliasname}"
-                fi
-            done <<EOF
-$(findscripts "${dir}")
-EOF
-        fi
-    done
-}
-
-appendto () {
-    # Append to variable (arg1), the given text (arg2).
-    if [ -z "$(eval "echo \"\$${1}\"")" ] ; then
-        eval "${1}=\"${2}\""
-    else
-        eval "${1}=\"\$${1}
-${2}\""
-    fi
-}
-
-# Function cyd - cd to the disk drive letter argument; fails if not in cygwin.
-# Syntax: cyd {a|b|c|d|e|f|...}
-cyd () {
-    _is_cygwin && cd /cygdrive/"${1:-c}" && ls -AFhl 1>&2
-}
+# ##############################################################################
 
 ckenv () {
-    # Checks number of arguments and sets hasgnu ("GNU is not Unix").
+    # Info: Checks number of arguments and sets hasgnu ("GNU is not Unix").
     # Syn: {min-args} [max-args=min-args]
 
     typeset args_slice_min="${1:-0}"
@@ -175,121 +112,10 @@ ckenv () {
     fi
 }
 
-# Function d - change directory and execute pwd followed by an ls.
-# Syntax: {directory}
-unalias d 2>/dev/null
-d () {
-    dir="${1}"
-    shift
-
-    cd "${dir}" || return 1
-    pwd 1>&2
-    ls -Fl "$@" 1>&2
-
-    if which git >/dev/null 2>&1 && [ -e "${PWD}/.git" ]; then
-        git status -s
-    fi
-}
-
-echodots () {
-    # Echoes dots between 200s or number of seconds in arg1.
-    trap return SIGPIPE
-    while sleep "${1:-4}" ; do
-        if [ -n "${BASH_VERSION}" ] ; then
-            echo -n '.' 1>&2
-        elif [[ ${SHELL} = *[kz]sh ]] ; then
-            echo '.\c' 1>&2
-        else
-            echo '.'
-        fi
-    done
-}
-
-# Function getnow - setup NOW* and TODAY* environment variables.
-getnow () {
-    export NOW_HMS="$(date '+%OH%OM%OS')"
-    export NOW_YMDHM="$(date '+%Y%m%d%OH%OM')"
-    export NOW_YMDHMS="$(date '+%Y%m%d%OH%OM%OS')"
-    export TODAY="$(date '+%Y%m%d')"
-    export TODAY_ISO="$(date '+%Y-%m-%d')"
-}
-
-# Function loop - pass a command to be executed every secs seconds.
-# Syntax: [-d secs] command
-loop () {
-    typeset interval=10
-
-    while getopts ':d:' opt ; do
-        case "${opt}" in
-        d)
-            interval="${OPTARG}"
-            ;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND=1
-
-    while true ; do
-        clear 2>/dev/null || echo '' 1>&2
-        echo "Looping thru every ${interval} seconds.." 1>&2
-        echo "Command:" "$@" 1>&2
-        $@
-        sleep "${interval}" 2>/dev/null \
-        || sleep 10 \
-        || break
-    done
-}
-
-# Function pathmunge - prepend (-a causes to append) directory to PATH global.
-# Syntax: [-v varname] [-x] {path}1+
-# Remark:
-#   -x causes variable to be exported.
-pathmunge () {
-    typeset oldind="${OPTIND}"
-
-    typeset doexport=false
-    typeset mungeafter=false
-    typeset varname=PATH
-    typeset mgdpath mgdstring previous
-
-    OPTIND=1
-    while getopts ':av:x' opt ; do
-        case "${opt}" in
-        a) mungeafter=true ;;
-        v) varname="${OPTARG}" ;;
-        x) doexport=true ;;
-        esac
-    done
-    shift $((OPTIND-1)) ; OPTIND="${oldind}"
-
-    for i in "$@" ; do
-        mgdpath="$(eval echo "\"${i}\"")"
-        previous="$(eval echo '"${'"${varname}"'}"')"
-
-        if ${mungeafter} ; then
-            mgdstring="${previous}${previous:+:}${mgdpath}"
-        else
-            mgdstring="${mgdpath}${previous:+:}${previous}"
-        fi
-
-        eval "${varname}='${mgdstring}'"
-    done
-
-    if ${doexport} ; then eval export "${varname}" ; fi
-}
-
-# Function ps1enhance - make PS1 better, displaying user, host, time, $? and the
-#   current directory.
-ps1enhance () {
-    if [ -n "${BASH_VERSION}" ] ; then
-        export PS1='[\[\e[32m\]\u@\h\[\e[0m\] \t \$?=$? \W]\$ '
-    elif [[ $0 = *ksh* ]] && [[ ${SHELL} = *ksh ]] ; then
-        export PS1='[${USER}@$(hostname) $(date '+%OH:%OM:%OS') \$=$? ${PWD##*/}]\$ '
-    fi
-}
-
-# Function setlogdir - create and check log directory.
-# Syntax: {log-directory}
 setlogdir () {
+    # Info: Create and check log directory.
+    # Syntax: {log-directory}
+
     typeset logdir="${1}"
 
     mkdir -p "${logdir}" 2>/dev/null
@@ -300,11 +126,11 @@ setlogdir () {
     fi
 }
 
-# Function sourcefiles - each arg is a glob; source all glob expanded paths.
-#  Tilde paths are accepted, as the expansion is yielded
-#  via eval. Expanded directories are ignored.
-#  Stdout is fully redirected to stderr.
 sourcefiles () {
+    # Info: Each arg is a glob; source all glob expanded paths.
+    #  Tilde paths are accepted, as the expansion is yielded
+    #  via eval. Expanded directories are ignored.
+    #  Stdout is fully redirected to stderr.
 
     typeset pname='sourcefiles'
     typeset quiet=false
@@ -377,8 +203,8 @@ EOF
     fi
 }
 
-# Function userconfirm - Ask a question and yield success if user responded [yY]*
 userconfirm () {
+    # Info: Ask a question and yield success if user responded [yY]*
     typeset confirm
     typeset result=1
     echo ${BASH_VERSION:+-e} "$@" "[y/N] \c"
@@ -387,11 +213,9 @@ userconfirm () {
     return 1
 }
 
-# Function userinput - Read value to variable userinput.
 userinput () {
-
+    # Info: Read value to variable userinput.
     echo ${BASH_VERSION:+-e} "$@: \c"
-
     read userinput
 }
 
@@ -404,9 +228,9 @@ echoupcase () { echo "$@" | tr '[[:lower:]]' '[[:upper:]]' ; }
 locase () { tr '[[:upper:]]' '[[:lower:]]' ; }
 upcase () { tr '[[:lower:]]' '[[:upper:]]' ; }
 
-# Function appendunique - If string not present in file, append to it.
-# Syntax: string file1 [file2 ...]
 appendunique () {
+    # Info: If string not present in file, append to it.
+    # Syntax: string file1 [file2 ...]
 
     typeset msgerrforfile="appendunique: ERROR for file"
     typeset failedsome=false
@@ -431,9 +255,10 @@ appendunique () {
     fi
 }
 
-# Function ckeof - Check whether final EOL (end-of-line) is missing.
-# Syntax: [file-or-dir1 [file-or-dir2...]]
 ckeof () {
+    # Info: Check whether final EOL (end-of-line) is missing.
+    # Syntax: [file-or-dir1 [file-or-dir2...]]
+
     typeset enforcecwd="${1:-.}" ; shift
     typeset files
 
@@ -457,9 +282,10 @@ EOF
     done
 }
 
-# Function ckwineol - check whether any file has windows end-of-line.
-# Syntax: [file-or-dir1 [file-or-dir2...]]
 ckeolwin () {
+    # Info: Check whether any file has windows end-of-line.
+    # Syntax: [file-or-dir1 [file-or-dir2...]]
+
     typeset enforcecwd="${1:-.}" ; shift
     typeset files
 
@@ -483,9 +309,10 @@ EOF
     done
 }
 
-# Function dos2unix - remove CR Windows end-of-line (0x0d) from file.
-# Syntax: [file1 [file2...]]
 dos2unix () {
+    # Info: Remove CR Windows end-of-line (0x0d) from file.
+    # Syntax: [file1 [file2...]]
+
     for i in "$@" ; do
         echo "Deleting CR chars from '${i}' (temp '${i}.u').."
         tr -d '\r' < "${i}" > "${i}.u"
@@ -493,12 +320,13 @@ dos2unix () {
     done
 }
 
-# Function echogrep - grep echoed arguments instead of files.
 echogrep () {
+    # Info: Grep echoed arguments instead of files.
+
     typeset re
     typeset iopt qopt vopt
-    typeset oldind="$OPTIND"
 
+    typeset oldind="$OPTIND"
     OPTIND=1
     while getopts ':iqv' opt ; do
         case "${opt}" in
@@ -516,14 +344,15 @@ $(for i in "$@" ; do echo "${i}" ; done)
 EOF
 }
 
-# Function elog - echoes a string to standard error.
 elog () {
+    # Info: Echo a string to standard error.
 
     typeset msgtype="INFO"
     typeset pname
     typeset verbosecondition
 
-    # Options:
+    typeset oldind="$OPTIND"
+    OPTIND=1
     while getopts ':dfin:svw' opt ; do
         case "${opt}" in
         d) msgtype="DEBUG" ;;
@@ -535,16 +364,17 @@ elog () {
         w) msgtype="WARNING" ;;
         esac
     done
-    shift $((OPTIND - 1)) ; OPTIND=1
+    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     if [ -z "${verbosecondition}" -o -n "${DS_VERBOSE}" ] ; then
         echo "${pname:+${pname}:}${msgtype:+${msgtype}:}" "$@" 1>&2
     fi
 }
 
-# Function fixeof - Fix and add final EOL (end-of-line) when missing.
-# Syntax: [file-or-dir1 [file-or-dir2...]]
 fixeof () {
+    # Info: Fix and add final EOL (end-of-line) when missing.
+    # Syntax: [file-or-dir1 [file-or-dir2...]]
+
     [ "${1}" = '-v' ] && verbose=true && shift
     typeset enforcecwd="${1:-.}" ; shift
     typeset files
@@ -573,10 +403,9 @@ EOF
     done
 }
 
-# Function getsection
-# Purpose:
-#   Picks up a section from a text file, sections being formatted like old ini files.
 getsection () {
+    # Info: Picks an (old format) ini section from a file.
+
     typeset sectionsearch="$1"
     typeset filename="$2"
 
@@ -592,89 +421,16 @@ getsection () {
     ' "${filename}"
 }
 
-# Function greperr - Checks files' last line is a sole zero.
-# Remark: Common case scenario, an exit status $? logged last by a command.
 greperr () {
+    # Info: Checks files' last line is a sole zero.
+    # Remark: Common case scenario, an exit status $? logged last by a command.
+
     for f in "$@" ; do
         if tail -n 1 "${f}" | grep -qv '[[:space:]]*0$' ; then
             echo "==> ${f} <=="
             tail -n 1 "${f}" | grep -v '[[:space:]]*0$'
         fi
     done
-}
-
-# Function mucat - cat multiple files.
-# Syntax: mucat file1[ file2[ file3 ...]]
-mucat () {
-    typeset first=true
-
-    for f in "$@" ; do
-        ${first} || echo ''
-
-        echo "==> ${f} <=="
-        cat "${f}"
-
-        first=false
-    done
-}
-
-mutail () {
-
-    typeset usage="Function mutail - tail multiple files.
-Syntax: mutail [-n lines] file1[ file2[ file3 ...]]
-"
-    typeset first=true
-    typeset lines=10
-
-    while getopts ':hn:' opt ; do
-        case "${opt}" in
-            h) echo "$usage" ; return ;;
-            n)
-                lines="${OPTARG}"
-                ;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND=1
-
-    for f in "$@" ; do
-        ${first} || echo ''
-
-        echo "==> ${f} <==" 1>&2
-        tail -n ${lines:-10} "${f}"
-
-        first=false
-    done
-}
-
-printawk () {
-
-    typeset fieldsep
-    typeset outsep
-    typeset pattern
-    typeset printargs
-    typeset usage="Function printawk - Prints fields as read by awk
-Syntax: printawk -F fieldsep -O outsep -p pattern {1st field} [2nd field [3rd ...]]
-"
-
-    typeset oldind="${OPTIND}"
-    OPTIND=1
-    while getopts ':F:hO:p:' opt ; do
-        case "${opt}" in
-        F) fieldsep="${OPTARG}" ;;
-        h) echo "${usage}" ; return ;;
-        O) outsep="${OPTARG}" ;;
-        p) pattern="${OPTARG}" ;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
-
-    for i in "$@" ; do
-        printargs="${printargs:+${printargs}, }\$${i}"
-    done
-
-    awk ${fieldsep:+-F${fieldsep}} \
-        ${outsep:+-vOFS=${outsep}} \
-        "${pattern}${pattern:+ }{print ${printargs};}"
 }
 
 # ##############################################################################

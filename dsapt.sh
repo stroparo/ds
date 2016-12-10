@@ -6,9 +6,6 @@
 # ##############################################################################
 # Admin APT (aptitude & apt-get) functions
 
-ckapt () { which apt > /dev/null || which apt-get > /dev/null ; }
-ckaptitude () { aptitude -h > /dev/null || (sudo apt-get update && sudo apt-get install -y aptitude) ; }
-
 aptaddppa () {
     # Adds ubuntu ppa repositories listed in the filename argument.
     # Syn: {ppa-list-filename}
@@ -45,22 +42,6 @@ aptaddppa () {
         elog -f 'Some ppa failed.'
         return 1
     fi
-}
-
-dpkgstat () {
-    # Displays installation status of given package names
-    # (dpkg -s "$@" | awk ... /^Package:/ ... /^Status:/).
-    # Syn: {pkg1} {pkg2} ... {pkgN}
-
-    [ "${#}" -lt 1 ] && return 1
-
-    dpkg -s "$@" | \
-        awk '
-            /^Package:/ { pkg = $0; }
-            /^Status:/ {
-                stat = $0; printf("%-32s%s\n", pkg, stat);
-            }
-        '
 }
 
 # ##############################################################################
