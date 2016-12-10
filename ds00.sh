@@ -12,7 +12,7 @@ pskip="SKIP:"
 pwarn="WARN:"
 
 # Changedir:
-alias cdbak='d "${BACKUP_DIRECTORY}" -A'
+alias cdbak='d "${DS_ENV_BAK}" -A'
 alias cde='d "${DS_ENV}" -A'
 alias cdl='cd "${DS_ENV_LOG}" && (ls -AFlrt | tail -n 64)'
 alias cdll='d "${DS_ENV_LOG}" -Art'
@@ -88,25 +88,12 @@ chmodshells () {
 
     for dir in "$@" ; do
         if _all_dirs_w "${dir}" ; then
-            # [[ -n $ZSH_VERSION ]] && set -o shwordsplit
             chmod ${verbose} "${mode}" $(findscripts "${dir}")
-            # [[ -n $ZSH_VERSION ]] && set +o shwordsplit
         fi
     done
 
-    if ${addpaths}; then
-        pathmunge -x "$@"
-    fi
-
-    if ${addaliases}; then
-        aliasnoext "$@"
-    fi
-}
-
-# Function enforcedir - Tries to create the directory and fails if not rwx.
-enforcedir () {
-    mkdir -p "$@" 2>/dev/null
-    if _any_dir_not_rwx "$@" ; then return 1 ; fi
+    if ${addpaths}; then pathmunge -x "$@" ; fi
+    if ${addaliases}; then aliasnoext "$@" ; fi
 }
 
 # Function findscripts - Finds script type files in root dirs passed as arguments.
