@@ -32,7 +32,9 @@ autovimode () {
 dropcaches3 () {
     # (Linux) Drops caches with the '3' command (see 'man drop_caches').
     _is_linux || return
-    echo 3 | sudo tee /proc/sys/vm/drop_caches > /dev/null
+    sudo cat > /proc/sys/vm/drop_caches <<EOF
+3
+EOF
 }
 
 makeat () {
