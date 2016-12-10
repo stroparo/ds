@@ -30,7 +30,6 @@ prep () {
 
 deploypackages () {
 
-    typeset oldind="${OPTIND}"
     typeset pname=deploypackages
 
     typeset deploypath
@@ -38,17 +37,18 @@ deploypackages () {
     typeset pkgspath
     typeset userconfirm
 
+    typeset oldind="${OPTIND}"
     OPTIND=1
     while getopts ':cx:' opt ; do
         case "${opt}" in
-        c) userconfirm=true ;;
-        x) exclude="${OPTARG}" ;;
+            c) userconfirm=true ;;
+            x) exclude="${OPTARG}" ;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
-    pkgspath="${1}"
-    deploypath="${2}"
+    pkgspath="$(cd "${1}" ; echo "$PWD")"
+    deploypath="$(cd "${2}" ; echo "$PWD")"
 
     if ${userconfirm:-false} ; then
         userconfirm "Deploy packages from '${pkgspath}' ?" || return
