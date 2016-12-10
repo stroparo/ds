@@ -183,8 +183,8 @@ sourcefiles () {
 
                 $quiet || elog -w -n "${pname}" "Tolerant fail for '${src}'."
             else
-                if $verbose ; then
-                    $quiet || elog -n "${pname}" "=> '${src}' completed successfully."
+                if $verbose && ! $quiet ; then
+                    elog -n "${pname}" "=> '${src}' completed successfully."
                 fi
             fi
         done <<EOF
