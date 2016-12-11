@@ -4,12 +4,11 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
-# Python ops
+# Python ops routines
 
-# Function addpystartup - Add default .pystartup to home folder.
-# No effect if file already exists.
-unset addpystartup
 addpystartup () {
+    # Info: Add default .pystartup to home folder.
+    # Rmk: No effect if file already exists.
 
     if [ -e ~/.pystartup ] ; then
         echo 'Nothing done because there is a ~/.pystartup file already.' 1>&2
@@ -49,4 +48,3 @@ EOF
 }
 
 # ##############################################################################
-
