@@ -4,5 +4,5 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
-# SUBJECT functions
+# SUBJECT routines
 
