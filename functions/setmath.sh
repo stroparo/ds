@@ -6,8 +6,8 @@
 # ##############################################################################
 # Mathematical functions
 
-# Syntax: sep field files...
 getmax () {
+    # Syn: sep field files...
 
     typeset sep="${1}"
     typeset field="${2}"
@@ -29,8 +29,8 @@ getmax () {
 
 }
 
-# Syntax: sep field files...
 getmin () {
+    # Syn: sep field files...
 
     typeset sep="${1}"
     typeset field="${2}"
@@ -52,8 +52,8 @@ getmin () {
 
 }
 
-# Syntax: sep field files...
 getsum () {
+    # Syn: sep field files...
 
     typeset sep="${1}"
     typeset field="${2}"
@@ -75,10 +75,10 @@ getsum () {
 
 }
 
-# Function isinslice - Tests wether number is in a [min, max) slice.
-# Syntax: num min max
-unset isinslice
 isinslice () {
+    # Info: Tests wether number is in a [min, max) slice.
+    # Syn: num min max
+
     typeset oldind="${OPTIND}"
 
     OPTIND=1
@@ -92,8 +92,8 @@ isinslice () {
     done
     shift $((OPTIND - 1)) ; OPTIND=1
 
-    if [ "${#}" -ne 3 ] ; then false ; return ; fi
+    if [ "${#}" -ne 3 ] ; then return 1 ; fi
 
-    [[ ${2} -le ${1} && ${1} -lt ${3} ]]
+    [[ ${1} -ge ${2} && ${1} -lt ${3} ]]
 }
 
