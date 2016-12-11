@@ -4,10 +4,7 @@
 #    https://github.com/stroparo/ds
 
 # ##############################################################################
-# Development routines
-
-# ##############################################################################
-# Git
+# Git routines
 
 gitclones () {
     # Info: Clone repos passed in the argument, one per line (quote it).
@@ -64,15 +61,6 @@ gitconfig () {
         [ -n "${name}" ] &&  git config --global user.name "${name}"
         for i in "$@" ; do git config --global ${1} ; done
     fi
-}
-
-# ##############################################################################
-# PostgreSQL
-
-supg () {
-    # Info: Call psql via su - postgres, at the given port and user.
-    # Syntax: [port=5432] [user=postgres]
-    sudo su - postgres -c "psql -p ${1:-5432} -U ${2:-postgres}"
 }
 
 # ##############################################################################
