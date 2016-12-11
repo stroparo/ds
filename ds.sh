@@ -21,12 +21,9 @@ dsversion:  displays the version of this Daily Shells instance.
 ' 1>&2
 }
 
-# ##############################################################################
+# Start
 
 . "${DS_HOME}/ds00.sh" || return 10
-
-if [ -n "${DS_VERBOSE}" ] ; then dsinfo 1>&2 ; fi
-
 sourcefiles ${DS_VERBOSE:+-v} -q -t \
     "${DS_HOME}/functions/*sh" \
     "${DS_HOME}/ds0[1-9]*sh" \
@@ -37,3 +34,5 @@ sourcefiles ${DS_VERBOSE:+-v} -q -t \
 sourcefiles ${DS_VERBOSE:+-v} -q "${DS_HOME}/aliases*sh"
 sourcefiles ${DS_VERBOSE:+-v} -q "${DS_HOME}/ee.sh"
 sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/sshagent.sh"
+
+if [ -n "${DS_VERBOSE}" ] ; then dsinfo ; fi
