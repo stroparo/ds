@@ -3,23 +3,13 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
-# ##############################################################################
-# DS reserved objects
-
 export DS_HOME="${1:-${HOME%/}/.ds}"
 export DS_VERBOSE
 export DS_VERSION='DS version 0.1.0 - 2016-01-18 22:30'
 
-# Function dsversion - displays the Daily Shells header and version.
-#  Stdout is fully redirected to stderr.
-unset dsversion
-dsversion () {
-    echo "Daily Shells - ${DS_VERSION}" 1>&2
-}
+dsversion () { echo "Daily Shells - ${DS_VERSION}" 1>&2 ; }
+dsinfo () { dsversion ; echo "DS_HOME='${DS_HOME}'" 1>&2 ; }
 
-# Function dshelp - displays the Daily Shells help information.
-#  Stdout is fully redirected to stderr.
-unset dshelp
 dshelp () {
     echo 'DS - Daily Shells Library - Help
 
@@ -31,31 +21,19 @@ dsversion:  displays the version of this Daily Shells instance.
 ' 1>&2
 }
 
-# Function dsinfo - this displays DS environment information.
-#  It might be overriden by your own fork.
-#  Stdout is fully redirected to stderr.
-unset dsinfo
-dsinfo () {
-    dsversion
-    echo "DS_HOME='${DS_HOME}'" 1>&2
-}
-
 # ##############################################################################
-# Execute
 
-# DS init:
 . "${DS_HOME}/ds00.sh" || return 10
 
 if [ -n "${DS_VERBOSE}" ] ; then dsinfo 1>&2 ; fi
 
-sourcefiles ${DS_VERBOSE:+-v} -q "${DS_HOME}/functions/*sh"
-sourcefiles ${DS_VERBOSE:+-v} -q -t -n 'Specialized routines 01..09' "${DS_HOME}/ds0[1-9]*sh"
-sourcefiles ${DS_VERBOSE:+-v} -q -t -n 'Specialized routines 10..89' "${DS_HOME}/ds[1-8][0-9]*sh"
-sourcefiles ${DS_VERBOSE:+-v} -q -t -n 'Specialized routines etcetera' "${DS_HOME}/ds[A-Za-z]*sh"
-sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/ds99post.sh"
+sourcefiles ${DS_VERBOSE:+-v} -q -t \
+    "${DS_HOME}/functions/*sh" \
+    "${DS_HOME}/ds0[1-9]*sh" \
+    "${DS_HOME}/ds[1-8][0-9]*sh" \
+    "${DS_HOME}/ds[A-Za-z]*sh" \
+    "${DS_HOME}/ds99post.sh"
 
 sourcefiles ${DS_VERBOSE:+-v} -q "${DS_HOME}/aliases*sh"
 sourcefiles ${DS_VERBOSE:+-v} -q "${DS_HOME}/ee.sh"
 sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/sshagent.sh"
-
-# ##############################################################################
