@@ -3,8 +3,12 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
-# pgr is similar to pgrep
+# ##############################################################################
+# PostgreSQL routines
 
+alias pgc='sudo -iu postgres psql postgres'
+
+# pgr is similar to pgrep
 pgr () { ps -ef | egrep -i "$1" | egrep -v "grep.*(${1})" ; }
 
 pgralert () {

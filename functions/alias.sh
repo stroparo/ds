@@ -22,9 +22,6 @@ alias yabest='youtube-dl -f bestaudio'
 alias yd='youtube-dl'
 alias yx='youtube-dl -x'
 
-# DB
-alias pgc='sudo -iu postgres psql postgres'
-
 # Grep color:
 if [[ $(grep --version 2>/dev/null) = *GNU* ]] ; then
     alias grep='grep --color=auto'
