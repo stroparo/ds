@@ -11,7 +11,7 @@ pinfo="INFO:"
 pskip="SKIP:"
 pwarn="WARN:"
 
-# Changedir:
+# Aliases to cd (change directory):
 alias cdbak='d "${DS_ENV_BAK}" -A'
 alias cde='d "${DS_ENV}" -A'
 alias cdl='cd "${DS_ENV_LOG}" && (ls -AFlrt | tail -n 64)'
@@ -44,53 +44,6 @@ d () {
         git status -s
     fi
 }
-
-_is_interactive () { [[ "$-" = *i* ]] ; }
-
-_is_aix () { [[ $(uname -a) = *[Aa][Ii][Xx]* ]] ; }
-_is_cygwin () { [[ "$(uname -a)" = *[Cc]ygwin* ]] ; }
-_is_debian () { [[ "$(uname -a)" = *[Db]ebian* ]] ; }
-_is_linux () { [[ "$(uname -a)" = *[Ll]inux* ]] || _is_debian || _is_ubuntu ; }
-_is_ubuntu () { [[ "$(uname -a)" = *[Uu]buntu* ]] ; }
-
-_all_dirs_rwx () {
-    # Tests if any of the directory arguments are neither readable nor w nor x.
-    for i in "$@" ; do
-        if [ ! -d "${1}" -o ! -r "${1}" -o ! -w "${1}" -o ! -x "${1}" ] ; then
-            return 1
-        fi
-    done
-    return 0
-}
-_all_dirs_r () { for i in "$@" ; do [ ! -d "${1}" -o ! -r "${1}" ] && return 1 ; done ; return 0 ; }
-_all_dirs_w () { for i in "$@" ; do [ ! -d "${1}" -o ! -w "${1}" ] && return 1 ; done ; return 0 ; }
-_all_exist () { for i in "$@" ; do [ ! -e "${1}" ] && return 1 ; done ; return 0 ; }
-_all_not_null () { for i in "$@" ; do [ -z "${i}" ] && return 1 ; done ; return 0 ; }
-_all_r () { for i in "$@" ; do [ ! -r "${1}" ] && return 1 ; done ; return 0 ; }
-_all_w () { for i in "$@" ; do [ ! -w "${1}" ] && return 1 ; done ; return 0 ; }
-_any_dir_not_r () { ! _all_dirs_r "$@" ; }
-_any_dir_not_rwx () { ! _all_dirs_rwx "$@" ; }
-_any_dir_not_w () { ! _all_dirs_w "$@" ; }
-_any_exists () { for i in "$@" ; do [ -e "${1}" ] && return 0 ; done ; return 1 ; }
-_any_not_exists () { ! _all_exist "$@" ; }
-_any_not_r () { ! all_r "$@" ; }
-_any_not_w () { ! all_w "$@" ; }
-_any_null () { for i in "$@" ; do [ -z "${i}" ] && return 0 ; done ; return 1 ; }
-
-ckapt () {
-    which apt > /dev/null || which apt-get > /dev/null
-}
-
-ckaptitude () {
-    aptitude -h > /dev/null || \
-        (sudo apt-get update && sudo apt-get install -y aptitude)
-}
-
-# ##############################################################################
-# Retrofit
-paralleljobs () { dsp "$@" ; }
-
-# ##############################################################################
 
 elog () {
     # Info: Echo a string to standard error.
@@ -197,6 +150,48 @@ EOF
 }
 
 # ##############################################################################
+# Testing routines
+
+_is_interactive () { [[ "$-" = *i* ]] ; }
+
+_is_aix () { [[ $(uname -a) = *[Aa][Ii][Xx]* ]] ; }
+_is_cygwin () { [[ "$(uname -a)" = *[Cc]ygwin* ]] ; }
+_is_debian () { [[ "$(uname -a)" = *[Db]ebian* ]] ; }
+_is_linux () { [[ "$(uname -a)" = *[Ll]inux* ]] || _is_debian || _is_ubuntu ; }
+_is_ubuntu () { [[ "$(uname -a)" = *[Uu]buntu* ]] ; }
+
+_all_dirs_rwx () {
+    # Tests if any of the directory arguments are neither readable nor w nor x.
+    for i in "$@" ; do
+        if [ ! -d "${1}" -o ! -r "${1}" -o ! -w "${1}" -o ! -x "${1}" ] ; then
+            return 1
+        fi
+    done
+    return 0
+}
+_all_dirs_r () { for i in "$@" ; do [ ! -d "${1}" -o ! -r "${1}" ] && return 1 ; done ; return 0 ; }
+_all_dirs_w () { for i in "$@" ; do [ ! -d "${1}" -o ! -w "${1}" ] && return 1 ; done ; return 0 ; }
+_all_exist () { for i in "$@" ; do [ ! -e "${1}" ] && return 1 ; done ; return 0 ; }
+_all_not_null () { for i in "$@" ; do [ -z "${i}" ] && return 1 ; done ; return 0 ; }
+_all_r () { for i in "$@" ; do [ ! -r "${1}" ] && return 1 ; done ; return 0 ; }
+_all_w () { for i in "$@" ; do [ ! -w "${1}" ] && return 1 ; done ; return 0 ; }
+_any_dir_not_r () { ! _all_dirs_r "$@" ; }
+_any_dir_not_rwx () { ! _all_dirs_rwx "$@" ; }
+_any_dir_not_w () { ! _all_dirs_w "$@" ; }
+_any_exists () { for i in "$@" ; do [ -e "${1}" ] && return 0 ; done ; return 1 ; }
+_any_not_exists () { ! _all_exist "$@" ; }
+_any_not_r () { ! all_r "$@" ; }
+_any_not_w () { ! all_w "$@" ; }
+_any_null () { for i in "$@" ; do [ -z "${i}" ] && return 0 ; done ; return 1 ; }
+
+ckapt () {
+    which apt > /dev/null || which apt-get > /dev/null
+}
+
+ckaptitude () {
+    aptitude -h > /dev/null || \
+        (sudo apt-get update && sudo apt-get install -y aptitude)
+}
 
 ckenv () {
     # Info: Checks number of arguments and sets hasgnu ("GNU is not Unix").
@@ -218,192 +213,8 @@ ckenv () {
     fi
 }
 
-setlogdir () {
-    # Info: Create and check log directory.
-    # Syntax: {log-directory}
-
-    typeset logdir="${1}"
-
-    mkdir -p "${logdir}" 2>/dev/null
-
-    if [ ! -d "${logdir}" -o ! -w "${logdir}" ] ; then
-        echo "$fatal '$logdir' log dir unavailable." 1>&2
-        return 10
-    fi
-}
-
 # ##############################################################################
-# Text processing functions
-
-catnum () { mutail -n1 "$@" | grep '^[0-9][0-9]*$' ; } # TODO rename to tailnum
-echoupcase () { echo "$@" | tr '[[:lower:]]' '[[:upper:]]' ; }
-locase () { tr '[[:upper:]]' '[[:lower:]]' ; }
-upcase () { tr '[[:lower:]]' '[[:upper:]]' ; }
-
-appendunique () {
-    # Info: If string not present in file, append to it.
-    # Syntax: string file1 [file2 ...]
-
-    typeset msgerrforfile="appendunique: ERROR for file"
-    typeset failedsome=false
-    typeset text="${1}" ; shift
-
-    for f in "$@" ; do
-
-        [ -e "$f" ] || touch "$f"
-
-        if ! fgrep -q "${text}" "${f}" ; then
-
-            if ! echo "${text}" >> "${f}" ; then
-                failedsome=true
-                echo "${msgerrforfile} '${f}' .." 1>&2
-            fi
-        fi
-    done
-
-    if ${failedsome} ; then
-        echo "appendunique: $fatal Text was '${text}'." 1>&2
-        return 1
-    fi
-}
-
-ckeof () {
-    # Info: Check whether final EOL (end-of-line) is missing.
-    # Syntax: [file-or-dir1 [file-or-dir2...]]
-
-    typeset enforcecwd="${1:-.}" ; shift
-    typeset files
-
-    for i in "${enforcecwd}" "$@"; do
-        if [ -d "$i" ] ; then
-            files=$(find "$i" -type f)
-        else
-            files="${i}"
-        fi
-
-        while read file ; do
-            #if (tail -n 1 "$i"; echo '##EOF##') | grep -q '.##EOF##$' ; then
-            if [ "$(awk 'END{print FNR;}' "${file}")" != \
-                "$(wc -l "${file}" | awk '{print $1}')" ]
-            then
-                echo "${file}"
-            fi
-        done <<EOF
-${files}
-EOF
-    done
-}
-
-ckeolwin () {
-    # Info: Check whether any file has windows end-of-line.
-    # Syntax: [file-or-dir1 [file-or-dir2...]]
-
-    typeset enforcecwd="${1:-.}" ; shift
-    typeset files
-
-    for i in "${enforcecwd}" "$@"; do
-        if [ -d "$i" ] ; then
-            files=$(find "$i" -type f)
-        else
-            files="${i}"
-        fi
-
-        while read file ; do
-            #if (tail -n 1 "$i"; echo '##EOF##') | grep -q '.##EOF##$' ; then
-
-            if [ $(head -1 "${file}" | tr '\r' '\n' | wc -l | awk '{print $1;}') -eq 2 ]
-            then
-                echo "${file}"
-            fi
-        done <<EOF
-${files}
-EOF
-    done
-}
-
-dos2unix () {
-    # Info: Remove CR Windows end-of-line (0x0d) from file.
-    # Syntax: [file1 [file2...]]
-
-    for i in "$@" ; do
-        echo "Deleting CR chars from '${i}' (temp '${i}.u').."
-        tr -d '\r' < "${i}" > "${i}.u"
-        mv "${i}.u" "${i}"
-    done
-}
-
-echogrep () {
-    # Info: Grep echoed arguments instead of files.
-
-    typeset re
-    typeset iopt qopt vopt
-
-    typeset oldind="$OPTIND"
-    OPTIND=1
-    while getopts ':iqv' opt ; do
-        case "${opt}" in
-        i) iopt='-i';;
-        q) qopt='-q';;
-        v) vopt='-v';;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
-
-    re="$1" ; shift
-
-    egrep ${iopt} ${qopt} ${vopt} "$re" <<EOF
-$(for i in "$@" ; do echo "${i}" ; done)
-EOF
-}
-
-fixeof () {
-    # Info: Fix and add final EOL (end-of-line) when missing.
-    # Syntax: [file-or-dir1 [file-or-dir2...]]
-
-    [ "${1}" = '-v' ] && verbose=true && shift
-    typeset enforcecwd="${1:-.}" ; shift
-    typeset files
-
-    for i in "${enforcecwd}" "$@"; do
-        if [ -d "${i}" ] ; then
-            files=$(find "${i}" -type f)
-        else
-            files="${i}"
-        fi
-
-        while read file ; do
-            #if (tail -n 1 "$i"; echo '##EOF##') | grep -q '.##EOF##$' ; then
-            if [ "$(awk 'END{print FNR;}' "${file}")" != \
-                "$(wc -l "${file}" | awk '{print $1}')" ]
-            then
-                echo -e '\n\c' >> "${file}"
-
-                if ${verbose:-false} ; then
-                    echo "${file}"
-                fi
-            fi
-        done <<EOF
-${files}
-EOF
-    done
-}
-
-getsection () {
-    # Info: Picks an (old format) ini section from a file.
-
-    typeset sectionsearch="$1"
-    typeset filename="$2"
-
-    awk '
-    # Find the entry:
-    /^ *\['"${sectionsearch}"'\] *$/ { found = 1; print "sectionname=" $0; }
-
-    # Print entry content:
-    found && $0 ~ /^ *[^[]/ { inbody = 1; print; }
-
-    # Stop on next entry after printing:
-    inbody && $0 ~ /^ *\[/ { exit 0; }
-    ' "${filename}"
-}
+# Retrofit
+paralleljobs () { dsp "$@" ; }
 
 # ##############################################################################
