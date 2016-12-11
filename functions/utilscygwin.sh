@@ -3,6 +3,9 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
+# ##############################################################################
+# Cygwin routines
+
 cyd () {
     # Info: cd to the disk drive letter argument; fails if not in cygwin.
     # Syn: cyd {a|b|c|d|e|f|...}

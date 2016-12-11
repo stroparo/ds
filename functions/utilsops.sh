@@ -3,6 +3,9 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
+# ##############################################################################
+# Ops routines
+
 autovimode () { appendunique 'set -o vi' "$HOME/.bashrc" "$HOME/.profile" ; }
 
 autobash () {

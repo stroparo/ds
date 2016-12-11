@@ -3,6 +3,7 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
+# ##############################################################################
 # Aliases aliases
 alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
 alias xgit="alias | grep 'git '"
@@ -22,18 +23,21 @@ alias yabest='youtube-dl -f bestaudio'
 alias yd='youtube-dl'
 alias yx='youtube-dl -x'
 
-# Grep color:
+# ##############################################################################
+# Grep color
 if [[ $(grep --version 2>/dev/null) = *GNU* ]] ; then
     alias grep='grep --color=auto'
     alias egrep='egrep --color=auto'
     alias fgrep='fgrep --color=auto'
 fi
 
+# ##############################################################################
 # No hang up (nohup)
 alias nhr='rm nohup.out'
 alias nht='tail -9999f nohup.out'
 
-# Ls:
+# ##############################################################################
+# Ls
 if [[ $(ls --version 2>/dev/null) = *GNU* ]] ; then
     alias ls='ls --color=auto'
     alias l='ls -Flhi'
@@ -44,4 +48,6 @@ else
     alias ll='ls -AFl'
     alias lt='ls -Flrt'
 fi
+
+# ##############################################################################
 

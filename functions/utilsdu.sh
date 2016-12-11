@@ -3,6 +3,9 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
+# ##############################################################################
+# Disk usage routines
+
 # Function dubulk - Displays disk usage of filenames read from stdin.
 #  Handles massive file lists.
 dubulk () {

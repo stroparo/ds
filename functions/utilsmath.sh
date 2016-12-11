@@ -4,7 +4,7 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
-# Mathematical functions
+# Mathematical routines
 
 getmax () {
     # Syn: sep field files...

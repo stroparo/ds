@@ -3,6 +3,9 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
+# ##############################################################################
+# User interactive routines
+
 userconfirm () {
     # Info: Ask a question and yield success if user responded [yY]*
 
