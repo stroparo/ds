@@ -4,11 +4,10 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
-# Dependencies:
-# ds00.sh
-
-# ##############################################################################
 # EE - Enter-Environment routines for ssh and scp operations
+
+# Dependencies:
+#   ds00.sh
 
 # Globals:
 # EEPATH (export):
