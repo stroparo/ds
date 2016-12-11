@@ -24,6 +24,7 @@ dsversion:  displays the version of this Daily Shells instance.
 # Start
 
 . "${DS_HOME}/ds00.sh" || return 10
+
 sourcefiles ${DS_VERBOSE:+-v} -q -t \
     "${DS_HOME}/functions/*sh" \
     "${DS_HOME}/ds0[1-9]*sh" \
