@@ -4,7 +4,7 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
-# File handling
+# File handling routines
 
 # Function archive - backup a set of directories which can also be given as variable names.
 # Syntax: [-p prefix] {destination-dir} {src-paths|src-path-variable-names}1+

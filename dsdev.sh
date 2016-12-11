@@ -4,7 +4,7 @@
 #    https://github.com/stroparo/ds
 
 # ##############################################################################
-# Devel functions
+# Development routines
 
 # Function grepfu - Greps the list of available shell functions in current session.
 unset grepfu

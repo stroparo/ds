@@ -4,7 +4,7 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
-# Admin APT (aptitude & apt-get) functions
+# Admin APT (aptitude & apt-get) routines
 
 aptaddppa () {
     # Adds ubuntu ppa repositories listed in the filename argument.
