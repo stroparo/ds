@@ -6,19 +6,13 @@
 # ##############################################################################
 # Development routines
 
-# Function grepfu - Greps the list of available shell functions in current session.
-unset grepfu
-grepfu () {
-    typeset -F | egrep -i "$@"
-}
-
 # ##############################################################################
 # Git
 
-# Function gitclones - Clone repos passed in the argument, one per line (quote it).
-# Syntax: {repositories-one-per-line}
-unset gitclones
 gitclones () {
+    # Info: Clone repos passed in the argument, one per line (quote it).
+    # Syntax: {repositories-one-per-line}
+
     typeset pname=gitclones
 
     while read repo ; do
@@ -39,15 +33,15 @@ ${1}
 EOF
 }
 
-# Function gitconfig - configure git.
-# Syntax: {email} {name} [other git config --global options]
-# Example: gitconfig "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
-unset gitconfig
 gitconfig () {
-    typeset oldind="${OPTIND}"
+    # Info: Configure git.
+    # Syntax: {email} {name} [other git config --global options]
+    # Example: gitconfig "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
+
     typeset pname=gitconfig
     typeset email gitfile name
 
+    typeset oldind="${OPTIND}"
     OPTIND=1
     while getopts ':e:f:n:' opt ; do
         case "${opt}" in
@@ -75,10 +69,9 @@ gitconfig () {
 # ##############################################################################
 # PostgreSQL
 
-# Function supg - call psql via su - postgres, at the given port and user.
-# Syntax: [port=5432] [user=postgres]
-unset supg
 supg () {
+    # Info: Call psql via su - postgres, at the given port and user.
+    # Syntax: [port=5432] [user=postgres]
     sudo su - postgres -c "psql -p ${1:-5432} -U ${2:-postgres}"
 }
 
