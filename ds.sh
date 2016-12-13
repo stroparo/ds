@@ -7,20 +7,6 @@ export DS_HOME="${1:-${HOME%/}/.ds}"
 export DS_VERBOSE
 export DS_VERSION='DS version 0.1.0 - 2016-01-18 22:30'
 
-dsversion () { echo "Daily Shells - ${DS_VERSION}" 1>&2 ; }
-dsinfo () { dsversion ; echo "DS_HOME='${DS_HOME}'" 1>&2 ; }
-
-dshelp () {
-    echo 'DS - Daily Shells Library - Help
-
-Commands:
-
-dshelp:     displays this help messsage.
-dsinfo:     displays environment information.
-dsversion:  displays the version of this Daily Shells instance.
-' 1>&2
-}
-
 # Start
 
 . "${DS_HOME}/ds00.sh" || return 10

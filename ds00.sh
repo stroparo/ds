@@ -4,14 +4,17 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
-# DS base objects
+# DS base routines
+
+# Globals
 
 pfatal="FATAL:"
 pinfo="INFO:"
 pskip="SKIP:"
 pwarn="WARN:"
 
-# Aliases to cd (change directory):
+# Aliases
+
 alias cdbak='d "${DS_ENV_BAK}" -A'
 alias cde='d "${DS_ENV}" -A'
 alias cdl='cd "${DS_ENV_LOG}" && (ls -AFlrt | tail -n 64)'
@@ -24,6 +27,43 @@ if ! ls -h >/dev/null 2>&1 ; then
     alias ds='d "${DS_HOME}" -A ; which git >/dev/null 2>&1 && [ -n "$(git status -s)" ] && git diff'
 fi
 alias t='d "${TEMP_DIRECTORY}" -A'
+
+# Functions
+
+dsinfo () { dsversion ; echo "DS_HOME='${DS_HOME}'" 1>&2 ; }
+dss () { ls -1 "$DS_HOME"/scripts/* | sed -e 's#.*/##' ; }
+dsversion () { echo "Daily Shells - ${DS_VERSION}" 1>&2 ; }
+
+dshelp () {
+    echo 'DS - Daily Shells Library - Help
+
+dsf - list daily shell functions
+dss - list daily shell scripts
+dshelp - display this help messsage.
+dsinfo - display environment information.
+dsversion - display the version of this Daily Shells instance.
+' 1>&2
+}
+
+dsf () {
+
+    typeset filename item items itemslength
+
+    for i in $(ls -1 "$DS_HOME"/functions/*sh) ; do
+
+        items=$(egrep '^ *(function [_a-zA-Z0-9][_a-zA-Z0-9]* *[{]|[_a-zA-Z0-9][_a-zA-Z0-9]* *[(][)] *[{])' "$i" /dev/null | \
+                    sed -e 's#^.*functions/##' -e  's/[(][)].*$//')
+        filename=$(echo "$items" | head -n 1 | cut -d: -f1)
+        items=$(echo "$items" | cut -d: -f2)
+        itemslength=$(echo "$items" | wc -l | awk '{print $1;}')
+
+        if [ -n "$items" ] ; then
+            for item in $(echo "$items" | cut -d: -f2) ; do
+                echo "$item in $filename"
+            done
+        fi
+    done | sort
+}
 
 # ##############################################################################
 # Base routines
