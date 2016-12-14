@@ -39,9 +39,9 @@ dshelp () {
 
 dsf - list daily shell functions
 dss - list daily shell scripts
-dshelp - display this help messsage.
-dsinfo - display environment information.
-dsversion - display the version of this Daily Shells instance.
+dshelp - display this help messsage
+dsinfo - display environment information
+dsversion - display the version of this Daily Shells instance
 ' 1>&2
 }
 
