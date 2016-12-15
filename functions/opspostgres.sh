@@ -25,5 +25,9 @@ supg () {
     # Info: Call psql via su - postgres, at the given port and user.
     # Syntax: [port=5432] [user=postgres]
 
-    sudo su - postgres -c "psql -p ${1:-5432} -U ${2:-postgres}"
+    typeset port=${1:-5432}
+    typeset user=${2:-postgres}
+    shift 2
+
+    sudo su - postgres -c "psql -p ${port} -U ${user} $@"
 }
