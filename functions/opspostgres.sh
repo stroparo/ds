@@ -8,17 +8,37 @@
 
 alias pgc='sudo -iu postgres psql postgres'
 
-pgr () {
-    # Info: pgr is similar to pgrep
+createpguser () {
 
-    ps -ef | egrep -i "$1" | egrep -v "grep.*(${1})"
-}
+    typeset pguser=${1}
+    typeset database=${2:-template1}
 
-pgralert () {
-    # Info: Awaits found processes to finish then starts beeping until interrupted.
+    if [ "$pguser" = 'user' ] ; then
+        echo "FATAL: Your username 'user' is a postgresql reserved word."
+        exit 1
+    fi
 
-    while pgr "${1}" > /dev/null ; do sleep 1 ; done
-    while true ; do echo '\a' ; sleep 8 ; done
+    sudo su - postgres -c "psql -p 5432 -U postgres -d ${database}" <<EOF
+CREATE ROLE ${pguser} WITH LOGIN CREATEROLE;
+ALTER ROLE ${pguser} WITH PASSWORD '${pguser}';
+
+GRANT ALL ON DATABASE ${database} TO ${pguser};
+
+ALTER DEFAULT PRIVILEGES
+    -- FOR ROLE ${pguser}
+    IN SCHEMA public
+    GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES
+    TO ${pguser}
+    ;
+
+ALTER DEFAULT PRIVILEGES
+    IN SCHEMA public
+    GRANT SELECT, USAGE ON SEQUENCES
+    TO ${pguser}
+    ;
+
+\q
+EOF
 }
 
 supg () {
