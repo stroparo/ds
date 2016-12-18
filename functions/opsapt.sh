@@ -20,9 +20,9 @@ aptaddppa () {
 
     [[ -n $ZSH_VERSION ]] && set -o shwordsplit
 
-    for ppa in "$(cat "$ppalistfile")" ; do
+    while read ppa ; do
 
-        if ! (ls -1 /etc/apt/sources.list.d | grep -q "$(echo "$ppa" | sed -e 's#/#-#g')")
+        if ! (ls -1 /etc/apt/sources.list.d | grep -q "$(echo "$ppa" | sed -e 's#/#-.*#g')")
         then
             elog "ppa '${ppa}' ..."
 
@@ -34,7 +34,9 @@ aptaddppa () {
             elog -s "ppa '${ppa}' already present."
         fi
 
-    done
+    done <<EOF
+$(cat "$ppalistfile")
+EOF
 
     [[ -n $ZSH_VERSION ]] && set +o shwordsplit
 
@@ -151,7 +153,7 @@ aptdeploy () {
     ckapt || return "$?"
     _any_not_r "$@" && return 1
 
-    if [[ $- = *i* ]] && ask && ! userconfirm 'Proceed deploying APT assets?' ; then
+    if [[ $- = *i* ]] && $ask && ! userconfirm 'Proceed deploying APT assets?' ; then
         return
     fi
 
