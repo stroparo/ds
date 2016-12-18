@@ -13,6 +13,7 @@ installexa () {
     unzip 'exa-0.4-linux-x86_64.zip' -d ~/bin || return 1
     rm -f 'exa-0.4-linux-x86_64.zip'
     chmod u+x ~/bin/exa-linux-x86_64
+    ln -s exa-linux-x86_64 ~/bin/exa
 }
 
 # Function installohmyzsh - Install Oh My ZSH.
@@ -37,7 +38,6 @@ installtruecrypt () {
     typeset pkg="${1}"
     typeset pkgdir="$(dirname "${pkg}")"
     typeset pkginstaller="${pkgdir}/truecrypt-7.1a-setup-x64"
-    typeset truecryptpath="/usr/bin/truecrypt"
 
     echo '==> Installing truecrypt..' 1>&2
 
@@ -46,9 +46,9 @@ installtruecrypt () {
         echo 'SKIP: Not in Linux, so nothing done.' 1>&2
         return
 
-    elif [ -e "${truecryptpath}" ] ; then
+    elif which truecrypt >/dev/null 2>&1 ; then
 
-        echo "SKIP: Truecrypt already installed at '${truecryptpath}'" 1>&2
+        echo "SKIP: Truecrypt already installed." 1>&2
         return
 
     elif [ ! -e "${pkg}" ] ; then
@@ -56,11 +56,16 @@ installtruecrypt () {
         echo "FATAL: Missing required package '${pkg}'." 1>&2
         return 1
 
+    elif [[ $pkg = *truecrypt-7.1a-setup-x64 ]] ; then
+
+        # The pkg actually received an uncompressed setup script already:
+        sudo bash "$pkg"
+
     elif tar -xzf "${pkg}" -C "${pkgdir}" ; then
 
         echo "Installing '${pkginstaller}'.." 1>&2
 
-        if "${pkginstaller}" ; then
+        if sudo bash "${pkginstaller}" ; then
             rm -f "${pkginstaller}"
         fi
 
