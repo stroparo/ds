@@ -220,8 +220,8 @@ _any_dir_not_rwx () { ! _all_dirs_rwx "$@" ; }
 _any_dir_not_w () { ! _all_dirs_w "$@" ; }
 _any_exists () { for i in "$@" ; do [ -e "${1}" ] && return 0 ; done ; return 1 ; }
 _any_not_exists () { ! _all_exist "$@" ; }
-_any_not_r () { ! all_r "$@" ; }
-_any_not_w () { ! all_w "$@" ; }
+_any_not_r () { ! _all_r "$@" ; }
+_any_not_w () { ! _all_w "$@" ; }
 _any_null () { for i in "$@" ; do [ -z "${i}" ] && return 0 ; done ; return 1 ; }
 
 ckapt () {
