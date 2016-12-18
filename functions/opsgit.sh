@@ -49,8 +49,14 @@ gitconfig () {
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
-    _any_null "${email}" "${name}" && elog -f -n "${pname}" "Must pass an email and a name." && return 1
-    _any_not_w "${gitfile}" && elog -f -n "${pname}" "Must pass writeable file to -f option." && return 1
+    if _any_null "${email}" "${name}" ; then
+        elog -f -n "${pname}" "Must pass an email and a name."
+        return 1
+    fi
+    if [ -n "$gitfile" ] && _any_not_w "${gitfile}"; then
+        elog -f -n "${pname}" "Must pass writeable file to -f option."
+        return 1
+    fi
 
     if [ -w "${gitfile}" ] ; then
         [ -n "${email}" ] && git config -f "${gitfile}" user.email "${email}"
