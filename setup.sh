@@ -15,6 +15,7 @@ if . "$HOME/.ds/ds.sh" "$HOME/.ds" 1>&2 && [ -z "${DS_LOADED}" ] ; then
     [ -e "$HOME/.bashrc" ]  && appendunique "DS_LOAD_CODE" "$HOME/.bashrc"
     [ -e "$HOME/.zshrc" ]   && appendunique "DS_LOAD_CODE" "$HOME/.zshrc"
 else
+    echo 'FATAL: ds not loaded so source commands were not written to any shell profiles..' 1>&2
     exit 99
 fi
 
