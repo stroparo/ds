@@ -11,7 +11,9 @@ dsget () {
 
 dsget || exit $?
 
-if . "$HOME/.ds/ds.sh" "$HOME/.ds" 1>&2 && [ -z "${DS_LOADED}" ] ; then
+. "$HOME/.ds/ds.sh" "$HOME/.ds" 1>&2
+
+if [ -n "${DS_LOADED}" ] ; then
     [ -e "$HOME/.bashrc" ]  && appendunique "DS_LOAD_CODE" "$HOME/.bashrc"
     [ -e "$HOME/.zshrc" ]   && appendunique "DS_LOAD_CODE" "$HOME/.zshrc"
 else
