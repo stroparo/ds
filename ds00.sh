@@ -4,8 +4,6 @@
 #  https://github.com/stroparo/ds
 
 # ##############################################################################
-# DS base routines
-
 # Globals
 
 pfatal="FATAL:"
@@ -13,6 +11,7 @@ pinfo="INFO:"
 pskip="SKIP:"
 pwarn="WARN:"
 
+# ##############################################################################
 # Aliases
 
 alias cdbak='d "${DS_ENV_BAK}" -A'
@@ -23,22 +22,12 @@ alias cdlgt='cd "${DS_ENV_LOG}" && (ls -AFlrt | grep "$(date +"%b %d")")'
 alias cdlt='cd "${DS_ENV_LOG}" && cd "$(ls -1d */|sort|tail -n 1)" && ls -AFlrt'
 alias t='d "${TEMP_DIRECTORY}" -A'
 
+# ##############################################################################
 # Functions
 
 dsinfo () { dsversion ; echo "DS_HOME='${DS_HOME}'" 1>&2 ; }
 dss () { ls -1 "$DS_HOME"/scripts/* | sed -e 's#.*/##' ; }
 dsversion () { echo "Daily Shells - ${DS_VERSION}" 1>&2 ; }
-
-dshelp () {
-    echo 'DS - Daily Shells Library - Help
-
-dsf - list daily shell functions
-dss - list daily shell scripts
-dshelp - display this help messsage
-dsinfo - display environment information
-dsversion - display the version of this Daily Shells instance
-' 1>&2
-}
 
 dsf () {
 
@@ -59,6 +48,45 @@ dsf () {
         fi
     done | sort
 }
+
+dshelp () {
+    echo 'DS - Daily Shells Library - Help
+
+dsf - list daily shell functions
+dss - list daily shell scripts
+dshelp - display this help messsage
+dsinfo - display environment information
+dsversion - display the version of this Daily Shells instance
+' 1>&2
+}
+
+dsload () {
+
+    typeset dshome="${1:-${DS_HOME}}"
+
+    if [ ! -f "${dshome}/ds.sh" ] ; then
+
+        if which wget >/dev/null ; then
+
+            dshome="$HOME/.ds"
+            export DS_HOME="$dshome"
+
+            if [ ! -e "${dshome}/ds.sh" ] ; then
+                echo "Installing DS into '${dshome}' ..." 1>&2
+                wget 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' -O - | bash
+            fi
+        else
+            echo "FATAL: No ds.sh in '${dshome}' directory." 1>&2
+        fi
+    fi
+
+    if ! . "${dshome}/ds.sh" "${dshome}" 1>&2 || [ -z "${DS_LOADED}" ] ; then
+        echo "FATAL: Could not load DS - Daily Shells." 1>&2
+        return 1
+    fi
+
+}
+
 
 # ##############################################################################
 # Base routines
