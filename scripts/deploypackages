@@ -34,6 +34,7 @@ deploypackages () {
 
     typeset deploypath
     typeset exclude
+    typeset files
     typeset pkgspath
     typeset userconfirm
 
@@ -47,8 +48,8 @@ deploypackages () {
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
-    pkgspath="$(cd "${1}" ; echo "$PWD")"
-    deploypath="$(cd "${2}" ; echo "$PWD")"
+    pkgspath="$(cd "${1}" || exit 1 ; echo "$PWD")" || exit 1
+    deploypath="$(cd "${2}" || exit 1 ; echo "$PWD")" || exit 1
 
     if ${userconfirm:-false} ; then
         userconfirm "Deploy packages from '${pkgspath}' ?" || return
@@ -62,10 +63,18 @@ deploypackages () {
     elog -n "$pname" "Packages path '${pkgspath}' .."
     elog -n "$pname" ".. deploying to '${deploypath}' .."
 
-    unarchive -v -o "${deploypath}" $(ls -1 "${pkgspath}"/*.7z 2>/dev/null)
-    unarchive -v -o "${deploypath}" $(ls -1 "${pkgspath}"/*.zip 2>/dev/null)
-    unarchive -v -o "${deploypath}" $(ls -1 "${pkgspath}"/*bz2 2>/dev/null)
-    unarchive -v -o "${deploypath}" $(ls -1 "${pkgspath}"/*gz 2>/dev/null)
+    files=$(ls -1 \
+        "${pkgspath}"/*.7z \
+        "${pkgspath}"/*.zip \
+        "${pkgspath}"/*bz2 \
+        "${pkgspath}"/*gz \
+        2>/dev/null)
+
+    if [ -n "$exclude" ] ; then
+        files=$(echo "$files" | egrep -v "$exclude")
+    fi
+
+    unarchive -v -o "${deploypath}" ${files}
 
     elog -n "$pname" 'Complete.'
 }
