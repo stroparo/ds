@@ -22,11 +22,13 @@ installohmyzsh () {
 
     echo '==> Installing ohmyzsh..' 1>&2
 
-    if which zsh >/dev/null && [ ! -d "${HOME}/.oh-my-zsh" ] ; then
-        sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
-    else
+    if ! which zsh >/dev/null ; then
         echo 'FATAL: Must have zsh installed.'
         return 1
+    fi
+
+    if [ ! -d "${HOME}/.oh-my-zsh" ] &&  ; then
+        sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
     fi
 }
 
