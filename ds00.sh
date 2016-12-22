@@ -93,7 +93,9 @@ dsupgrade () {
 
     mv ~/.ds ~/.ds-$timestamp
 
-    if ! dsload ; then
+    if dsload ; then
+        rm -rf ~/.ds-$timestamp
+    else
         echo "FATAL: upgrade failed ... restoring ~/.ds-${timestamp} ..."
         rm ~/.ds
         mv ~/.ds-$timestamp ~/.ds
