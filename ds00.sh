@@ -87,6 +87,18 @@ dsload () {
 
 }
 
+dsupgrade () {
+
+    typeset timestamp="$(date +%Y%m%d-%OH%OM%OS)"
+
+    mv ~/.ds ~/.ds-$timestamp
+
+    if ! dsload ; then
+        echo "FATAL: upgrade failed ... restoring ~/.ds-${timestamp} ..."
+        rm ~/.ds
+        mv ~/.ds-$timestamp ~/.ds
+    fi
+}
 
 # ##############################################################################
 # Base routines
