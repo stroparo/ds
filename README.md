@@ -11,6 +11,16 @@ The _DS - Daily Shells Library_ is a collection of useful shell routines in the 
 
 Currently the ___Bash___ and ___Zsh___ shells are supported.
 
+The dshelp function is the help system entry point. It will output something like this:
+
+```
+dsf - list daily shell functions
+dss - list daily shell scripts
+dshelp - display this help messsage
+dsinfo - display environment information
+dsversion - display the version of this Daily Shells instance
+```
+
 Some examples:
 
 * Aggregate a file:
