@@ -38,7 +38,7 @@ alias nht='tail -9999f nohup.out'
 
 # ##############################################################################
 # Ls
-if exa --version >/dev/null 2>&1 ; then
+if which exa >/dev/null 2>&1 ; then
     alias ls='exa'
     alias l='exa -il'
     alias ll='exa -ila'
