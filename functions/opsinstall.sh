@@ -13,7 +13,7 @@ installexa () {
     unzip 'exa-0.4-linux-x86_64.zip' -d ~/bin || return 1
     rm -f 'exa-0.4-linux-x86_64.zip'
     chmod u+x ~/bin/exa-linux-x86_64
-    ln -s exa-linux-x86_64 ~/bin/exa
+    ln -s ~/bin/exa-linux-x86_64 ~/bin/exa
 }
 
 # Function installohmyzsh - Install Oh My ZSH.
