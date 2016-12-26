@@ -39,7 +39,7 @@ installtruecrypt () {
 
     typeset pkg="${1}"
     typeset pkgdir="$(dirname "${pkg}")"
-    typeset pkginstaller="${pkgdir}/truecrypt-7.1a-setup-x64"
+    typeset installer="truecrypt-7.1a-setup-x64"
 
     echo '==> Installing truecrypt..' 1>&2
 
@@ -65,10 +65,10 @@ installtruecrypt () {
 
     elif tar -xzf "${pkg}" -C "${pkgdir}" ; then
 
-        echo "Installing '${pkginstaller}'.." 1>&2
+        echo "Installing '${installer}'.." 1>&2
 
-        if sudo bash "${pkginstaller}" ; then
-            rm -f "${pkginstaller}"
+        if sudo bash "${pkgdir}/${installer}" ; then
+            rm -f "${pkgdir}/${installer}"
         fi
 
         echo 'Truecrypt installation complete.' 1>&2
