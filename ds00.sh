@@ -50,14 +50,14 @@ dsf () {
 }
 
 dshelp () {
-    echo 'DS - Daily Shells Library - Help
+    echo "DS - Daily Shells Library - Help
 
-dsf - list daily shell functions
-dss - list daily shell scripts
+dsf - list daily shells' functions
+dss - list daily shells' scripts
 dshelp - display this help messsage
 dsinfo - display environment information
 dsversion - display the version of this Daily Shells instance
-' 1>&2
+" 1>&2
 }
 
 dsload () {

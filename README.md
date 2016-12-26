@@ -14,8 +14,8 @@ Currently the ___Bash___ and ___Zsh___ shells are supported.
 The dshelp function is the help system entry point. It will output something like this:
 
 ```
-dsf - list daily shell functions
-dss - list daily shell scripts
+dsf - list daily shells' functions
+dss - list daily shells' scripts
 dshelp - display this help messsage
 dsinfo - display environment information
 dsversion - display the version of this Daily Shells instance
