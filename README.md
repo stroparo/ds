@@ -73,6 +73,7 @@ Execute:
 3. Source **ds.sh** in your shell profile i.e.
 
 * .bashrc
+* .zshrc
 * .profile
 * Etcera
 
