@@ -66,15 +66,12 @@ dsload () {
 
     if [ ! -f "${dshome}/ds.sh" ] ; then
 
-        if which wget >/dev/null ; then
+        dshome="$HOME/.ds"
+        export DS_HOME="$dshome"
 
-            dshome="$HOME/.ds"
-            export DS_HOME="$dshome"
-
-            if [ ! -e "${dshome}/ds.sh" ] ; then
-                echo "Installing DS into '${dshome}' ..." 1>&2
-                wget 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' -O - | bash
-            fi
+        if [ ! -e "${dshome}/ds.sh" ] && which wget >/dev/null ; then
+            echo "Installing DS into '${dshome}' ..." 1>&2
+            wget 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' -O - | bash
         else
             echo "FATAL: No ds.sh in '${dshome}' directory." 1>&2
         fi
@@ -91,7 +88,7 @@ dsupgrade () {
 
     typeset timestamp="$(date +%Y%m%d-%OH%OM%OS)"
 
-    mv ~/.ds ~/.ds-$timestamp
+    mv ~/.ds ~/.ds-$timestamp 2>/dev/null
 
     if dsload ; then
         rm -rf ~/.ds-$timestamp
