@@ -259,7 +259,8 @@ rentidyedit () {
 }
 
 # Function rentidy - Renames files and directories recursively at the root given by
-#  the argument. The new file is as per the function regex.
+#   the argument. Underscores, camel case instances and other special characters are
+#   substituted by a hyphen separator.
 rentidy () {
     typeset editspace newfilename prefixintact
 
