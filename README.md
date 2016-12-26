@@ -41,7 +41,7 @@ Execute:
 The default DS_HOME is $HOME/.ds (~/.ds) so if you install in there, just source ds.sh:
 
 ```bash
-source ~/ds.sh
+source ~/.ds/ds.sh
 ```
 
 Otherwise, specify the directory (after sourcing, $DS_HOME will point to it) both in the filename and as the first argument:
