@@ -45,8 +45,8 @@ installtruecrypt () {
     if ! _is_linux ; then
         echo 'SKIP: Not in Linux, so nothing done.' 1>&2
         return
-    elif which ${basename%%-*} >/dev/null 2>&1 ; then
-        echo "SKIP: ${basename%%-*} already installed." 1>&2
+    elif which ${pkgbasename%%-*} >/dev/null 2>&1 ; then
+        echo "SKIP: ${pkgbasename%%-*} already installed." 1>&2
         return
     elif [ ! -e "${pkg}" ] ; then
         echo "FATAL: Missing required package '${pkg}'." 1>&2
