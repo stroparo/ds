@@ -37,13 +37,9 @@ alias nhr='rm nohup.out'
 alias nht='tail -9999f nohup.out'
 
 # ##############################################################################
-# Ls
-if which exa >/dev/null 2>&1 ; then
-    alias ls='ls --color=auto'
-    alias l='exa -il'
-    alias ll='exa -ila'
-    alias lt='ls -Fhilrt'
-elif [[ $(ls --version 2>/dev/null) = *GNU* ]] ; then
+# Ls etcetera
+
+if [[ $(ls --version 2>/dev/null) = *GNU* ]] ; then
     alias ls='ls --color=auto'
     alias l='ls -Fhil'
     alias ll='ls -FhilA'
@@ -52,6 +48,11 @@ else
     alias l='ls -Fl'
     alias ll='ls -AFl'
     alias lt='ls -Flrt'
+fi
+
+if which exa >/dev/null 2>&1 ; then
+    alias e='exa -il'
+    alias ea='exa -ila'
 fi
 
 # ##############################################################################
