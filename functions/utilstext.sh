@@ -112,7 +112,7 @@ dos2unix () {
 echogrep () {
     # Info: Grep echoed arguments instead of files.
 
-    typeset re
+    typeset re text
     typeset iopt qopt vopt
 
     typeset oldind="$OPTIND"
@@ -127,9 +127,12 @@ echogrep () {
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     re="$1" ; shift
+    text="$(for i in "$@" ; do echo "${i}" ; done)"
+
+    if [ -z "$text" ] ; then return ; fi
 
     egrep ${iopt} ${qopt} ${vopt} "$re" <<EOF
-$(for i in "$@" ; do echo "${i}" ; done)
+${text}
 EOF
 }
 
