@@ -24,3 +24,18 @@ userinput () {
     echo ${BASH_VERSION:+-e} "$@: \c"
     read userinput
 }
+
+validinput () {
+    # Info: Read value repeatedly until it is valid, then echo it.
+    # Syn: {message} {ere-extended-regex}
+
+    typeset msg=$1
+    typeset re=$2
+    typeset userinput=''
+
+    while ! (echo "$userinput" | egrep -iq "^${re}\$") ; do
+        read -p "${msg}: " userinput
+    done
+
+    echo "$userinput"
+}

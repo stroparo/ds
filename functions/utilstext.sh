@@ -6,10 +6,16 @@
 # ##############################################################################
 # Text processing routines
 
+# Oneliners
 catnum () { mutail -n1 "$@" | grep '^[0-9][0-9]*$' ; } # TODO rename to tailnum
-echoupcase () { echo "$@" | tr '[[:lower:]]' '[[:upper:]]' ; }
-locase () { tr '[[:upper:]]' '[[:lower:]]' ; }
-upcase () { tr '[[:lower:]]' '[[:upper:]]' ; }
+
+# Case conversion
+lowerecho () { echo "$@" | tr '[[:upper:]]' '[[:lower:]]' ; }
+upperecho () { echo "$@" | tr '[[:lower:]]' '[[:upper:]]' ; }
+lowertr () { tr '[[:upper:]]' '[[:lower:]]' ; }
+uppertr () { tr '[[:lower:]]' '[[:upper:]]' ; }
+lowervar () { eval "$1=\"\$(echo \"\$$1\" | tr '[[:upper:]]' '[[:lower:]]')\"" ; }
+uppervar () { eval "$1=\"\$(echo \"\$$1\" | tr '[[:lower:]]' '[[:upper:]]')\"" ; }
 
 appendunique () {
     # Info: If string not present in file, append to it.
