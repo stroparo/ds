@@ -28,7 +28,9 @@ installohmyzsh () {
     fi
 
     if [ ! -d "${HOME}/.oh-my-zsh" ] ; then
-        sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+        sh -c "$(wget \
+                https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh \
+                -O -)"
     fi
 }
 
@@ -134,7 +136,8 @@ EOF
 unset installinputfont
 installinputfont () {
 
-    typeset find_command="find \"$HOME/Input_Fonts\" \( -name '*.[o,t]tf' -or -name '*.pcf.gz' \) -type f -print0"
+    typeset find_command="find \"$HOME/Input_Fonts\" \
+\( -name '*.[o,t]tf' -or -name '*.pcf.gz' \) -type f -print0"
     typeset font_dir="$HOME/.local/share/fonts"
     typeset inputfontpackage="$1"
 
