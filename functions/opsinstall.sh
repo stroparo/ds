@@ -13,11 +13,10 @@ installexa () {
     unzip 'exa-0.4-linux-x86_64.zip' -d ~/bin || return 1
     rm -f 'exa-0.4-linux-x86_64.zip'
     chmod u+x ~/bin/exa-linux-x86_64
-    ln -s exa-linux-x86_64 ~/bin/exa
+    ln -s ~/bin/exa-linux-x86_64 ~/bin/exa
 }
 
 # Function installohmyzsh - Install Oh My ZSH.
-unset installohmyzsh
 installohmyzsh () {
 
     echo '==> Installing ohmyzsh..' 1>&2
@@ -28,51 +27,33 @@ installohmyzsh () {
     fi
 
     if [ ! -d "${HOME}/.oh-my-zsh" ] ; then
-        sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+        sh -c "$(wget \
+                https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh \
+                -O -)"
     fi
 }
 
 # Function installtruecrypt - Install truecrypt encryption software.
 # Syntax: {package-filename}
-unset installtruecrypt
 installtruecrypt () {
 
     typeset pkg="${1}"
-    typeset pkgdir="$(dirname "${pkg}")"
-    typeset pkginstaller="${pkgdir}/truecrypt-7.1a-setup-x64"
+    typeset pkgbasename="$(basename "${pkg}")"
 
-    echo '==> Installing truecrypt..' 1>&2
+    echo "==> Installing ${pkgbasename%%-*} ..." 1>&2
 
     if ! _is_linux ; then
-
         echo 'SKIP: Not in Linux, so nothing done.' 1>&2
         return
-
-    elif which truecrypt >/dev/null 2>&1 ; then
-
-        echo "SKIP: Truecrypt already installed." 1>&2
+    elif which ${pkgbasename%%-*} >/dev/null 2>&1 ; then
+        echo "SKIP: ${pkgbasename%%-*} already installed." 1>&2
         return
-
     elif [ ! -e "${pkg}" ] ; then
-
         echo "FATAL: Missing required package '${pkg}'." 1>&2
         return 1
+    fi
 
-    elif [[ $pkg = *truecrypt-7.1a-setup-x64 ]] ; then
-
-        # The pkg actually received an uncompressed setup script already:
-        sudo bash "$pkg"
-
-    elif tar -xzf "${pkg}" -C "${pkgdir}" ; then
-
-        echo "Installing '${pkginstaller}'.." 1>&2
-
-        if sudo bash "${pkginstaller}" ; then
-            rm -f "${pkginstaller}"
-        fi
-
-        echo 'Truecrypt installation complete.' 1>&2
-    else
+    if ! sudo bash "$pkg" ; then
         echo 'FATAL: Truecrypt installation failed.' 1>&2
         return 1
     fi
@@ -89,7 +70,6 @@ installdesktopapps () {
     installyoutubedl
 }
 
-unset installdropbox
 installdropbox () {
 
     echo '==> Installing dropbox..' 1>&2
@@ -131,10 +111,10 @@ EOF
 
 # Function installinputfont - Installs local input font package
 # Syntax: {input-font-package-filename}
-unset installinputfont
 installinputfont () {
 
-    typeset find_command="find \"$HOME/Input_Fonts\" \( -name '*.[o,t]tf' -or -name '*.pcf.gz' \) -type f -print0"
+    typeset find_command="find \"$HOME/Input_Fonts\" \
+\( -name '*.[o,t]tf' -or -name '*.pcf.gz' \) -type f -print0"
     typeset font_dir="$HOME/.local/share/fonts"
     typeset inputfontpackage="$1"
 
@@ -178,7 +158,6 @@ installinputfont () {
 }
 
 # Function installpowerfonts - Install powerline fonts.
-unset installpowerfonts
 installpowerfonts () {
 
     echo '==> Installing powerline fonts..' 1>&2
@@ -208,7 +187,6 @@ installpowerfonts () {
 }
 
 # Function installyoutubedl
-unset installyoutubedl
 installyoutubedl () {
 
     typeset youtubedlpath='/usr/local/bin/youtube-dl'
