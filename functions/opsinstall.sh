@@ -17,7 +17,6 @@ installexa () {
 }
 
 # Function installohmyzsh - Install Oh My ZSH.
-unset installohmyzsh
 installohmyzsh () {
 
     echo '==> Installing ohmyzsh..' 1>&2
@@ -36,45 +35,25 @@ installohmyzsh () {
 
 # Function installtruecrypt - Install truecrypt encryption software.
 # Syntax: {package-filename}
-unset installtruecrypt
 installtruecrypt () {
 
     typeset pkg="${1}"
-    typeset pkgdir="$(dirname "${pkg}")"
-    typeset installer="truecrypt-7.1a-setup-x64"
+    typeset pkgbasename="$(basename "${pkg}")"
 
     echo '==> Installing truecrypt..' 1>&2
 
     if ! _is_linux ; then
-
         echo 'SKIP: Not in Linux, so nothing done.' 1>&2
         return
-
-    elif which truecrypt >/dev/null 2>&1 ; then
-
-        echo "SKIP: Truecrypt already installed." 1>&2
+    elif which ${basename%%-*} >/dev/null 2>&1 ; then
+        echo "SKIP: ${basename%%-*} already installed." 1>&2
         return
-
     elif [ ! -e "${pkg}" ] ; then
-
         echo "FATAL: Missing required package '${pkg}'." 1>&2
         return 1
+    fi
 
-    elif [[ $pkg = *truecrypt-7.1a-setup-x64 ]] ; then
-
-        # The pkg actually received an uncompressed setup script already:
-        sudo bash "$pkg"
-
-    elif tar -xzf "${pkg}" -C "${pkgdir}" ; then
-
-        echo "Installing '${installer}'.." 1>&2
-
-        if sudo bash "${pkgdir}/${installer}" ; then
-            rm -f "${pkgdir}/${installer}"
-        fi
-
-        echo 'Truecrypt installation complete.' 1>&2
-    else
+    if ! sudo bash "$pkg" ; then
         echo 'FATAL: Truecrypt installation failed.' 1>&2
         return 1
     fi
@@ -91,7 +70,6 @@ installdesktopapps () {
     installyoutubedl
 }
 
-unset installdropbox
 installdropbox () {
 
     echo '==> Installing dropbox..' 1>&2
@@ -133,7 +111,6 @@ EOF
 
 # Function installinputfont - Installs local input font package
 # Syntax: {input-font-package-filename}
-unset installinputfont
 installinputfont () {
 
     typeset find_command="find \"$HOME/Input_Fonts\" \
@@ -181,7 +158,6 @@ installinputfont () {
 }
 
 # Function installpowerfonts - Install powerline fonts.
-unset installpowerfonts
 installpowerfonts () {
 
     echo '==> Installing powerline fonts..' 1>&2
@@ -211,7 +187,6 @@ installpowerfonts () {
 }
 
 # Function installyoutubedl
-unset installyoutubedl
 installyoutubedl () {
 
     typeset youtubedlpath='/usr/local/bin/youtube-dl'
