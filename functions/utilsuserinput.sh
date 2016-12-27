@@ -31,10 +31,17 @@ validinput () {
 
     typeset msg=$1
     typeset re=$2
-    typeset userinput=''
+
+    userinput=''
+
+    if [ -z "$re" ] ; then
+        echo 'FATAL: empty regex' 1>&2
+        return 1
+    fi
 
     while ! (echo "$userinput" | egrep -iq "^${re}\$") ; do
-        read -p "${msg}: " userinput
+        echo ${BASH_VERSION:+-e} "$@: \c"
+        read userinput
     done
 
     echo "$userinput"
