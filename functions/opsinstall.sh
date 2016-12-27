@@ -40,7 +40,7 @@ installtruecrypt () {
     typeset pkg="${1}"
     typeset pkgbasename="$(basename "${pkg}")"
 
-    echo '==> Installing truecrypt..' 1>&2
+    echo '==> Installing ${pkgbasename%%-*}..' 1>&2
 
     if ! _is_linux ; then
         echo 'SKIP: Not in Linux, so nothing done.' 1>&2
