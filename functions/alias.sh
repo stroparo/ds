@@ -39,7 +39,7 @@ alias nht='tail -9999f nohup.out'
 # ##############################################################################
 # Ls
 if which exa >/dev/null 2>&1 ; then
-    alias ls='exa'
+    alias ls='ls --color=auto'
     alias l='exa -il'
     alias ll='exa -ila'
     alias lt='ls -Fhilrt'
