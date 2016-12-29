@@ -99,8 +99,9 @@ installtruecrypt () { # Syntax: {package-filename}
 }
 
 installyoutubedl () {
-    typeset youtubedlpath='/usr/local/bin/youtube-dl'
     ! _is_linux && ! _is_cygwin && return
+
+    typeset youtubedlpath='/usr/local/bin/youtube-dl'
     [ -e "${youtubedlpath}" ] && return
 
     echo '==> Installing youtube-dl ...' 1>&2
