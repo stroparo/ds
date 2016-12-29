@@ -6,88 +6,23 @@
 # ##############################################################################
 # Application installation routines
 
-installexa () {
-
-    _is_linux || return 1
-
-    mkdir ~/bin || return 1
-
-    wget 'https://the.exa.website/releases/exa-0.4-linux-x86_64.zip' || return 1
-    unzip 'exa-0.4-linux-x86_64.zip' -d ~/bin || return 1
-    rm -f 'exa-0.4-linux-x86_64.zip'
-
-    chmod u+x ~/bin/exa-linux-x86_64
-    ln -s ~/bin/exa-linux-x86_64 ~/bin/exa
-}
-
-# Function installohmyzsh - Install Oh My ZSH.
-installohmyzsh () {
-
-    echo '==> Installing ohmyzsh..' 1>&2
-
-    if ! which zsh >/dev/null ; then
-        echo 'FATAL: Must have zsh installed.'
-        return 1
-    fi
-
-    if [ ! -d "${HOME}/.oh-my-zsh" ] ; then
-        sh -c "$(wget \
-                https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh \
-                -O -)"
-    fi
-}
-
-# Function installtruecrypt - Install truecrypt encryption software.
-# Syntax: {package-filename}
-installtruecrypt () {
-
-    typeset pkg="${1}"
-    typeset pkgbasename="$(basename "${pkg}")"
-
-    echo "==> Installing ${pkgbasename%%-*} ..." 1>&2
-
-    if ! _is_linux ; then
-
-        echo 'SKIP: Not in Linux, so nothing done.' 1>&2
-        return
-
-    elif which ${pkgbasename%%-*} >/dev/null 2>&1 ; then
-
-        echo "SKIP: ${pkgbasename%%-*} already installed." 1>&2
-        return
-    fi
-
-    if ! sudo bash "$pkg" ; then
-        echo 'FATAL: Truecrypt installation failed.' 1>&2
-        return 1
-    fi
-}
-
-# ##############################################################################
-# Desktop-most software
-
-installdesktopapps () {
+installapps () {
     # Info: Install applications, mostly for linux and downloaded from the Internet.
 
     installdropbox
+    installexa
     installinputfont "${INPUTFONTPATH}"
+    installohmyzsh
     installpowerfonts
     installyoutubedl
 }
 
 installdropbox () {
 
-    echo '==> Installing dropbox..' 1>&2
+    _is_linux || return
+    [ -e ~/.dropbox-dist/dropboxd ] && return
 
-    if ! _is_linux ; then
-        echo 'SKIP: Not in Linux, so nothing done.' 1>&2
-        return
-    fi
-
-    if [ -e ~/.dropbox-dist/dropboxd ] ; then
-        echo 'SKIP: It was installed already.' 1>&2
-        return
-    fi
+    echo '==> Installing dropbox ...' 1>&2
 
     cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | \
         tar xzf -
@@ -108,106 +43,67 @@ StartupNotify=false
 Terminal=false
 Hidden=false
 EOF
-    echo 'Launching dropbox..' 1>&2
     env DBUS_SESSION_BUS_ADDRESS='' "${HOME}"/.dropbox-dist/dropboxd > /dev/null 2>&1 &
-
-    echo 'Dropbox installation complete.' 1>&2
 }
 
-# Function installinputfont - Installs local input font package
-# Syntax: {input-font-package-filename}
+installexa () {
+    _is_linux || return
+    mkdir ~/bin || return 1
+    wget 'https://the.exa.website/releases/exa-0.4-linux-x86_64.zip' || return 1
+    unzip 'exa-0.4-linux-x86_64.zip' -d ~/bin || return 1
+    rm -f 'exa-0.4-linux-x86_64.zip'
+    chmod u+x ~/bin/exa-linux-x86_64
+    ln -s ~/bin/exa-linux-x86_64 ~/bin/exa
+}
+
 installinputfont () {
+    # Info: Installs local input font package
+    # Syntax: {input-font-package-filename}
 
     typeset find_command="find \"$HOME/Input_Fonts\" \
 \( -name '*.[o,t]tf' -or -name '*.pcf.gz' \) -type f -print0"
     typeset font_dir="$HOME/.local/share/fonts"
     typeset inputfontpackage="$1"
 
-    echo '==> Installing input font..' 1>&2
+    _is_linux || return
+    [ -e "$font_dir/InputMono-Regular.ttf" ] && return
 
-    if ! _is_linux ; then
-        echo 'SKIP: Not in Linux, so nothing done.' 1>&2
-        return
-    fi
-    if [ -e "$font_dir/InputMono-Regular.ttf" ] ; then
-        echo 'SKIP: It was installed already.' 1>&2
-        return
-    fi
-    if [ ! -e "$inputfontpackage" ] ; then
-        echo 'FATAL: Invalid input font package location (first argument).' 1>&2
-        return 1
-    fi
-
-    unzip -d "$HOME" "$inputfontpackage" 'Input_Fonts/*'
-
-    if [ ! -d "$font_dir" ] ; then
-        mkdir -p "$font_dir"
-    fi
-
+    echo '==> Installing input font ...' 1>&2
+    unzip -d "$HOME" "$inputfontpackage" 'Input_Fonts/*' || return 1
+    mkdir -p "$font_dir" 2>/dev/null
     eval $find_command | xargs -0 -I % cp "%" "$font_dir/"
     rm -rf "$HOME/Input_Fonts"
-
-    if [ -e "$font_dir/InputMono-Regular.ttf" ] ; then
-
-        # Reset font cache on Linux
-        if command -v fc-cache @>/dev/null ; then
-            echo "Resetting font cache, this may take a moment..." 1>&2
-            fc-cache -f "$font_dir"
-        fi
-
-        echo "Input fonts installed into '$font_dir'." 1>&2
-    else
-        echo "FATAL: Failure installing input fonts to '$font_dir'." 1>&2
-        return 1
-    fi
+    command -v fc-cache @>/dev/null && fc-cache -f "$font_dir" # reset font cache
 }
 
-# Function installpowerfonts - Install powerline fonts.
+installohmyzsh () {
+    which zsh >/dev/null || return 1
+    [ -d "${HOME}/.oh-my-zsh" ] && return
+    echo '==> Installing ohmyzsh ...' 1>&2
+    sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+}
+
 installpowerfonts () {
-
-    echo '==> Installing powerline fonts..' 1>&2
-
-    if ! _is_linux ; then
-
-        echo 'SKIP: Not in Linux, so nothing done.' 1>&2
-        return
-
-    elif [ -e "$HOME/.local/share/fonts/Inconsolata for Powerline.otf" ] ; then
-
-        echo 'SKIP: It was installed already.' 1>&2
-        return
-    fi
-
+    _is_linux || return
+    [ -e "$HOME/.local/share/fonts/Inconsolata for Powerline.otf" ] && return
     wget https://github.com/powerline/fonts/archive/master.zip -O ~/powerline.zip
     (cd ~ ; unzip powerline.zip)
-
-    if ~/fonts-master/install.sh ; then
-
-        rm -rf ~/fonts-master ~/powerline.zip
-        echo 'Powerfonts sucessfully installed.' 1>&2
-    else
-        echo 'FATAL: Failure during powerfonts installation.' 1>&2
-        return 1
-    fi
+    echo '==> Installing powerline fonts ...' 1>&2
+    ~/fonts-master/install.sh && rm -rf ~/fonts-master ~/powerline.zip
 }
 
-# Function installyoutubedl
+installtruecrypt () { # Syntax: {package-filename}
+    _is_linux || return
+    echo "==> Installing ${1##*/} ..." 1>&2
+    sudo bash "$pkg"
+}
+
 installyoutubedl () {
-
     typeset youtubedlpath='/usr/local/bin/youtube-dl'
+    ! _is_linux && ! _is_cygwin && return
+    [ -e "${youtubedlpath}" ] && return
 
-    echo '==> Installing youtube-dl..' 1>&2
-
-    if ! _is_linux && ! _is_cygwin ; then
-
-        echo 'SKIP: Not in Cygwin or Linux, so nothing done.' 1>&2
-        return
-
-    elif [ -e "${youtubedlpath}" ] ; then
-
-        echo 'SKIP: It was installed already.' 1>&2
-        return
-    fi
+    echo '==> Installing youtube-dl ...' 1>&2
 
     if _is_linux ; then
         sudo wget -q -O "${youtubedlpath}" 'https://yt-dl.org/latest/youtube-dl'
@@ -215,12 +111,6 @@ installyoutubedl () {
     elif _is_cygwin ; then
         wget -q -O "${youtubedlpath}" 'https://yt-dl.org/latest/youtube-dl'
         chmod a+rx "${youtubedlpath}"
-    fi
-
-    if ls -l "${youtubedlpath}" ; then
-        echo 'Installation complete.' 1>&2
-    else
-        echo 'FATAL: Installation failed.' 1>&2
     fi
 }
 
