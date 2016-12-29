@@ -48,12 +48,12 @@ EOF
 
 installexa () {
     _is_linux || return
-    mkdir ~/bin || return 1
+    [ ! -d ~/bin ] && ! mkdir ~/bin && return 1
     wget 'https://the.exa.website/releases/exa-0.4-linux-x86_64.zip' || return 1
     unzip 'exa-0.4-linux-x86_64.zip' -d ~/bin || return 1
     rm -f 'exa-0.4-linux-x86_64.zip'
+    ln -s 'exa-linux-x86_64' ~/bin/exa
     chmod u+x ~/bin/exa-linux-x86_64
-    ln -s ~/bin/exa-linux-x86_64 ~/bin/exa
 }
 
 installinputfont () {
