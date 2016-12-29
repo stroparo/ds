@@ -7,11 +7,10 @@
 # Application installation routines
 
 installapps () {
-    # Info: Install applications, mostly for linux and downloaded from the Internet.
+    # Info: Install applications from the Internet.
 
     installdropbox
     installexa
-    installinputfont "${INPUTFONTPATH}"
     installohmyzsh
     installpowerfonts
     installyoutubedl
@@ -92,7 +91,9 @@ installpowerfonts () {
     ~/fonts-master/install.sh && rm -rf ~/fonts-master ~/powerline.zip
 }
 
-installtruecrypt () { # Syntax: {package-filename}
+installtruecrypt () {
+    # Syntax: {package-filename}
+
     _is_linux || return
     echo "==> Installing ${1##*/} ..." 1>&2
     sudo bash "$pkg"
