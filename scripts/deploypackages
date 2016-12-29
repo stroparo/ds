@@ -36,7 +36,7 @@ deploypackages () {
     typeset exclude
     typeset files
     typeset pkgspath
-    typeset userconfirm
+    typeset userconfirm=false
 
     typeset oldind="${OPTIND}"
     OPTIND=1
@@ -51,14 +51,8 @@ deploypackages () {
     pkgspath="$(cd "${1}" || exit 1 ; echo "$PWD")" || exit 1
     deploypath="$(cd "${2}" || exit 1 ; echo "$PWD")" || exit 1
 
-    if ${userconfirm:-false} ; then
-        userconfirm "Deploy packages from '${pkgspath}' ?" || return
-    fi
-
-    if [ -z "$(ls -1 "${pkgspath}" 2>/dev/null | egrep '([.]7z|[.]zip|bz2|gz)$')" ] ; then
-        elog -n "$pname" -f "No packages in '${pkgspath}'."
-        return 1
-    fi
+    ! (ls -1 "${pkgspath}" | egrep '([.]7z|[.]zip|bz2|gz)$') && return
+    $userconfirm && ! userconfirm "Deploy packages from '${pkgspath}' ?" && return
 
     elog -n "$pname" "Packages path '${pkgspath}' .."
     elog -n "$pname" ".. deploying to '${deploypath}' .."
@@ -69,18 +63,12 @@ deploypackages () {
         "${pkgspath}"/*bz2 \
         "${pkgspath}"/*gz \
         2>/dev/null)
-
-    if [ -n "$exclude" ] ; then
-        files=$(echo "$files" | egrep -v "$exclude")
-    fi
+    [ -n "$exclude" ] && files=$(echo "$files" | egrep -v "$exclude")
 
     unarchive -v -o "${deploypath}" ${files}
-
-    elog -n "$pname" 'Complete.'
 }
 
 # ##############################################################################
-# Main
 
 prep
 deploypackages "$@"
