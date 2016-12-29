@@ -40,9 +40,7 @@ validinput () {
     fi
 
     while ! (echo "$userinput" | egrep -iq "^${re}\$") ; do
-        echo ${BASH_VERSION:+-e} "$@: \c"
+        echo ${BASH_VERSION:+-e} "${1}: \c"
         read userinput
     done
-
-    echo "$userinput"
 }
