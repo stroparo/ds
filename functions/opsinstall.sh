@@ -47,14 +47,14 @@ installtruecrypt () {
     echo "==> Installing ${pkgbasename%%-*} ..." 1>&2
 
     if ! _is_linux ; then
+
         echo 'SKIP: Not in Linux, so nothing done.' 1>&2
         return
+
     elif which ${pkgbasename%%-*} >/dev/null 2>&1 ; then
+
         echo "SKIP: ${pkgbasename%%-*} already installed." 1>&2
         return
-    elif [ ! -e "${pkg}" ] ; then
-        echo "FATAL: Missing required package '${pkg}'." 1>&2
-        return 1
     fi
 
     if ! sudo bash "$pkg" ; then
@@ -66,8 +66,9 @@ installtruecrypt () {
 # ##############################################################################
 # Desktop-most software
 
-# Function installdesktopapps - Install packages downloaded from the Internet.
 installdesktopapps () {
+    # Info: Install applications, mostly for linux and downloaded from the Internet.
+
     installdropbox
     installinputfont "${INPUTFONTPATH}"
     installpowerfonts
