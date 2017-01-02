@@ -72,7 +72,7 @@ Otherwise, specify the directory (after sourcing, $DS_HOME will point to it) bot
 source {dir}/ds.sh {dir}
 ```
 
-Examples
+Usage & Examples
 --------
 
 ### Aggregate a file
@@ -112,9 +112,13 @@ Examples
 
 ### Printing fields with awk
 
-```printawk 1 3 5``` prints fields 1, 3 and 5)
+```printawk [-F fieldsep] fieldno1 [fieldno2 ...]```
 
 * ```-F fieldsep``` works (as in awk) e.g. ```printawk -F, 1 2 ...```
+
+Example:
+
+```printawk 1 3 5``` prints fields 1, 3 and 5)
 
 ### Rename files in a tidy fashion with ```rentidy {dir}```:
 
@@ -125,4 +129,6 @@ Renames files and directories recursively at {dir}. Underscores, camel case inst
 ```userconfirm message```
 
 ```userinput message``` - input will be stored in the ```userinput``` variable
+
+```validinput {message} {ere-extended-regex}``` - input will be stored in the ```userinput``` variable; prompts user for the input repeatedly until it matches de regex
 
