@@ -21,28 +21,6 @@ dsinfo - display environment information
 dsversion - display the version of this Daily Shells instance
 ```
 
-Some examples:
-
-* Aggregate a file:
-    - ```getmax fieldsep field files...```
-    - ```getmin fieldsep field files...```
-    - ```getsum fieldsep field files...```
-* Append a string to a file only once (```appendunique string file1 file2 ...```)
-* End of line conversion from windows to linux (```dos2unix file1 file2 ...```)
-* Grepping process (```pgr ExtendedREGEX```)
-* INI file section extraction (```getsection sectionpattern filename```)
-* Looping commands (```loop command...```)
-* Path munging (```pathmunge [-v varname] [-x] {path}1+```
-    - ```-v varname``` causes the ```varname``` variable to be munged instead of the default (PATH)
-    - ```-x``` causes the variable to be exported
-* Printing fields with awk (```printawk 1 3 5``` prints fields 1, 3 and 5)
-    - ```-F fieldsep``` works (as in awk) e.g. ```printawk -F, 1 2 ...```
-* Rename files in a tidy fashion with ```rentidy {dir}```:
-    - Renames files and directories recursively at {dir}. Underscores, camel case instances and other special characters are substituted by a hyphen separator.
-* User confirmation and input
-    - ```userconfirm message```
-    - ```userinput message # input will be stored in the userinput variable```
-
 ---
 
 Installation
@@ -88,4 +66,62 @@ Otherwise, specify the directory (after sourcing, $DS_HOME will point to it) bot
 ```bash
 source {dir}/ds.sh {dir}
 ```
+
+---
+
+Examples
+--------
+
+### Aggregate a file
+
+```getmax fieldsep field files...```
+
+```getmin fieldsep field files...```
+
+```getsum fieldsep field files...```
+
+### Append a string to a file only once
+
+```appendunique string file1 file2 ...```
+
+### End of line: windows to linux
+
+```dos2unix file1 file2 ...```
+
+### Grepping a process
+
+```pgr ExtendedREGEX```
+
+### INI file section extraction
+
+```getsection sectionpattern filename```
+
+### Looping commands
+
+```loop command...```
+
+### Path munging
+
+```pathmunge [-v varname] [-x] {path}1+```
+
+* ```-v varname``` causes the ```varname``` variable to be munged instead of the default (PATH)
+* ```-x``` causes the variable to be exported
+
+### Printing fields with awk
+
+```printawk 1 3 5``` prints fields 1, 3 and 5)
+
+* ```-F fieldsep``` works (as in awk) e.g. ```printawk -F, 1 2 ...```
+
+### Rename files in a tidy fashion with ```rentidy {dir}```:
+
+Renames files and directories recursively at {dir}. Underscores, camel case instances and other special characters are substituted by a hyphen separator.
+
+### User confirmation and input
+
+```userconfirm message```
+
+```userinput message # input will be stored in the userinput variable```
+
+---
 
