@@ -121,7 +121,7 @@ Renames files and directories recursively at {dir}. Underscores, camel case inst
 
 ```userconfirm message```
 
-```userinput message # input will be stored in the userinput variable```
+```userinput message``` - input will be stored in the userinput variable
 
 ---
 
