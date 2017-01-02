@@ -91,6 +91,12 @@ Usage & Examples
 
 ```dos2unix file1 file2 ...```
 
+### Grep context emulation (GNU grep's -A, -B & -C options)
+
+Use -a, -b and -c to emulate GNU grep's -A, -B and -C options, respectively.
+
+Default behavior is ```-c 10```.
+
 ### Grepping a process
 
 ```pgr ExtendedREGEX```
