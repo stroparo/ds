@@ -11,6 +11,9 @@ The _DS - Daily Shells Library_ is a collection of useful shell routines in the 
 
 Currently the ___Bash___ and ___Zsh___ shells are supported.
 
+Help
+----
+
 The dshelp function is the help system entry point. It will output something like this:
 
 ```
@@ -21,7 +24,7 @@ dsinfo - display environment information
 dsversion - display the version of this Daily Shells instance
 ```
 
----
+__Soon the dshelp command will accept the name of a function or script as an argument and will display its corresponding help and/or usage message.__
 
 Installation
 ------------
@@ -66,8 +69,6 @@ Otherwise, specify the directory (after sourcing, $DS_HOME will point to it) bot
 ```bash
 source {dir}/ds.sh {dir}
 ```
-
----
 
 Examples
 --------
@@ -122,6 +123,4 @@ Renames files and directories recursively at {dir}. Underscores, camel case inst
 ```userconfirm message```
 
 ```userinput message``` - input will be stored in the ```userinput``` variable
-
----
 
