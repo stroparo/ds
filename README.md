@@ -104,7 +104,7 @@ Examples
 
 ```pathmunge [-v varname] [-x] {path}1+```
 
-* ```-v varname``` causes the ```varname``` variable to be munged instead of the default (PATH)
+* ```-v varname``` causes the ```varname``` variable to be munged instead of the default (```PATH```)
 * ```-x``` causes the variable to be exported
 
 ### Printing fields with awk
@@ -121,7 +121,7 @@ Renames files and directories recursively at {dir}. Underscores, camel case inst
 
 ```userconfirm message```
 
-```userinput message``` - input will be stored in the userinput variable
+```userinput message``` - input will be stored in the ```userinput``` variable
 
 ---
 
