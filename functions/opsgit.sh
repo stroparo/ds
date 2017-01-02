@@ -57,11 +57,11 @@ gitconfig () {
     if [ -w "${gitfile}" ] ; then
         [ -n "${email}" ] && git config -f "${gitfile}" user.email "${email}"
         [ -n "${name}" ] &&  git config -f "${gitfile}" user.name "${name}"
-        for i in "$@" ; do git config -f "${gitfile}" ${1} ; done
+        for i in "$@" ; do git config -f "${gitfile}" $(echo ${i}) ; done
     else
         [ -n "${email}" ] && git config --global user.email "${email}"
         [ -n "${name}" ] &&  git config --global user.name "${name}"
-        for i in "$@" ; do git config --global ${1} ; done
+        for i in "$@" ; do git config --global $(echo ${i}) ; done
     fi
 }
 
