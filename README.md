@@ -130,5 +130,5 @@ Renames files and directories recursively at {dir}. Underscores, camel case inst
 
 ```userinput message``` - input will be stored in the ```userinput``` variable
 
-```validinput {message} {ere-extended-regex}``` - input will be stored in the ```userinput``` variable; prompts user for the input repeatedly until it matches de regex
+```validinput {message} {ere-extended-regex}``` - input will be stored in the ```userinput``` variable; prompts user for the input repeatedly until it matches the regular expression
 
