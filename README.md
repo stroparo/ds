@@ -24,7 +24,9 @@ dsinfo - display environment information
 dsversion - display the version of this Daily Shells instance
 ```
 
-__Soon the dshelp command will accept the name of a function or script as an argument and will display its corresponding help and/or usage message.__
+__Important__
+
+___Soon the dshelp command will accept the name of a function or script as an argument and will display its corresponding help and/or usage message.___
 
 Installation
 ------------
