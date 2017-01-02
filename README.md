@@ -47,7 +47,7 @@ wget 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' -O - | bash
 
 ### Manual
 
-When there is a restriction such as no Internet access for the host you might want to install DS manually.
+You might want to install DS manually when there is a network restriction such as no Internet access for the host etc.
 
 Execute:
 
