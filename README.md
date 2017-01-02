@@ -120,9 +120,13 @@ Example:
 
 ```printawk 1 3 5``` prints fields 1, 3 and 5)
 
-### Rename files in a tidy fashion with ```rentidy {dir}```:
+### Rename files in a tidy fashion
 
-Renames files and directories recursively at {dir}. Underscores, camel case instances and other special characters are substituted by a hyphen separator.
+```rentidy {dir}```
+
+Renames files and directories recursively at {dir}.
+
+Underscores, camel case instances and other special characters are substituted by a hyphen separator.
 
 ### User confirmation and input
 
