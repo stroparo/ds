@@ -93,6 +93,8 @@ Usage & Examples
 
 ### Grep context emulation (GNU grep's -A, -B & -C options)
 
+```grepc [-a afterlines] [-b beforelines] [-c contextlines]```
+
 Use -a, -b and -c to emulate GNU grep's -A, -B and -C options, respectively.
 
 Default behavior is ```-c 10```.
