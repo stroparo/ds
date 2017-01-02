@@ -20,11 +20,12 @@ grepc () {
     typeset beforelines
     typeset contextlines=10
 
-    while getopts ':a:b:c:' opt ; do
+    while getopts ':a:b:c:h' opt ; do
         case "${opt}" in
         a) afterlines="${OPTARG}" ;;
         b) beforelines="${OPTARG}" ;;
         c) contextlines="${OPTARG}" ;;
+        h) echo "$USAGE" ; return ;;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND=1
