@@ -72,7 +72,7 @@ installinputfont () {
     mkdir -p "$font_dir" 2>/dev/null
     eval $find_command | xargs -0 -I % cp "%" "$font_dir/"
     rm -rf "$HOME/Input_Fonts"
-    command -v fc-cache @>/dev/null && fc-cache -f "$font_dir" # reset font cache
+    command -v fc-cache 2>/dev/null && fc-cache -f "$font_dir" # reset font cache
 }
 
 installohmyzsh () {
