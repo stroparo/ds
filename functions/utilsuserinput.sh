@@ -6,6 +6,32 @@
 # ##############################################################################
 # User interactive routines
 
+readmyemail () {
+    # Info: read user input for the MYEMAIL environment variable.
+
+    if [ -z "${MYEMAIL}" ] ; then
+        userinput 'Type in your email'
+        export MYEMAIL="${userinput}"
+
+    elif userconfirm "MYEMAIL set to '${MYEMAIL}'. Override?" ; then
+        unset MYEMAIL
+        readmyemail
+    fi
+}
+
+readmysign () {
+    # Info: read user input for the MYSIGN environment variable.
+
+    if [ -z "${MYSIGN}" ] ; then
+        userinput 'Type in your name or sign'
+        export MYSIGN="${userinput}"
+
+    elif userconfirm "MYSIGN set to '${MYSIGN}'. Override?" ; then
+        unset MYSIGN
+        readmysign
+    fi
+}
+
 userconfirm () {
     # Info: Ask a question and yield success if user responded [yY]*
 

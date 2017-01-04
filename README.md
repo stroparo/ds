@@ -42,7 +42,7 @@ curl -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash
 or:
 
 ```bash
-wget 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' -O - | bash
+wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash
 ```
 
 ### Manual

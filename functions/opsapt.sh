@@ -7,7 +7,7 @@
 # Admin APT (aptitude & apt-get) routines
 
 aptaddppa () {
-    # Adds ubuntu ppa repositories listed in the filename argument.
+    # Adds ppa repositories listed in the filename argument.
     # Syn: {ppa-list-filename}
 
     typeset somefail=false
@@ -15,7 +15,7 @@ aptaddppa () {
     typeset ppalistfile="$1"
     typeset usage="${pname} {ppa file (one ppa path per line)}"
 
-    _is_ubuntu || return 1
+    sudo which apt-add-repository || return 1
     test -f "$ppalistfile" || return 1
 
     [[ -n $ZSH_VERSION ]] && set -o shwordsplit
@@ -132,11 +132,9 @@ fixaptmodes () {
 }
 
 aptdeploy () {
-    # Installs apt packages.
-    # Calls aptinstall arguments,
-    # followed by fixaptmodes and
-    # finally aptclean.
-    #   Rmk: APTREMOVELIST global will cause aptitude purge to be called with that list.
+    # Installs apt packages using the routines: aptinstall, fixaptmodes, aptclean.
+    # Deps: apt or apt-get.
+    # Rmk: APTREMOVELIST global will cause aptitude purge to be called with that list.
 
     typeset ask=false
     typeset upgradeoption
