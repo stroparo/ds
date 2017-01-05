@@ -22,7 +22,7 @@ installatom () {
 
     if _is_cygwin ; then
 
-        wget -o 'https://atom.io/download/windows'
+        wget 'https://atom.io/download/windows'
         mv windows atomsetup.exe
         chmod u+x atomsetup.exe && ./atomsetup.exe && rm -f ./atomsetup.exe
 
