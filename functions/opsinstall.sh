@@ -67,8 +67,6 @@ installexa () {
     chmod u+x ~/bin/exa-linux-x86_64
 }
 
-installrubygems () { for i in "$@"; do gem install "$i" ; done ; }
-
 installinputfont () {
     # Info: Installs local input font package
     # Syntax: {input-font-package-filename}
