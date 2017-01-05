@@ -6,16 +6,6 @@
 # ##############################################################################
 # Application installation routines
 
-installapps () {
-    # Info: Install applications from the Internet.
-
-    installdropbox
-    installexa
-    installohmyzsh
-    installpowerfonts
-    installyoutubedl
-}
-
 installatom () {
 
     if which atom >/dev/null 2>&1 ; then return ; fi
@@ -76,6 +66,8 @@ installexa () {
     ln -s 'exa-linux-x86_64' ~/bin/exa
     chmod u+x ~/bin/exa-linux-x86_64
 }
+
+installrubygems () { for i in "$@"; do gem install "$i" ; done ; }
 
 installinputfont () {
     # Info: Installs local input font package
