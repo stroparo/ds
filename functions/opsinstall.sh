@@ -16,6 +16,27 @@ installapps () {
     installyoutubedl
 }
 
+installatom () {
+
+    if which atom >/dev/null 2>&1 ; then return ; fi
+
+    if _is_cygwin ; then
+
+        wget -o ~/atom.exe 'https://atom.io/download/windows'
+        ~/atom.exe && rm -f ~/atom.exe
+
+    elif _is_debian || _is_ubuntu ; then
+
+        wget -o ~/atom.deb 'https://atom.io/download/deb'
+        sudo dpkg -i ~/atom.deb && rm -f ~/atom.deb
+
+    elif _is_redhat ; then
+
+        wget -o ~/atom.rpm 'https://atom.io/download/rpm'
+        sudo rpm -ivh ~/atom.rpm && rm -f ~/atom.rpm
+    fi
+}
+
 installdropbox () {
 
     _is_linux || return
