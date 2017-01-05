@@ -22,18 +22,19 @@ installatom () {
 
     if _is_cygwin ; then
 
-        wget -o ~/atom.exe 'https://atom.io/download/windows'
-        ~/atom.exe && rm -f ~/atom.exe
+        wget -o 'https://atom.io/download/windows'
+        mv windows atomsetup.exe
+        chmod u+x atomsetup.exe && ./atomsetup.exe && rm -f ./atomsetup.exe
 
     elif _is_debian || _is_ubuntu ; then
 
-        wget -o ~/atom.deb 'https://atom.io/download/deb'
-        sudo dpkg -i ~/atom.deb && rm -f ~/atom.deb
+        wget 'https://atom.io/download/deb'
+        sudo dpkg -i deb && rm -f deb
 
     elif _is_redhat ; then
 
-        wget -o ~/atom.rpm 'https://atom.io/download/rpm'
-        sudo rpm -ivh ~/atom.rpm && rm -f ~/atom.rpm
+        wget 'https://atom.io/download/rpm'
+        sudo rpm -ivh rpm && rm -f rpm
     fi
 }
 
