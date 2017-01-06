@@ -61,6 +61,8 @@ dsversion - display the version of this Daily Shells instance
 }
 
 dsload () {
+    # Info: loads ds. If it does not exist, download and install to the default path.
+    # Syn: [dshome=~/.ds]
 
     typeset dshome="${1:-${DS_HOME}}"
 
@@ -71,7 +73,8 @@ dsload () {
 
         if [ ! -e "${dshome}/ds.sh" ] && which wget >/dev/null ; then
             echo "Installing DS into '${dshome}' ..." 1>&2
-            wget 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' -O - | bash
+            wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' \
+            | bash
         else
             echo "FATAL: No ds.sh in '${dshome}' directory." 1>&2
         fi
