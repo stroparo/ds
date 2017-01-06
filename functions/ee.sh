@@ -150,7 +150,6 @@ DESCRIPTION
         for eegroup in "$@" ; do
             if [ -n "$eegroup" ] ; then
                 eegroupsect="$(getsection "groups" "$eefile" | \
-                    grep -v '^sectionname' | \
                     grep "^${eegroup}=" | \
                     sed -e 's/^[^=]*=//')"
 
@@ -164,7 +163,6 @@ DESCRIPTION
         # Print all when no args:
         if [ "$#" -eq 0 ] ; then
             eegroupsect="$(getsection "groups" "$eefile" | \
-                grep -v '^sectionname' | \
                 sed -e 's/=/: /')"
 
             if [ -n "$eegroupsect" ] ; then
@@ -247,29 +245,27 @@ eereset () {
     export eepw=''
 }
 
-# Function eesel
-# Purpose:
-#   Select ee environment from first occurrence in ee.txt files found in EEPATH.
 eesel () {
-    typeset section_search_term="$1"
-    typeset section_exports
+    # Info: Select ee environment from first occurrence in ee.txt files found in EEPATH.
+
+    typeset sectionname sectiontext
+    typeset sectionsearch="$1"
 
     eereset
 
     while read eefile ; do
 
-        section_exports="$(getsection "$section_search_term" "$eefile" | \
-                    sed -e 's/ *= *[[]/=/' -e 's/[]] *$//' -e 's/^/export /')"
+        sectionname="$(getsectionmame "$sectionsearch" "$eefile")"
+        sectiontext="$(getsection "$sectionsearch" "$eefile" | \
+                    sed -e 's/^/export /')"
 
-        if [ -n "$section_exports" ] ; then
+        if [ -n "$sectionname" ] && [ -n "$sectiontext" ] ; then
 
             # The egrep below is not unnecessary redundancy, it is for security:
-            eval "$(echo "${section_exports}" | egrep '^export (sectionname=|ee[_a-zA-Z0-9]*=)')"
+            eval "$(echo "${sectiontext}" | egrep '^export ee[_a-zA-Z0-9]*=')"
 
-            if [ -z "${sectionname}" -o -z "$eeh" -o -z "$eeu" ] ; then
-                echo "FATAL: Some of sectionname, eeh, eeu are empty." 1>&2
-                return 1
-            fi
+            [ -z "$eeh" ] && echo "FATAL: eeh is empty." 1>&2 && return 1
+            [ -z "$eeu" ] && echo "FATAL: eeu is empty." 1>&2 && return 1
 
             echo 1>&2
             echo "==> Selected '${eedesc:-${sectionname}}', ee='${eeu}@${eeh}' <==" 1>&2
@@ -282,7 +278,7 @@ eesel () {
 $(eefiles)
 EOF
 
-    echo "eesel: WARN: No environment found for '$section_search_term'."
+    echo "WARN: No environment found for '$sectionsearch'."
     return 1
 }
 
