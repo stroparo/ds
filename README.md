@@ -107,13 +107,34 @@ Default behavior is ```-c 10```.
 
 ```getsection sectionpattern filename```
 
+File ab.txt:
+
+```
+[a]
+b=1
+c=2
+
+[d]
+e=3
+f=4
+```
+
+```getsection a ab.txt```
+
+Will output:
+
+```
+b=1
+c=2
+```
+
 ### Looping commands
 
-```loop command...```
+```loop command [arguments ...]```
 
 ### Path munging
 
-```pathmunge [-v varname] [-x] {path}1+```
+```pathmunge [-v varname] [-x] {path} [path2 [path3 ...]]```
 
 * ```-v varname``` causes the ```varname``` variable to be munged instead of the default (```PATH```)
 * ```-x``` causes the variable to be exported
@@ -126,7 +147,7 @@ Default behavior is ```-c 10```.
 
 Example:
 
-```printawk 1 3 5``` prints fields 1, 3 and 5)
+```printawk 1 3 5``` prints fields 1, 3 and 5
 
 ### Rename files in a tidy fashion
 

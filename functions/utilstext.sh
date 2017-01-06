@@ -176,7 +176,7 @@ getsection () {
 
     awk '
     # Find the entry:
-    /^ *\['"${sectionsearch}"'\] *$/ { found = 1; print "sectionname=" $0; }
+    /^ *\['"${sectionsearch}"'\] *$/ { found = 1; }
 
     # Print entry content:
     found && $0 ~ /^ *[^[]/ { inbody = 1; print; }
@@ -184,6 +184,28 @@ getsection () {
     # Stop on next entry after printing:
     inbody && $0 ~ /^ *\[/ { exit 0; }
     ' "${filename}"
+}
+
+getsectionname () {
+    # Info: Exact match for the section name as the getsection function.
+    #       Prints only the matching name, good as a reference for when
+    #       a regex was passed to a getsection call, to know exactly which
+    #       section was retrieved.
+
+    typeset sectionname
+    typeset sectionsearch="$1"
+    typeset filename="$2"
+
+    sectionname="$(awk '
+                # Find and print the entry:
+                /^ *\['"${sectionsearch}"'\] *$/ { found = 1; print $0; exit 0; }
+                ' \
+                "${filename}")"
+
+    if [ -n "$sectionname" ] ; then
+        sectionname=$(echo "$sectionname" | sed -e 's/ *[[]//' -e 's/[]] *$//')
+        echo "${sectionname}"
+    fi
 }
 
 # ##############################################################################
