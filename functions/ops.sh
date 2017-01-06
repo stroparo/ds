@@ -13,6 +13,10 @@ autobash () {
         "$HOME/.profile"
 }
 
+mountiso () {
+    sudo mount -o loop -t iso9660 "$@"
+}
+
 pgr () {
     # Info: pgr is similar to pgrep
 
