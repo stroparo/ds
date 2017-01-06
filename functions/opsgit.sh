@@ -10,18 +10,18 @@ gitclones () {
     # Info: Clone repos passed in the argument, one per line (quote it).
     # Syntax: {repositories-one-per-line}
 
-    typeset pname=gitclones
+    [ -z "${1}" ] && return
 
     while read repo ; do
         [ -z "${repo}" ] && continue
 
         if [ ! -d "$(basename "${repo%.git}")" ] ; then
             if ! git clone "${repo}" ; then
-                elog -f -n "${pname}" "Failed cloning '${repo}' repository."
+                echo "FATAL: Cloning '${repo}' repository." 1>&2
                 return 1
             fi
         else
-            elog -s -n "${pname}" "'$(basename "${repo%.git}")' repository already exists."
+            echo "SKIP: '$(basename "${repo%.git}")' repository already exists." 1>&2
         fi
 
         echo '' 1>&2
