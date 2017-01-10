@@ -44,5 +44,22 @@ setlogdir () {
     fi
 }
 
+shut () {
+    # Info: shuts down the computer only if truecrypt (-d) unmount.
+
+    typeset tcdismounted=true
+
+    if which truecrypt >/dev/null 2>&1 && \
+        truecrypt -t -l && \
+        ! truecrypt -d
+    then
+        tcdismounted=false
+    fi
+
+    if ${tcdismounted:-false} ; then
+        sudo shutdown -h now
+    fi
+}
+
 # ##############################################################################
 
