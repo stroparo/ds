@@ -6,9 +6,10 @@
 # ##############################################################################
 # PostgreSQL routines
 
-alias pgc='sudo -iu postgres psql postgres'
+pglocal () { psql -h '127.0.0.1' "$@" ; }
+pgpg () { sudo -iu postgres psql postgres ; }
 
-createpguser () {
+pgcreateuser () {
 
     typeset pguser=${1}
     typeset database=${2:-template1}
@@ -41,7 +42,7 @@ ALTER DEFAULT PRIVILEGES
 EOF
 }
 
-supg () {
+pgsu () {
     # Info: Call psql via su - postgres, at the given port and user.
     # Syntax: [port=5432] [user=postgres]
 
