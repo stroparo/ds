@@ -9,10 +9,9 @@
 # ##############################################################################
 # Globals
 
-DS_GLOB="ds*sh aliases.sh ee.sh setup.sh sshagent.sh"
-DS_LOADED=true
-
-export DS_GLOB
+export DS_GLOB="ds*sh aliases.sh ee.sh setup.sh sshagent.sh"
+export DS_LOADED=true
+: ${DS_CONF:=${DS_HOME}/conf} ; export DS_CONF
 
 # ##############################################################################
 # Main
