@@ -22,8 +22,7 @@ unalias d 2>/dev/null
 # Post-calls: Evaluate each line in the DS_POST_CALLS variable:
 if [ -n "${DS_POST_CALLS}" ] ; then
 
-    echo 'Running commands in DS_POST_CALLS ...' 1>&2
-    echo "${DS_POST_CALLS}" 1>&2
+    echo ${BASH_VERSION:+-e} "\nRunning commands in DS_POST_CALLS ..." 1>&2
 
     while read nextcommand ; do
         eval "${nextcommand}"
