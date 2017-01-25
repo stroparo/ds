@@ -255,7 +255,7 @@ eesel () {
 
     while read eefile ; do
 
-        sectionname="$(getsectionmame "$sectionsearch" "$eefile")"
+        sectionname="$(getsectionname "$sectionsearch" "$eefile")"
         sectiontext="$(getsection "$sectionsearch" "$eefile" | \
                     sed -e 's/^/export /')"
 
