@@ -8,7 +8,7 @@ aliasnoext () {
     # Deps: ds00 findscripts
     # Syn: {directory}1+
 
-    typeset aliasname scriptbasename
+    typeset aliasname scriptbasename scripts
     typeset verbose=false
 
     typeset oldind="${OPTIND}"
@@ -22,6 +22,9 @@ aliasnoext () {
 
     for dir in "$@" ; do
         if _all_dirs_w "${dir}" ; then
+
+            scripts=$(findscripts "${dir}")
+            [ -z "$scripts" ] && continue
 
             while read script ; do
                 if [ -x "${script}" ] ; then
@@ -39,7 +42,7 @@ aliasnoext () {
                     chmod u+x "${script}"
                 fi
             done <<EOF
-$(findscripts "${dir}")
+${scripts}
 EOF
         fi
     done
