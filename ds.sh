@@ -15,13 +15,15 @@ sourcefiles ${DS_VERBOSE:+-v} -q -t \
     "${DS_HOME}/functions/*sh" \
     "${DS_HOME}/ds0[1-9]*sh" \
     "${DS_HOME}/ds[1-8][0-9]*sh" \
-    "${DS_HOME}/ds[A-Za-z]*sh" \
-    "${DS_HOME}/ds99post.sh"
+    "${DS_HOME}/ds[A-Za-z]*sh"
 
-echo
-sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/sshagent.sh"
+echo ; sourcefiles ${DS_VERBOSE:+-v} \
+    "${DS_HOME}/sshagent.sh"
 
 if [ -n "${DS_VERBOSE}" ] ; then
     echo
     dsinfo
 fi
+
+sourcefiles ${DS_VERBOSE:+-v} -q -t \
+    "${DS_HOME}/ds99post.sh"
