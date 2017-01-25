@@ -18,7 +18,7 @@ export DS_LOADED=true
 
 unalias d 2>/dev/null
 
-chmodshells ${DS_VERBOSE+:-v} -a "${DS_HOME}"
+chmodshells ${DS_VERBOSE:+-v} -a "${DS_HOME}" | grep -v retained 1>&2
 pathmunge -x "${DS_HOME}" "${DS_HOME}/bin" "${DS_HOME}/scripts"
 pathmunge -a -v 'EEPATH' -x "${DS_HOME}"
 
