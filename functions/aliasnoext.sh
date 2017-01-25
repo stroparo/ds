@@ -8,6 +8,7 @@ aliasnoext () {
     # Deps: ds00 findscripts
     # Syn: {directory}1+
 
+    typeset aliasname scriptbasename
     typeset verbose=false
 
     typeset oldind="${OPTIND}"
@@ -21,13 +22,21 @@ aliasnoext () {
 
     for dir in "$@" ; do
         if _all_dirs_w "${dir}" ; then
+
             while read script ; do
-                if [[ $script = *.* ]] && [ -x "${script}" ] ; then
-                    aliasname="${script##*/}"
-                    aliasname="${aliasname%%.*}"
-                    eval unalias "${aliasname}" 2>/dev/null
-                    eval alias "${aliasname}=${script}"
-                    $verbose && eval type "${aliasname}"
+                if [ -x "${script}" ] ; then
+
+                    scriptbasename="${script##*/}"
+                    aliasname="${scriptbasename%%.*}"
+
+                    if [ "${aliasname}" != "${scriptbasename}" ] ; then
+                        eval unalias "${aliasname}" 2>/dev/null
+                        eval alias "${aliasname}=${script}"
+                        $verbose && eval type "${aliasname}"
+                    fi
+                else
+                    echo chmod u+x "${script}" 1>&2
+                    chmod u+x "${script}"
                 fi
             done <<EOF
 $(findscripts "${dir}")

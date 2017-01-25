@@ -31,5 +31,5 @@ chmodshells () {
     done
 
     if ${addpaths}; then pathmunge -x "$@" ; fi
-    if ${addaliases}; then aliasnoext "$@" ; fi
+    if ${addaliases}; then aliasnoext ${verbose} "$@" ; fi
 }
