@@ -18,6 +18,10 @@ sourcefiles ${DS_VERBOSE:+-v} -q -t \
     "${DS_HOME}/ds[A-Za-z]*sh" \
     "${DS_HOME}/ds99post.sh"
 
+echo
 sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/sshagent.sh"
 
-if [ -n "${DS_VERBOSE}" ] ; then dsinfo ; fi
+if [ -n "${DS_VERBOSE}" ] ; then
+    echo
+    dsinfo
+fi

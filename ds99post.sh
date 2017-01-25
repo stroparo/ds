@@ -16,11 +16,8 @@ export DS_LOADED=true
 # ##############################################################################
 # Main
 
+# Protect names of important DS functions against custom prior aliases:
 unalias d 2>/dev/null
-
-chmodshells ${DS_VERBOSE:+-v} -a "${DS_HOME}" | grep -v retained 1>&2
-pathmunge -x "${DS_HOME}" "${DS_HOME}/bin" "${DS_HOME}/scripts"
-pathmunge -a -v 'EEPATH' -x "${DS_HOME}"
 
 # Post-calls: Evaluate each line in the DS_POST_CALLS variable:
 while read nextcommand ; do
