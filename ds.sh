@@ -4,6 +4,8 @@
 #  https://github.com/stroparo/ds
 
 export DS_HOME="${1:-${HOME%/}/.ds}"
+
+export DS_CONF="${DS_HOME}/conf"
 export DS_VERBOSE
 export DS_VERSION='DS version 0.2.0 - 2017-01-01 00:00'
 
