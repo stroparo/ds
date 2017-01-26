@@ -15,7 +15,9 @@ aptaddppa () {
     typeset ppalistfile="$1"
     typeset usage="${pname} {ppa file (one ppa path per line)}"
 
-    sudo which apt-add-repository || return 1
+    sudo which apt-add-repository >/dev/null || return 1
+
+    echo "$ppalistfile" 1>&2
     test -f "$ppalistfile" || return 1
 
     [[ -n $ZSH_VERSION ]] && set -o shwordsplit
