@@ -6,14 +6,25 @@
 # ##############################################################################
 # Ops routines
 
-autovimode () { appendunique 'set -o vi' "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.profile" ; }
 edithosts () { sudo vi /etc/hosts ; }
 editsshauth () { mkdir ~/.ssh 2>/dev/null ; vi ~/.ssh/authorized_keys ; }
 mountiso () { sudo mount -o loop -t iso9660 "$@" ; }
 pgr () { ps -ef | egrep -i "$1" | egrep -v "grep.*(${1})" ; }
+# psef () { ps -ef ; }
+# psefnoshells () { ps -ef | grep -v bash | grep -v sshd ; }
+# psefuser () { ps -ef | grep "${USER}" ; }
+# psfu () { ps -fu "${UID:-$(id -u)}" -U "${UID:-$(id -u)}" ; }
+# psfunoshells () { ps -fu "${UID:-$(id -u)}" -U "${UID:-$(id -u)}" | grep -v bash | grep -v sshd ; }
 
 autobash () {
     appendunique 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' \
+        "$HOME/.profile"
+}
+
+autovimode () {
+    appendunique 'set -o vi' \
+        "$HOME/.zshrc" \
+        "$HOME/.bashrc" \
         "$HOME/.profile"
 }
 
@@ -54,6 +65,14 @@ shut () {
         sudo shutdown -h now
     fi
 }
+
+# ##############################################################################
+# IBM AIX platform:
+
+if [[ $(uname) = *[Aa][Ii][Xx]* ]] ; then
+    psft () { ps -fT1 ; }
+    psftu () { ps -fT1 | awk "\$1 ~ /^$USER$/" ; }
+fi
 
 # ##############################################################################
 
