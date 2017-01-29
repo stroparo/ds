@@ -6,8 +6,8 @@
 alias gh='git diff HEAD'
 alias gv='git mv'
 
-# Replicate Oh My ZSH Git aliases in Bash:
-if [ -n "${BASH_VERSION}" ] ; then
+# If no Oh-My-ZSH then load similar git aliases:
+if [ -z "${ZSH_THEME}" ] ; then
     alias ga='git add'
     alias gb='git branch'
     alias gc='git commit -v'

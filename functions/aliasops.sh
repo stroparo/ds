@@ -3,8 +3,8 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
-alias edetchosts='sudo vi /etc/hosts'
-alias edsshkeys='mkdir ~/.ssh 2>/dev/null ; vi ~/.ssh/authorized_keys'
+alias edithosts='sudo vi /etc/hosts'
+alias editsshauth='mkdir ~/.ssh 2>/dev/null ; vi ~/.ssh/authorized_keys'
 
 alias psfe='ps -fe'
 alias psfens='ps -fe | grep -v bash | grep -v sshd'
