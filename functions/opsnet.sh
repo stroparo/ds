@@ -25,9 +25,6 @@ EOF
     fi
 }
 
-# Function iwf - Show iwconfig and ifconfig in given interface (1st arg; default=wlan0).
-iwf () { iwconfig "${1:-wlan0}" ; ifconfig "${1:-wlan0}" ; }
-
 # Function pushds
 # Purpose:
 #   Push ds scripts and source files to envs pointed to by arguments packed into.
