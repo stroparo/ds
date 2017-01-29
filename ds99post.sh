@@ -6,22 +6,26 @@
 # ##############################################################################
 # Post file
 
-# ##############################################################################
-# Globals
-
 export DS_GLOB="ds*sh aliases.sh ee.sh setup.sh sshagent.sh"
 export DS_LOADED=true
-
-# ##############################################################################
-# Main
 
 # Protect names of important DS functions against custom prior aliases:
 unalias d 2>/dev/null
 
+# ##############################################################################
+# Calls
+
+if [ -n "${DS_VERBOSE}" ] ; then
+    echo
+    dsinfo
+fi
+
 # Post-calls: Evaluate each line in the DS_POST_CALLS variable:
 if [ -n "${DS_POST_CALLS}" ] ; then
 
-    echo ${BASH_VERSION:+-e} "\nRunning commands in DS_POST_CALLS ..." 1>&2
+    if [ -n "$DS_VERBOSE" ] ; then
+        echo ${BASH_VERSION:+-e} "\nRunning commands in DS_POST_CALLS ..." 1>&2
+    fi
 
     while read nextcommand ; do
         eval "${nextcommand}"
@@ -29,3 +33,5 @@ if [ -n "${DS_POST_CALLS}" ] ; then
 ${DS_POST_CALLS:-:}
 EOF
 fi
+
+# ##############################################################################

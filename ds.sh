@@ -22,10 +22,5 @@ sourcefiles ${DS_VERBOSE:+-v} -q -t \
 echo ; sourcefiles ${DS_VERBOSE:+-v} \
     "${DS_HOME}/sshagent.sh"
 
-if [ -n "${DS_VERBOSE}" ] ; then
-    echo
-    dsinfo
-fi
-
 sourcefiles ${DS_VERBOSE:+-v} -q -t \
     "${DS_HOME}/ds99post.sh"
