@@ -6,21 +6,15 @@
 # ##############################################################################
 # Ops routines
 
-autovimode () { appendunique 'set -o vi' "$HOME/.bashrc" "$HOME/.profile" ; }
+autovimode () { appendunique 'set -o vi' "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.profile" ; }
+edithosts () { sudo vi /etc/hosts ; }
+editsshauth () { mkdir ~/.ssh 2>/dev/null ; vi ~/.ssh/authorized_keys ; }
+mountiso () { sudo mount -o loop -t iso9660 "$@" ; }
+pgr () { ps -ef | egrep -i "$1" | egrep -v "grep.*(${1})" ; }
 
 autobash () {
     appendunique 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' \
         "$HOME/.profile"
-}
-
-mountiso () {
-    sudo mount -o loop -t iso9660 "$@"
-}
-
-pgr () {
-    # Info: pgr is similar to pgrep
-
-    ps -ef | egrep -i "$1" | egrep -v "grep.*(${1})"
 }
 
 pgralert () {
