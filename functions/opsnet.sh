@@ -26,11 +26,11 @@ EOF
 }
 
 # Function iwf - Show iwconfig and ifconfig in given interface (1st arg; default=wlan0).
-iwf () { iwconfig "${1:-wlan0}" ; ifconfig "${1:-wlan0}" ; }
+iwf () { iwconfig ; ifconfig ; }
 
 # Function pushds
 # Purpose:
-#   Push ds scripts and source files to envs pointed to by arguments packed into.
+#   Push ds scripts and source files to envs pointed to by arguments, packed into
 #   an archive whose filename starts with DS directory's basename eg 'ds.tar.gz'.
 # Option -d new-ds-home overrides DS_HOME as the default DS directory.
 pushds () {
@@ -38,7 +38,7 @@ pushds () {
     typeset dsarchivedir="$HOME"
     typeset envre
     typeset extension='.tar.gz'
-    typeset excere='====@@@@DUMMYEXCLUDE@@@@===='
+    typeset excludeERE='====@@@@DUMMYEXCLUDE@@@@===='
     typeset oldind="$OPTIND"
     typeset optdirs="${DS_HOME}"
 
@@ -47,7 +47,7 @@ pushds () {
         case ${opt} in
         d) optdirs="$OPTARG";;
         e) envre="$OPTARG";;
-        x) excere="$OPTARG";;
+        x) excludeERE="$OPTARG";;
         esac
     done
     shift $((OPTIND - 1)) ; OPTIND="$oldind"
@@ -69,7 +69,7 @@ pushds () {
         fi
 
         tar -C "${dsparent}" -cf - \
-            $(cd "${dsparent}" && find "${dsbase}" -type f | egrep -v "/[.]git|$excere") | \
+            $(cd "${dsparent}" && find "${dsbase}" -type f | egrep -v "/[.]git|$excludeERE") | \
             gzip -c - > "${dsarchive}"
     done <<EOF
 $(echo "$optdirs" | tr -s , '\n')
