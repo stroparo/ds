@@ -179,7 +179,7 @@ getsection () {
     /^ *\['"${sectionsearch}"'\] *$/ { found = 1; }
 
     # Print entry content:
-    found && $0 ~ /^ *[^[]/ { inbody = 1; print; }
+    found && $0 ~ /^ *[^[#]/ { inbody = 1; print; }
 
     # Stop on next entry after printing:
     inbody && $0 ~ /^ *\[/ { exit 0; }
