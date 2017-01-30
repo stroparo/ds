@@ -7,6 +7,7 @@
 # Ops routines
 
 edithosts () { sudo vi /etc/hosts ; }
+editrcshells () { $VISUAL ~/.{ba,z}shrc || $EDITOR ~/.{ba,z}shrc ; }
 editsshauth () { mkdir ~/.ssh 2>/dev/null ; vi ~/.ssh/authorized_keys ; }
 mountiso () { sudo mount -o loop -t iso9660 "$@" ; }
 pgr () { ps -ef | egrep -i "$1" | egrep -v "grep.*(${1})" ; }
