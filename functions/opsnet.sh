@@ -6,10 +6,13 @@
 # ##############################################################################
 # Networking
 
-# Function getcookiesmozilla - Get firefox cookies and write them to a
-#   file in old netscape format, suitable for usage with wget.
-# Syntax: {mozilla's cookies sqlite db} {target cookies filename} {domain pattern/regex}
+# Oneliners
+iwf () { iwconfig ; ifconfig ; }
+
 getcookiesmozilla () {
+    # Info: Get firefox cookies & write them to a file in old netscape (or wget) format.
+    # Syntax: {mozilla's cookies sqlite db} {target cookies filename} {domain pattern/regex}
+
     typeset agent_cookies="${1}"
     typeset target_cookies="${2}"
     typeset inet_domain_pattern="${3}"
@@ -25,15 +28,12 @@ EOF
     fi
 }
 
-# Function iwf - Show iwconfig and ifconfig in given interface (1st arg; default=wlan0).
-iwf () { iwconfig ; ifconfig ; }
-
-# Function pushds
-# Purpose:
-#   Push ds scripts and source files to envs pointed to by arguments, packed into
-#   an archive whose filename starts with DS directory's basename eg 'ds.tar.gz'.
-# Option -d new-ds-home overrides DS_HOME as the default DS directory.
 pushds () {
+    # Info:
+    #   Push ds scripts and source files to envs pointed to by arguments, packed into
+    #   an archive whose filename starts with DS directory's basename eg 'ds.tar.gz'.
+    # Option -d new-ds-home overrides DS_HOME as the default DS directory.
+
     typeset dsarchive dsbase dsdir dsparent
     typeset dsarchivedir="$HOME"
     typeset envre
@@ -81,13 +81,9 @@ EOF
     return ${res:-1}
 }
 
-# Function sshkeygenrsa
-# Purpose:
-#   Generate id_rsa if none present for the current user.
-# Usage:
-# {comment} [keypath]
-unset sshkeygenrsa
 sshkeygenrsa () {
+    # Info: Generate id_rsa if none present for the current user.
+    # Syntax: {comment} [keypath]
 
     typeset comment="$1"
     typeset keypath="${2:-${HOME}/.ssh/id_rsa}"

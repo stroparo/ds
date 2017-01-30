@@ -8,11 +8,12 @@
 # Purpose:
 # Set a PPTP vpn up for Linux.
 
+export USAGE='setvpnpptp {connection name} {host address[|other hosts up script]} [up command]'
+
 # ##############################################################################
 # Functions
 
 setvpnpptp () {
-    typeset usage='setvpnpptp {connection name} {host address[|other hosts up script]} [up command]'
 
     typeset conn_name="$1"
     typeset host="${2%%|*}"

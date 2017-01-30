@@ -6,6 +6,10 @@
 # ##############################################################################
 # Admin APT (aptitude & apt-get) routines
 
+if ! which apt >/dev/null 2>&1 && ! which apt-get >/dev/null 2>&1 ; then
+    return
+fi
+
 aptaddppa () {
     # Adds ppa repositories listed in the filename argument.
     # Syn: {ppa-list-filename}
@@ -142,6 +146,24 @@ aptdeploy () {
     if [ -n "$APTREMOVELIST" ] ; then
         sudo aptitude purge $(echo $APTREMOVELIST)
     fi
+}
+
+# ##############################################################################
+# dpkg
+
+dpkgstat () {
+    # Info: Displays installation status of given package names
+    # Syn: {pkg1} {pkg2} ... {pkgN}
+
+    [ "${#}" -lt 1 ] && return 1
+
+    dpkg -s "$@" | \
+        awk '
+            /^Package:/ { pkg = $0; }
+            /^Status:/ {
+                stat = $0; printf("%-32s%s\n", pkg, stat);
+            }
+        '
 }
 
 # ##############################################################################
