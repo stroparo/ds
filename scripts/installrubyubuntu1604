@@ -104,7 +104,7 @@ installGemDeps () {
 
     # ImageMagick headers
     if [ -f "$PKGSRUBY" ] && grep -iq magick "$PKGSRUBY" ; then
-        deps="$deps libmagick++-dev"
+        deps="$deps imagemagick libmagick++-dev"
     fi
 
     # PostgreSQL database
