@@ -76,7 +76,7 @@ dsload () {
             wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' \
             | bash
         else
-            echo "FATAL: No ds.sh in '${dshome}' directory." 1>&2
+            echo "FATAL: no '${dshome}/ds.sh' and wget (downloader) unavailable." 1>&2
         fi
     fi
 
