@@ -4,6 +4,8 @@
 #  https://github.com/stroparo/ds
 
 alias gh='git diff HEAD'
+alias glggas='git log --graph --all --decorate --stat'
+alias glogas='git log --oneline --graph --all --decorate --stat'
 alias gv='git mv'
 
 # If no Oh-My-ZSH then load similar git aliases:
