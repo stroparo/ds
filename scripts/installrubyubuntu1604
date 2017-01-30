@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+
+# Install Ruby, Rails, Bundler and common gems
+# For Ubuntu 16.04
+
+# ##############################################################################
+# Dependencies
+
+# Enforce Operating System
+if ! grep -q Ubuntu /etc/os-release || ! grep -q '16[.]04' /etc/os-release ; then
+    echo 'SKIP: Not in Ubuntu 16.04' 1>&2
+    exit
+fi
+
+# Daily Shells
+if [ -z "$DS_LOADED" ] ; then
+    if [ -f ~/.ds/ds.sh ] ; then
+        . ~/.ds/ds.sh
+    else
+        wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash
+        . ~/.ds/ds.sh
+    fi
+fi
+[ -n "$DS_LOADED" ] || exit $?
+which appendunique || exit $?
+
+# APT
+export APTPROG=apt-get
+if which apt >/dev/null 2>&1 ; then
+    export APTPROG=apt
+fi
+
+# ##############################################################################
+# Functions
+
+installDependencies () {
+
+    typeset deps="git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev nodejs"
+
+    sudo $APTPROG update || return $?
+    sudo $APTPROG install -y $deps || return $?
+}
+
+installRbenv () {
+
+    type rbenvprofile="export PATH=\"\$HOME/.rbenv/bin:\$PATH\"
+eval \"\$(rbenv init -)\"
+export PATH=\"\$HOME/.rbenv/plugins/ruby-build/bin:\$PATH\""
+
+    if [ -e ~/.rbenv ] ; then
+        echo 'installRbenv: SKIP: ~/.rbenv present already.' 1>&2
+        return
+    else
+        git clone https://github.com/rbenv/rbenv.git ~/.rbenv || return $?
+    fi
+
+    if [ ! -e ~/.rbenv/plugins/ruby-build ] ; then
+        git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build || return $?
+    fi
+
+    if [[ "$(uname -a)" = *[Uu]buntu* ]] && [[ "$-" = *i* ]] ; then
+        # Ubuntu desktop edge case as pointed out in
+        #   https://www.digitalocean.com/community/tutorials/how-to-install-ruby-on-rails-with-rbenv-on-ubuntu-14-04
+        appendunique "$rbenvprofile" ~/.bashrc
+    else
+        appendunique "$rbenvprofile" ~/.bash_profile
+    fi
+
+    if [ -e ~/.zshrc ] ; then
+        appendunique "$rbenvprofile" ~/.zshrc
+    fi
+
+    exec $SHELL
+}
+
+installRuby () {
+
+    typeset version="$1"
+
+    rbenv install -v "$version"
+}
+
+setDefaultRuby () {
+
+    typeset version="$1"
+
+    rbenv global "$version" || return $?
+    rbenv rehash
+    ruby -v
+}
+
+installBundler () {
+
+    echo "gem: --no-document" > ~/.gemrc
+
+    gem install bundler || return $?
+    rbenv rehash
+
+}
+
+installGemDeps () {
+
+    typeset deps
+
+    # ImageMagick headers
+    if [ -f "$PKGSRUBY" ] && grep -iq magick "$PKGSRUBY" ; then
+        deps="$deps libmagick++-dev"
+    fi
+
+    # PostgreSQL database
+    if [ -f "$PKGSRUBY" ] && grep -iq "'pg'" "$PKGSRUBY" ; then
+        deps="$deps postgresql postgresql-doc libpq-dev postgresql-server-dev-all"
+    fi
+
+    sudo $APTPROG install -y $deps || return $?
+}
+
+# ##############################################################################
+
+# Ruby
+installDependencies || exit $?
+installRbenv || exit $?
+installRuby "$RUBY_VERSION"
+setDefaultRuby "$RUBY_VERSION" || exit $?
+
+# Gems
+installBundler || exit $?
+installGemDeps || exit $?
+BUNDLE_GEMFILE="$PKGSRUBY" bundle || exit $?
+[ -f ~/.ssh/id_rsa.pub ] && cb << ~/.ssh/id_rsa.pub
+
