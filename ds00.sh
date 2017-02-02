@@ -105,7 +105,6 @@ dsupgrade () {
 # ##############################################################################
 # Base routines
 
-unalias d 2>/dev/null
 d () {
     # Info: Change directory and execute pwd followed by an ls.
     # Syn: {directory}
@@ -181,7 +180,7 @@ sourcefiles () {
 
     for globpattern in "$@" ; do
 
-        srcs="$(eval ls -1d ${globpattern} 2>/dev/null)"
+        srcs="$(eval command ls -1d ${globpattern} 2>/dev/null)"
 
         if [ -z "$srcs" ] ; then
             if ! ${tolerant} ; then
