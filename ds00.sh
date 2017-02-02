@@ -105,6 +105,8 @@ dsupgrade () {
 # ##############################################################################
 # Base routines
 
+unalias d 2>/dev/null # Protect fiercely by also calling this in 99post or later
+unset d 2>/dev/null # Protect fiercely by also calling this in 99post or later
 d () {
     # Info: Change directory and execute pwd followed by an ls.
     # Syn: {directory}

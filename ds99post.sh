@@ -11,6 +11,7 @@ DS_LOADED=true
 
 # Protect names of important DS functions against custom prior aliases:
 unalias d 2>/dev/null
+unset d 2>/dev/null
 
 # ##############################################################################
 # Calls
