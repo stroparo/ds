@@ -22,7 +22,6 @@ if [ -z "$DS_LOADED" ] ; then
     fi
 fi
 [ -n "$DS_LOADED" ] || exit $?
-which appendunique || exit $?
 
 # APT
 export APTPROG=apt-get
