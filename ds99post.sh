@@ -7,7 +7,7 @@
 # Post file
 
 export DS_GLOB="ds*sh aliases.sh ee.sh setup.sh sshagent.sh"
-export DS_LOADED=true
+DS_LOADED=true
 
 # Protect names of important DS functions against custom prior aliases:
 unalias d 2>/dev/null
