@@ -120,7 +120,7 @@ installGemDeps () {
 installDependencies || exit $?
 installRbenv || exit $?
 
-export RUBY_VERSION='2.4.0'
+export RUBY_VERSION='2.3.3'
 userinput "Enter desired ruby version (default: $RUBY_VERSION)"
 export RUBY_VERSION="${userinput:-$RUBY_VERSION}"
 installRuby "$RUBY_VERSION" || exit $?
