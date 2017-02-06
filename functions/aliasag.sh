@@ -20,6 +20,7 @@ if which ag >/dev/null 2>&1 ; then
     alias agjs='ag --js'
     alias agmd='ag --md -i'
     alias agmk='ag --mk -i'
+    alias agn='ag --line-numbers'
     alias agphp='ag --php'
     alias agrust='ag --rust'
     alias agshell='ag --shell'
