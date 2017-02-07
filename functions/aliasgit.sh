@@ -4,8 +4,8 @@
 #  https://github.com/stroparo/ds
 
 alias gh='git diff HEAD'
-alias glggas='git log --graph --all --decorate --stat'
-alias glogas='git log --oneline --graph --all --decorate --stat'
+alias glggas='git log --graph --decorate --all --stat'
+alias glogas='git log --graph --decorate --all --stat --oneline'
 alias gv='git mv'
 
 # If no Oh-My-ZSH then load similar git aliases:
@@ -13,10 +13,13 @@ if [ -z "${ZSH_THEME}" ] ; then
     alias ga='git add'
     alias gb='git branch'
     alias gc='git commit -v'
+    alias gcl='git clone --recursive'
     alias gco='git checkout'
     alias gd='git diff'
     alias gdca='git diff --cached'
     alias gl='git pull'
+    alias glg='git log --stat'
+    alias glgg='git log --graph'
     alias glog='git log --oneline --decorate --graph'
     alias gp='git push'
     alias grh='git reset HEAD'
