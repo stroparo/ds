@@ -3,6 +3,7 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
+alias gbv='git branch -v'
 alias gh='git diff HEAD'
 alias glggas='git log --graph --decorate --all --stat'
 alias glogas='git log --graph --decorate --all --stat --oneline'
