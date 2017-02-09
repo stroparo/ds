@@ -130,5 +130,5 @@ setDefaultRuby "$RUBY_VERSION" || exit $?
 installBundler || exit $?
 installGemDeps || exit $?
 BUNDLE_GEMFILE="$PKGSRUBY" bundle || exit $?
-[ -f ~/.ssh/id_rsa.pub ] && cb << ~/.ssh/id_rsa.pub
+[ -f ~/.ssh/id_rsa.pub ] && cb < ~/.ssh/id_rsa.pub
 
