@@ -76,8 +76,7 @@ dsgitdeploy () {
     readmysign
     [ -e ~/.ssh/id_rsa ] || sshkeygenrsa "${MYEMAIL}"
 
-    eval dsgitconfig -e "\"${MYEMAIL}\"" -n "\"${MYSIGN}\"" \
-        "$(echo "$1")"
+    eval dsgitconfig -e "\"${MYEMAIL}\"" -n "\"${MYSIGN}\"" $(echo "$1")
 
     if _is_cygwin ; then
         typeset cyggitconfig="$(cygpath "$USERPROFILE")/.gitconfig"
@@ -86,8 +85,11 @@ dsgitdeploy () {
         dsgitconfig 'core.filemode false'
         dsgitconfig -f "${cyggitconfig}" 'core.filemode false'
 
-        eval dsgitconfig -f "\"${cyggitconfig}\"" -e "\"${MYEMAIL}\"" -n "\"${MYSIGN}\"" \
-            "$(echo "$1")"
+        eval dsgitconfig \
+            -f "\"${cyggitconfig}\"" \
+            -e "\"${MYEMAIL}\"" \
+            -n "\"${MYSIGN}\"" \
+            $(echo "$1")
     fi
 }
 
