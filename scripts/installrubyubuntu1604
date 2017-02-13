@@ -126,6 +126,7 @@ export RUBY_VERSION="${userinput:-$RUBY_VERSION}"
 installRuby "$RUBY_VERSION" || exit $?
 setDefaultRuby "$RUBY_VERSION" || exit $?
 
+# ##############################################################################
 # Gems
 installBundler || exit $?
 installGemDeps || exit $?
@@ -133,6 +134,16 @@ installGemDeps || exit $?
 if [ -f "$PKGSRUBY" ]; then
     BUNDLE_GEMFILE="$PKGSRUBY" bundle || exit $?
 fi
+
+# ##############################################################################
+# Display version of main packages
+
+echo ${BASH_VERSION:+-e} "sqlite3\c " ; sqlite3 --version
+ruby -v
+rails -v
+
+# ##############################################################################
+# Copy ssh public key to the clipboard
 
 [ -f ~/.ssh/id_rsa.pub ] && cb < ~/.ssh/id_rsa.pub
 
