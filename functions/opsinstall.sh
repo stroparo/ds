@@ -111,22 +111,5 @@ installtruecrypt () {
     sudo bash "$pkg"
 }
 
-installyoutubedl () {
-    ! _is_linux && ! _is_cygwin && return
-
-    typeset youtubedlpath='/usr/local/bin/youtube-dl'
-    [ -e "${youtubedlpath}" ] && return
-
-    echo '==> Installing youtube-dl ...' 1>&2
-
-    if _is_linux ; then
-        sudo wget -q -O "${youtubedlpath}" 'https://yt-dl.org/latest/youtube-dl'
-        sudo chmod a+rx "${youtubedlpath}"
-    elif _is_cygwin ; then
-        wget -q -O "${youtubedlpath}" 'https://yt-dl.org/latest/youtube-dl'
-        chmod a+rx "${youtubedlpath}"
-    fi
-}
-
 # ##############################################################################
 
