@@ -127,8 +127,8 @@ _install_pyenv || exit $?
 export PATH="$HOME/.pyenv/bin:$PATH"
 eval "$("$HOME/.pyenv/bin/pyenv" init -)"
 
-pip install "$PYV3" || exit $?
-pip install "$PYV2" || exit $?
+pyenv install "$PYV3" || exit $?
+pyenv install "$PYV2" || exit $?
 
 # Environments:
 pyenv virtualenv "$PYV3" jupyter3
