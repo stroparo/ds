@@ -14,7 +14,7 @@ if ! grep -q Ubuntu /etc/os-release || ! grep -q '16[.]04' /etc/os-release ; the
 fi
 
 # Daily Shells
-! . "${DS_HOME:-$HOME}"/.ds/ds.sh "${DS_HOME:-$HOME}" \
+! . "${DS_HOME:-$HOME}"/ds.sh "${DS_HOME:-$HOME}" \
     && echo "FATAL: sourcing daily shells" \
     && exit 1
 [ -n "$DS_LOADED" ] || exit $?
