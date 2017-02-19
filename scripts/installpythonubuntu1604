@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-# Install Ruby, Rails, Bundler and common gems
-# For Ubuntu 16.04
+# Install Python in Ubuntu 16.04
 
 # ##############################################################################
 # Dependencies

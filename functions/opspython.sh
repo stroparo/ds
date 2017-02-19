@@ -47,4 +47,14 @@ EOF
 
 }
 
+pipinstall () {
+
+    pip --version > /dev/null || return $?
+
+    for p in $(cat "$@") ; do
+        pip install ${p}
+    done
+}
+
 # ##############################################################################
+
