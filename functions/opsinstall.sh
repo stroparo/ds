@@ -67,26 +67,6 @@ installexa () {
     chmod u+x ~/bin/exa-linux-x86_64
 }
 
-installinputfont () {
-    # Info: Installs local input font package
-    # Syntax: {input-font-package-filename}
-
-    typeset find_command="find \"$HOME/Input_Fonts\" \
-\( -name '*.[o,t]tf' -or -name '*.pcf.gz' \) -type f -print0"
-    typeset font_dir="$HOME/.local/share/fonts"
-    typeset inputfontpackage="$1"
-
-    _is_linux || return
-    [ -e "$font_dir/InputMono-Regular.ttf" ] && return
-
-    echo '==> Installing input font ...' 1>&2
-    unzip -d "$HOME" "$inputfontpackage" 'Input_Fonts/*' || return 1
-    mkdir -p "$font_dir" 2>/dev/null
-    eval $find_command | xargs -0 -I % cp "%" "$font_dir/"
-    rm -rf "$HOME/Input_Fonts"
-    command -v fc-cache 2>/dev/null && fc-cache -f "$font_dir" # reset font cache
-}
-
 installohmyzsh () {
     which zsh >/dev/null || return 1
     [ -d "${HOME}/.oh-my-zsh" ] && return
