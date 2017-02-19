@@ -11,45 +11,18 @@ if ! which apt >/dev/null 2>&1 && ! which apt-get >/dev/null 2>&1 ; then
 fi
 
 aptaddppa () {
-    # Adds ppa repositories listed in the filename argument.
-    # Syn: {ppa-list-filename}
-
-    typeset somefail=false
-
-    typeset ppalistfile="$1"
-    typeset usage="${pname} {ppa file (one ppa path per line)}"
+    # Adds ppa repositories
+    # Syn: {ppa} ...
 
     sudo which apt-add-repository >/dev/null || return 1
 
-    echo "$ppalistfile" 1>&2
-    test -f "$ppalistfile" || return 1
-
-    [[ -n $ZSH_VERSION ]] && set -o shwordsplit
-
-    while read ppa ; do
-
-        if ! (ls -1 /etc/apt/sources.list.d | grep -q "$(echo "$ppa" | sed -e 's#/#-.*#g')")
+    for ppa in "$@" ; do
+        if ! (ls -1 /etc/apt/sources.list.d \
+                | grep -q "$(echo "${ppa:-DUMMY}" | sed -e 's#/#-.*#g')")
         then
-            elog "ppa '${ppa}' ..."
-
-            if ! sudo apt-add-repository "ppa:${ppa}" ; then
-                elog -f "ppa '${ppa}'."
-                somefail=true
-            fi
-        else
-            elog -s "ppa '${ppa}' already present."
+            sudo apt-add-repository "ppa:${ppa}"
         fi
-
-    done <<EOF
-$(cat "$ppalistfile")
-EOF
-
-    [[ -n $ZSH_VERSION ]] && set +o shwordsplit
-
-    if $somefail ; then
-        elog -f 'Some ppa failed.'
-        return 1
-    fi
+    done
 }
 
 # ##############################################################################
