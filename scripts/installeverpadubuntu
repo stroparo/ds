@@ -23,7 +23,7 @@ fi
 
 # ##############################################################################
 
-aptaddppa 'nvbn-rm/ppa'
+aptaddppa 'nvbn-rm/ppa' || return $?
 sudo $APTPROG update || return $?
 sudo $APTPROG install -y everpad || return $?
 

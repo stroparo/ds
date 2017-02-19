@@ -65,14 +65,14 @@ export PATH=\"\$HOME/.rbenv/plugins/ruby-build/bin:\$PATH\""
     exec $SHELL
 }
 
-installRuby () {
+installVm () {
 
     typeset version="$1"
 
     rbenv install -v "$version" || return $?
 }
 
-setDefaultRuby () {
+setDefaultVm () {
 
     typeset version="$1"
 
@@ -116,8 +116,8 @@ installRbenv || exit $?
 export RUBY_VERSION='2.3.3'
 userinput "Enter desired ruby version (default: $RUBY_VERSION)"
 export RUBY_VERSION="${userinput:-$RUBY_VERSION}"
-installRuby "$RUBY_VERSION" || exit $?
-setDefaultRuby "$RUBY_VERSION" || exit $?
+installVm "$RUBY_VERSION" || exit $?
+setDefaultVm "$RUBY_VERSION" || exit $?
 
 # ##############################################################################
 # Gems

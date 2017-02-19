@@ -6,7 +6,10 @@
 # ##############################################################################
 # Admin APT (aptitude & apt-get) routines
 
-if ! which apt >/dev/null 2>&1 && ! which apt-get >/dev/null 2>&1 ; then
+if ! which apt >/dev/null 2>&1 \
+    && ! which apt-get >/dev/null 2>&1 \
+    && ! which aptitude >/dev/null 2>&1
+then
     return
 fi
 

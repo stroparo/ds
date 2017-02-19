@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+# Install Ruby, Rails, Bundler and common gems
+# For Ubuntu 16.04
+
+# ##############################################################################
+# Dependencies
+
+# Enforce Operating System
+if ! grep -q Ubuntu /etc/os-release || ! grep -q '16[.]04' /etc/os-release ; then
+    echo 'SKIP: Not in Ubuntu 16.04' 1>&2
+    exit
+fi
+
+# Daily Shells
+! . ~/.ds/ds.sh && echo "FATAL: sourcing daily shells" && exit 1
+[ -n "$DS_LOADED" ] || exit $?
+
+# APT
+export APTPROG=apt-get
+if which apt >/dev/null 2>&1 ; then
+    export APTPROG=apt
+fi
+
+# ##############################################################################
+# Functions
+
+installDependencies () {
+
+    aptaddppa 'jonathonf/python-3.6'
+
+    sudo $APTPROG update || return $?
+
+    typeset deps="git-core curl sqlite3"
+    sudo $APTPROG install -y $deps || return $?
+}
+
+installPyenv () {
+    curl -L \
+        "https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer" \
+        | bash
+    appendunique 'export PATH="$HOME/.pyenv/bin:$PATH"' "${HOME}/.bashrc" "${HOME}/.zshrc"
+    appendunique 'eval "$(pyenv init -)"' "${HOME}/.bashrc" "${HOME}/.zshrc"
+    appendunique 'eval "$(pyenv virtualenv-init -)"' "${HOME}/.bashrc" "${HOME}/.zshrc"
+    test -x "$HOME/.pyenv/bin/pyenv"
+}
+
+installVm () {
+
+    typeset version="$1"
+
+    rbenv install -v "$version" || return $?
+}
+
+setDefaultVm () {
+
+    typeset version="$1"
+
+    rbenv global "$version" || return $?
+    rbenv rehash
+    ruby -v
+}
+
+# ##############################################################################
+
+installDependencies || exit $?
+installPyenv || exit $?
+
+installVm "2.7.13" || exit $?
+installVm "3.6.0" || exit $?
+setDefaultVm "3.6.0" || exit $?
+
