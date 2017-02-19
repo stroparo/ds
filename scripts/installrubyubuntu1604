@@ -13,14 +13,7 @@ if ! grep -q Ubuntu /etc/os-release || ! grep -q '16[.]04' /etc/os-release ; the
 fi
 
 # Daily Shells
-if [ -z "$DS_LOADED" ] ; then
-    if [ -f ~/.ds/ds.sh ] ; then
-        . ~/.ds/ds.sh
-    else
-        wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash
-        . ~/.ds/ds.sh
-    fi
-fi
+! . ~/.ds/ds.sh && echo "FATAL: sourcing daily shells" && exit 1
 [ -n "$DS_LOADED" ] || exit $?
 
 # APT
