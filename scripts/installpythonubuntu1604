@@ -33,11 +33,12 @@ fi
 _prep_dirs () {
 
     # virtualenvs will stay in here:
-    mkdir ~/.ve || return $?
+    mkdir ~/.ve
 
     # projects will stay in here:
-    mkdir ~/workspace || return $?
+    mkdir ~/workspace
 
+    test -d ~/.ve && test -d ~/workspace
 }
 
 _prep_profiles () {
