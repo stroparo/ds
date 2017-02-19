@@ -112,7 +112,7 @@ aptdeploy () {
 
     ckapt || return "$?"
     _any_not_r "$@" && return 1
-    [[ $- = *i* ]] && $ask && ! userconfirm 'Proceed deploying APT assets?' && return
+    [[ $- = *i* ]] && $ask && ! userconfirm "Proceed deploying APT lists ($*)?" && return
     [[ $- = *i* ]] && userconfirm 'Upgrade all packages?' && upgradeoption='u'
 
     aptinstall -${upgradeoption}y "$@"
