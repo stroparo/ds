@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-# Install Ruby, Rails, Bundler and common gems
-# For Ubuntu 16.04
+# Install Ruby, Rails, Bundler and common gems in Ubuntu 16.04
+
+# Argument is a gemfile to use to install global packages
 
 # ##############################################################################
 # Dependencies
@@ -94,13 +95,11 @@ installGemDeps () {
 
     typeset deps
 
-    # ImageMagick headers
-    if [ -f "$PKGSRUBY" ] && grep -iq magick "$PKGSRUBY" ; then
+    if userconfirm "Install imagemagick?" ; then
         deps="$deps imagemagick libmagick++-dev"
     fi
 
-    # PostgreSQL database
-    if [ -f "$PKGSRUBY" ] && grep -iq "'pg'" "$PKGSRUBY" ; then
+    if userconfirm "Install PostgreSQL database?" ; then
         deps="$deps postgresql postgresql-doc libpq-dev postgresql-server-dev-all"
     fi
 
@@ -117,6 +116,7 @@ export RUBY_VERSION='2.3.3'
 userinput "Enter desired ruby version (default: $RUBY_VERSION)"
 export RUBY_VERSION="${userinput:-$RUBY_VERSION}"
 installVm "$RUBY_VERSION" || exit $?
+
 setDefaultVm "$RUBY_VERSION" || exit $?
 
 # ##############################################################################
@@ -124,8 +124,8 @@ setDefaultVm "$RUBY_VERSION" || exit $?
 installBundler || exit $?
 installGemDeps || exit $?
 
-if [ -f "$PKGSRUBY" ]; then
-    BUNDLE_GEMFILE="$PKGSRUBY" bundle || exit $?
+if [ -f "$1" ]; then
+    BUNDLE_GEMFILE="$1" bundle || exit $?
 fi
 
 # ##############################################################################

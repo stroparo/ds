@@ -2,6 +2,12 @@
 
 # Install Python in Ubuntu 16.04
 
+# Arguments of filenames ending '-xyz' will have a list of pip packages to be installed
+# into the 'xyz' virtualenv.
+
+export PYV2='2.7.13'
+export PYV3='3.6.0'
+
 # ##############################################################################
 # Dependencies
 
@@ -24,7 +30,30 @@ fi
 # ##############################################################################
 # Functions
 
-installDependencies () {
+_prep_dirs () {
+
+    # virtualenvs will stay in here:
+    mkdir ~/.ve || return $?
+
+    # projects will stay in here:
+    mkdir ~/workspace || return $?
+
+}
+
+_prep_profiles () {
+
+    appendunique 'export WORKON_HOME=~/.ve' \
+        "${HOME}/.bashrc" \
+        "${HOME}/.zshrc" \
+        || return $?https://github.com/yandex/
+
+    appendunique 'export PROJECT_HOME=~/workspace' \
+        "${HOME}/.bashrc" \
+        "${HOME}/.zshrc" \
+        || return $?
+}
+
+_install_deps () {
 
     aptaddppa 'jonathonf/python-3.6'
 
@@ -34,38 +63,96 @@ installDependencies () {
     sudo $APTPROG install -y $deps || return $?
 }
 
-installPyenv () {
+_install_pyenv () {
+    # Pyenv projects:
+    # https://github.com/yyuu/pyenv-installer (https://github.com/yyuu/pyenv)
+    # https://github.com/yyuu/pyenv-virtualenv
+    # https://github.com/yyuu/pyenv-virtualenvwrapper
+
+    # Skip if already installed
+    test -x "$HOME/.pyenv/bin/pyenv" && return
+
     curl -L \
         "https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer" \
         | bash
-    appendunique 'export PATH="$HOME/.pyenv/bin:$PATH"' "${HOME}/.bashrc" "${HOME}/.zshrc"
-    appendunique 'eval "$(pyenv init -)"' "${HOME}/.bashrc" "${HOME}/.zshrc"
-    appendunique 'eval "$(pyenv virtualenv-init -)"' "${HOME}/.bashrc" "${HOME}/.zshrc"
+
+    appendunique 'export PATH="$HOME/.pyenv/bin:$PATH"' \
+        "${HOME}/.bashrc" \
+        "${HOME}/.zshrc"
+
+    appendunique 'eval "$(pyenv init -)"' \
+        "${HOME}/.bashrc" \
+        "${HOME}/.zshrc"
+
+    # Commenting this LOC out avoids conflicting with virtualenvwrapper...
+    appendunique '#eval "$(pyenv virtualenv-init -)"' \
+        "${HOME}/.bashrc" \
+        "${HOME}/.zshrc"
+
     test -x "$HOME/.pyenv/bin/pyenv"
 }
 
-installVm () {
-
-    typeset version="$1"
-
-    rbenv install -v "$version" || return $?
+_install_tools () {
+    for piplist in "$@" ; do
+        pyenv activate ${piplist##*-}
+        pip install $(cat "$piplist")
+        pyenv deactivate
+    done
 }
 
-setDefaultVm () {
+_install_vewrapper () {
 
-    typeset version="$1"
+    if [ ! -d ~/.pyenv/plugins/pyenv-virtualenvwrapper ] ; then
+        git clone \
+            https://github.com/yyuu/pyenv-virtualenvwrapper.git \
+            ~/.pyenv/plugins/pyenv-virtualenvwrapper \
+            || return $?
+    fi
 
-    rbenv global "$version" || return $?
-    rbenv rehash
-    ruby -v
+    appendunique 'pyenv virtualenvwrapper_lazy' \
+        "${HOME}/.bashrc" \
+        "${HOME}/.zshrc" \
+        || return $?
 }
 
 # ##############################################################################
 
-installDependencies || exit $?
-installPyenv || exit $?
+_prep_dirs || exit $?
+_prep_profiles || exit $?
+_install_deps || exit $?
+_install_pyenv || exit $?
 
-installVm "2.7.13" || exit $?
-installVm "3.6.0" || exit $?
-setDefaultVm "3.6.0" || exit $?
+# Loading pyenv into this session:
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$("$HOME/.pyenv/bin/pyenv" init -)"
+
+pip install "$PYV3" || exit $?
+pip install "$PYV2" || exit $?
+
+# Environments:
+pyenv virtualenv "$PYV3" jupyter3
+pyenv virtualenv "$PYV2" ipython2
+pyenv virtualenv "$PYV3" tools3
+pyenv virtualenv "$PYV2" tools2
+
+# Install iPython for Python 3 & Jupyter
+pyenv activate jupyter3
+pip install jupyter # iPython dependency gets automatically installed...
+python -m ipykernel install --user
+pyenv deactivate
+
+# Install iPython for Python 2
+pyenv activate ipython2
+pip install ipykernel
+python -m ipykernel install --user
+pyenv deactivate
+
+# Install argument lists:
+_install_tools
+
+# Set pyenv's PATH priority
+pyenv global "$PYV3" "$PYV2" jupyter3 ipython2 tools3 tools2
+
+_install_vewrapper || exit $?
+pyenv virtualenvwrapper_lazy
 
