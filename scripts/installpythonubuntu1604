@@ -155,7 +155,7 @@ python -m ipykernel install --user
 pyenv deactivate
 
 # Install argument lists:
-_install_tools
+_install_tools "$@"
 
 # Set pyenv's PATH priority
 pyenv global "$PYV3" "$PYV2" jupyter3 ipython2 tools3 tools2
