@@ -16,8 +16,9 @@ dsget || exit $?
 if [ -n "${DS_LOADED}" ] ; then
     appendunique "$DS_LOAD_CODE" "$HOME/.bashrc"
     appendunique "$DS_LOAD_CODE" "$HOME/.zshrc"
+    echo "INFO: Installed. Start a new terminal session." 1>&2
 else
-    echo 'FATAL: ds not loaded so source commands were not written to any shell profiles..' 1>&2
+    echo "FATAL: ds not loaded." 1>&2
     exit 99
 fi
 
