@@ -129,8 +129,12 @@ _install_pyenv || exit $?
 export PATH="$HOME/.pyenv/bin:$PATH"
 eval "$("$HOME/.pyenv/bin/pyenv" init -)"
 
-pyenv install "$PYV3" || exit $?
-pyenv install "$PYV2" || exit $?
+pyenv install "$PYV3"
+pyenv install "$PYV2"
+
+if ! (pyenv versions | fgrep -q "$PYV3") ; then
+    echo "FATAL: $PYV3 version could not be installed." 1>&2
+fi
 
 # Environments:
 pyenv virtualenv "$PYV3" jupyter3
