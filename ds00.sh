@@ -64,20 +64,15 @@ dsload () {
     # Info: loads ds. If it does not exist, download and install to the default path.
     # Syn: [dshome=~/.ds]
 
-    typeset dshome="${1:-${DS_HOME}}"
+    typeset dshome="${1:-${DS_HOME:-${HOME}/.ds}}"
 
     if [ ! -f "${dshome}/ds.sh" ] ; then
 
-        dshome="$HOME/.ds"
+        echo "INFO: Installing DS into '${dshome}' ..." 1>&2
+
         export DS_HOME="$dshome"
 
-        if [ ! -e "${dshome}/ds.sh" ] && which wget >/dev/null ; then
-            echo "Installing DS into '${dshome}' ..." 1>&2
-            wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' \
-            | bash
-        else
-            echo "FATAL: no '${dshome}/ds.sh' and wget (downloader) unavailable." 1>&2
-        fi
+        wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash
     fi
 
     if ! . "${dshome}/ds.sh" "${dshome}" 1>&2 || [ -z "${DS_LOADED}" ] ; then
@@ -91,14 +86,18 @@ dsupgrade () {
 
     typeset timestamp="$(date +%Y%m%d-%OH%OM%OS)"
 
-    mv ~/.ds ~/.ds-$timestamp 2>/dev/null
+    mv "$DS_HOME" "$DS_HOME-$timestamp" 2>/dev/null
+    if [ -d "$DS_HOME" ] ; then
+        echo "FATAL: Could not move out '$DS_HOME'..." 1>&2
+        return 1
+    fi
 
     if dsload ; then
-        rm -rf ~/.ds-$timestamp
+        rm -f -r "$DS_HOME-$timestamp"
     else
-        echo "FATAL: upgrade failed ... restoring ~/.ds-${timestamp} ..."
-        rm ~/.ds
-        mv ~/.ds-$timestamp ~/.ds
+        echo "FATAL: upgrade failed ... restoring '$DS_HOME-$timestamp' ..."
+        rm -f -r "$DS_HOME"
+        mv "$DS_HOME-$timestamp" "$DS_HOME"
     fi
 }
 
