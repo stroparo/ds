@@ -96,6 +96,7 @@ if which git >/dev/null 2>&1 ; then
         alias gco='git checkout'
         alias gd='git diff'
         alias gdca='git diff --cached'
+        alias gf='git fetch'
         alias gl='git pull'
         alias glg='git log --stat'
         alias glgg='git log --graph'
