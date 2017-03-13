@@ -8,6 +8,7 @@ findscripts () {
 
     typeset re_shells='perl|python|ruby|sh'
 
-    awk 'FNR == 1 && $0 ~ /^#!.*('"$re_shells"') */ { print FILENAME; }' \
+    awk 'FNR == 1 && $0 ~ /^#!.*('"$re_shells"') */ { print FILENAME; }
+        FNR > 1 { exit; }' \
         $(find "$@" -type f | egrep -v '[.](git|hg|svn)')
 }
