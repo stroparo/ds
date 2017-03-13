@@ -9,6 +9,7 @@ chmodshells () {
 
     typeset addaliases=false
     typeset addpaths=false
+    typeset files
     typeset mode='u+rwx'
     typeset verbose
 
@@ -26,7 +27,10 @@ chmodshells () {
 
     for dir in "$@" ; do
         if _all_dirs_w "${dir}" ; then
-            chmod ${verbose} "${mode}" $(findscripts "${dir}")
+            files=$(findscripts "${dir}")
+            if [ -n "$files" ] ; then
+                chmod ${verbose} "${mode}" $(echo ${files})
+            fi
         fi
     done
 
