@@ -415,7 +415,7 @@ xzp () {
     # Set command to place output files to specified target if one was passed in:
     if [ -n "${target}" ] ; then
         if [ ! -d "${target}" -o ! -w "${target}" ] ; then
-            elog -f -n xzp "Target path (${target}) is not writable."
+            echo "FATAL: Target path (${target}) is not writable." 1>&2
             return 1
         fi
 

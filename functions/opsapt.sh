@@ -90,14 +90,14 @@ aptclean () {
             sudo deborphan | xargs sudo apt-get purge -y
         fi
     else
-        elog -s -p "$pname" "No deborphan program available.."
+        echo "SKIP: No deborphan program available.." 1>&2
     fi
 
     # Remove caches:
     userconfirm 'apt-get autoclean?' && sudo apt-get autoclean -y
     userconfirm 'apt-get clean?' && sudo apt-get clean -y
 
-    elog '==> Complete.'
+    echo '==> Complete.' 1>&2
 }
 
 aptdeploy () {

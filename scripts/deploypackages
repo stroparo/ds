@@ -54,8 +54,8 @@ deploypackages () {
     ! (ls -1 "${pkgspath}" | egrep '([.]7z|[.]zip|bz2|gz)$') && return
     $userconfirm && ! userconfirm "Deploy packages from '${pkgspath}' ?" && return
 
-    elog -n "$pname" "Packages path '${pkgspath}' .."
-    elog -n "$pname" ".. deploying to '${deploypath}' .."
+    echo "INFO: Packages path '${pkgspath}' .." 1>&2
+    echo "INFO: .. deploying to '${deploypath}' .." 1>&2
 
     files=$(ls -1 \
         "${pkgspath}"/*.7z \

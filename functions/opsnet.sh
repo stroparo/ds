@@ -103,7 +103,7 @@ sshkeygenrsa () {
     fi
 
     if [ ! -d "$(dirname "$keypath")" ] ; then
-        elog -n "$pname" "No directory available to store '$keypath'."
+        echo "FATAL: No directory available to store '$keypath'." 1>&2
         return 1
     fi
 

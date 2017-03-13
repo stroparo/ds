@@ -118,7 +118,7 @@ ckeeh () {
 
 ckglobs () {
     if [[ -z $GLOBSFINAL ]]; then
-        elog -f -n "$pname" "Empty value in GLOBSFINAL."
+        echo "FATAL: Empty value in GLOBSFINAL." 1>&2
         exit 1
     fi
 }
