@@ -92,7 +92,7 @@ dsupgrade () {
         return 1
     fi
 
-    if dsload ; then
+    if dsload "$DS_HOME" ; then
         rm -f -r "$DS_HOME-$timestamp"
     else
         echo "FATAL: upgrade failed ... restoring '$DS_HOME-$timestamp' ..."
