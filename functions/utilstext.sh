@@ -137,7 +137,7 @@ EOF
 }
 
 fixeof () {
-    # Info: Fix and add final EOL (end-of-line) when missing.
+    # Info: Fix by adding final EOL (end-of-line) when missing.
     # Syntax: [file-or-dir1 [file-or-dir2...]]
 
     [ "${1}" = '-v' ] && verbose=true && shift
