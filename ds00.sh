@@ -104,22 +104,11 @@ dsupgrade () {
 # ##############################################################################
 # Base routines
 
-unalias d 2>/dev/null # Protect fiercely by also calling this in 99post or later
-unset d 2>/dev/null # Protect fiercely by also calling this in 99post or later
+unalias d 2>/dev/null; unset d 2>/dev/null
 d () {
-    # Info: Change directory and execute pwd followed by an ls.
-    # Syn: {directory}
-
-    dir="${1}"
-    shift
-
-    cd "${dir}" || return 1
-    pwd 1>&2
-    ls -Fl "$@" 1>&2
-
-    if which git >/dev/null 2>&1 && [ -e "${PWD}/.git" ]; then
-        git status -s
-    fi
+    dir="${1}" ; shift
+    cd "${dir}" || return 1 ; pwd 1>&2 ; ls -Fl "$@" 1>&2
+    if which git >/dev/null 2>&1; then git status -s 2>/dev/null ; fi
 }
 
 elog () {
