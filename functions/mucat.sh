@@ -4,15 +4,15 @@
 #  https://github.com/stroparo/ds
 
 mucat () {
-    # Info: Cat multiple files.
+    # Info: Cat multiple files. Sends '==> filename <==' to stderr before each cat.
     # Syntax: mucat file1[ file2[ file3 ...]]
 
     typeset first=true
 
     for f in "$@" ; do
-        ${first} || echo ''
+        ${first} || echo '' 1>&2
 
-        echo "==> ${f} <=="
+        echo "==> ${f} <==" 1>&2
         cat "${f}"
 
         first=false
