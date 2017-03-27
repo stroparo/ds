@@ -20,15 +20,9 @@ loadjava () {
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
-    if [ -x "${1}/bin/java" ] ; then
-        export JAVA_HOME="${1}"
-    elif [ ! -x "${JAVA_HOME}/bin/java" ] ; then
-        return 1
-    fi
-
-    if [ -n "${doverbose:-}" ] ; then
-        echo "JAVA_HOME=${JAVA_HOME}" 1>&2
-    fi
+    export JAVA_HOME=${1:-${JAVA_HOME}}
+    if [ ! -x "${JAVA_HOME}/bin/java" ] ; then return 1 ; fi
+    if [ -n "${doverbose:-}" ] ; then echo "JAVA_HOME=${JAVA_HOME}" 1>&2 ; fi
 
     # For JDK also add its root bin and lib subdirectories:
     if [[ ${JAVA_HOME} = *jdk* ]] ; then
