@@ -111,33 +111,6 @@ d () {
     if which git >/dev/null 2>&1; then git status -s 2>/dev/null ; fi
 }
 
-elog () {
-    # Info: Echo a string to standard error.
-
-    typeset msgtype="INFO"
-    typeset pname
-    typeset verbosecondition
-
-    typeset oldind="$OPTIND"
-    OPTIND=1
-    while getopts ':dfin:svw' opt ; do
-        case "${opt}" in
-            d) msgtype="DEBUG" ;;
-            f) msgtype="FATAL" ;;
-            i) msgtype="INFO" ;;
-            n) pname="${OPTARG}" ;;
-            s) msgtype="SKIP" ;;
-            v) verbosecondition=true ;;
-            w) msgtype="WARNING" ;;
-        esac
-    done
-    shift $((OPTIND - 1)) ; OPTIND="${oldind}"
-
-    if [ -z "${verbosecondition}" -o -n "${DS_VERBOSE}" ] ; then
-        echo "${pname:+${pname}:}${msgtype:+${msgtype}:}" "$@" 1>&2
-    fi
-}
-
 sourcefiles () {
     # Info: Each arg is a glob; source all glob expanded paths.
     #  Tilde paths are accepted, as the expansion is yielded
@@ -251,15 +224,6 @@ _any_not_r () { ! _all_r "$@" ; }
 _any_not_w () { ! _all_w "$@" ; }
 _any_null () { for i in "$@" ; do [ -z "${i}" ] && return 0 ; done ; return 1 ; }
 
-ckapt () {
-    which apt > /dev/null || which apt-get > /dev/null
-}
-
-ckaptitude () {
-    aptitude -h > /dev/null || \
-        (sudo apt-get update && sudo apt-get install -y aptitude)
-}
-
 ckenv () {
     # Info: Checks number of arguments and sets hasgnu ("GNU is not Unix").
     # Syn: {min-args} [max-args=min-args]
@@ -279,11 +243,6 @@ ckenv () {
         export hasgnu=true
     fi
 }
-
-# ##############################################################################
-# Retrofit
-
-paralleljobs () { dsp "$@" ; }
 
 # ##############################################################################
 

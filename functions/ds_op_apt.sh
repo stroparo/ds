@@ -6,11 +6,13 @@
 # ##############################################################################
 # Admin APT (aptitude & apt-get) routines
 
-if ! which apt >/dev/null 2>&1 \
-    && ! which apt-get >/dev/null 2>&1 \
-    && ! which aptitude >/dev/null 2>&1
-then
-    return
+unset APTCMD
+which apt-get >/dev/null 2>&1 && export APTCMD=apt-get
+which apt >/dev/null 2>&1 && export APTCMD=apt
+if [ -z "$APTCMD" ] ; then return ; fi
+
+if ! which aptitude >/dev/null 2>&1 ; then
+    sudo "$APTCMD" update && sudo "$APTCMD" install -y aptitude
 fi
 
 aptaddppa () {
@@ -52,7 +54,7 @@ aptinstall () {
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
-    ckaptitude || return 1
+    aptitude -h > /dev/null || return 1
     if ${doupdate} ; then sudo aptitude update || return 1 ; fi
     if ${doupgrade} ; then sudo aptitude upgrade ${assumeyes} || return 1 ; fi
 
@@ -79,7 +81,6 @@ aptclean () {
     # Rmk - this also installs localepurge, but it must be executed separately (in that
     #   package you will choose only the locales you use and/or want to keep).
 
-    ckapt || return "$?"
     which deborphan > /dev/null 2>&1 || sudo aptitude install -y deborphan
     which localepurge > /dev/null 2>&1 || sudo aptitude install -y localepurge
 
@@ -87,22 +88,21 @@ aptclean () {
         echo '==> Orphaned packages:'
         sudo deborphan
         if userconfirm 'Remove?' ; then
-            sudo deborphan | xargs sudo apt-get purge -y
+            sudo deborphan | xargs sudo "$APTCMD" purge -y
         fi
     else
         echo "SKIP: No deborphan program available.." 1>&2
     fi
 
     # Remove caches:
-    userconfirm 'apt-get autoclean?' && sudo apt-get autoclean -y
-    userconfirm 'apt-get clean?' && sudo apt-get clean -y
+    userconfirm "$APTCMD autoclean?" && sudo "$APTCMD" autoclean -y
+    userconfirm "$APTCMD clean?" && sudo "$APTCMD" clean -y
 
     echo '==> Complete.' 1>&2
 }
 
 aptdeploy () {
     # Installs apt packages using the routines: aptinstall, fixaptmodes, aptclean.
-    # Deps: apt or apt-get.
     # Rmk: APTREMOVELIST global will cause aptitude purge to be called with that list.
 
     typeset ask=false
@@ -110,7 +110,6 @@ aptdeploy () {
 
     [[ $1 = -i ]] && ask=true && shift
 
-    ckapt || return "$?"
     _any_not_r "$@" && return 1
     [[ $- = *i* ]] && $ask && ! userconfirm "Proceed deploying APT lists ($*)?" && return
     [[ $- = *i* ]] && userconfirm 'Upgrade all packages?' && upgradeoption='u'
