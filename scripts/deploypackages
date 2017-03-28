@@ -5,9 +5,14 @@
 #   See README.md document in projects page at
 #   https://github.com/stroparo/ds
 
-# Program deploypackages - Deploy packages from-to the given directories.
+if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1 || [ -z "${DS_LOADED}" ] ; then
+    echo "$(basename "$0"): FATAL: Could not load DS - Daily Shells." 1>&2
+    exit 1
+fi
 
-usage="$(basename "$0") [-c] [-x {exclude-expression}] {packages-path} {destination}
+USAGE="deploypackages - Deploy packages from-to the given directories.
+
+$(basename "$0") [-c] [-x {exclude-expression}] {packages-path} {destination}
 
 Options:
 -c  Asks for prior user confirmation.
@@ -15,18 +20,6 @@ Options:
 
 # ##############################################################################
 # Functions
-
-prep () {
-
-    typeset oldpwd="$PWD"
-
-    if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1 || [ -z "${DS_LOADED}" ] ; then
-        echo "$(basename "$0"): FATAL: Could not load DS - Daily Shells." 1>&2
-        exit 1
-    fi
-
-    cd "$oldpwd"
-}
 
 deploypackages () {
 
@@ -40,9 +33,10 @@ deploypackages () {
 
     typeset oldind="${OPTIND}"
     OPTIND=1
-    while getopts ':cx:' opt ; do
+    while getopts ':chx:' opt ; do
         case "${opt}" in
             c) userconfirm=true ;;
+            h) echo "$USAGE" ; exit ;;
             x) exclude="${OPTARG}" ;;
         esac
     done
