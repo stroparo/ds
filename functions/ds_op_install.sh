@@ -83,13 +83,5 @@ installpowerfonts () {
     ~/fonts-master/install.sh && rm -rf ~/fonts-master ~/powerline.zip
 }
 
-installtruecrypt () {
-    # Syntax: {package-filename}
-
-    _is_linux || return
-    echo "==> Installing ${1##*/} ..." 1>&2
-    sudo bash "$pkg"
-}
-
 # ##############################################################################
 
