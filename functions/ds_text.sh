@@ -17,33 +17,6 @@ uppertr () { tr '[[:lower:]]' '[[:upper:]]' ; }
 lowervar () { eval "$1=\"\$(echo \"\$$1\" | tr '[[:upper:]]' '[[:lower:]]')\"" ; }
 uppervar () { eval "$1=\"\$(echo \"\$$1\" | tr '[[:lower:]]' '[[:upper:]]')\"" ; }
 
-appendunique () {
-    # Info: If string not present in file, append to it.
-    # Syntax: string file1 [file2 ...]
-
-    typeset msgerrforfile="appendunique: ERROR for file"
-    typeset failedsome=false
-    typeset text="${1}" ; shift
-
-    for f in "$@" ; do
-
-        [ -e "$f" ] || touch "$f"
-
-        if ! fgrep -q "${text}" "${f}" ; then
-
-            if ! echo "${text}" >> "${f}" ; then
-                failedsome=true
-                echo "${msgerrforfile} '${f}' .." 1>&2
-            fi
-        fi
-    done
-
-    if ${failedsome} ; then
-        echo "appendunique: $fatal Text was '${text}'." 1>&2
-        return 1
-    fi
-}
-
 ckeof () {
     # Info: Check whether final EOL (end-of-line) is missing.
     # Syntax: [file-or-dir1 [file-or-dir2...]]

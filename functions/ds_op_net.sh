@@ -9,25 +9,6 @@
 # Oneliners
 iwf () { iwconfig ; ifconfig ; }
 
-getcookiesmozilla () {
-    # Info: Get firefox cookies & write them to a file in old netscape (or wget) format.
-    # Syntax: {mozilla's cookies sqlite db} {target cookies filename} {domain pattern/regex}
-
-    typeset agent_cookies="${1}"
-    typeset target_cookies="${2}"
-    typeset inet_domain_pattern="${3}"
-
-    if [ ! -e "${target_cookies}" ] ; then
-        sqlite3 "${agent_cookies}" <<EOF
-.output ${target_cookies}
-.mode tabs
--- select basedomain, 'TRUE', path, issecure, expiry, name, value from moz_cookies where baseDomain like '%domain%';
-select basedomain, 'TRUE', path, 'FALSE', expiry, name, value from moz_cookies where baseDomain like '%${inet_domain_pattern}%';
-.quit
-EOF
-    fi
-}
-
 pushds () {
     # Info:
     #   Push ds scripts and source files to envs pointed to by arguments, packed into
@@ -81,36 +62,3 @@ EOF
     return ${res:-1}
 }
 
-sshkeygenrsa () {
-    # Info: Generate id_rsa if none present for the current user.
-    # Syntax: {comment} [keypath]
-
-    typeset comment="$1"
-    typeset keypath="${2:-${HOME}/.ssh/id_rsa}"
-
-    while [ -z "${comment}" ] ; do
-        userinput 'SSH key comment (email, name or whatever)'
-        comment="${userinput}"
-    done
-
-    while [ -e "${keypath}" ] ; do
-        userinput "Key '${keypath}' already exists, type another path"
-        keypath="${userinput}"
-    done
-
-    if [[ $keypath = $HOME/.ssh* ]] && [ ! -d "$HOME/.ssh" ] ; then
-        mkdir "$HOME/.ssh"
-    fi
-
-    if [ ! -d "$(dirname "$keypath")" ] ; then
-        echo "FATAL: No directory available to store '$keypath'." 1>&2
-        return 1
-    fi
-
-    if ssh-keygen -t rsa -b 4096 -C "${comment:-mykey}" -f "${keypath}" ; then
-        # Call the agent to add the newly generated key:
-        sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/sshagent.sh"
-    fi
-}
-
-# ##############################################################################

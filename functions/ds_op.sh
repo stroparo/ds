@@ -15,15 +15,30 @@ psef () { ps -ef ; }
 psefnoshells () { ps -ef | grep -v bash | grep -v zsh | grep -v sshd ; }
 psefuser () { ps -ef | grep "${USER}" ; }
 psfu () { ps -fu "${UID:-$(id -u)}" -U "${UID:-$(id -u)}" ; }
+rundropbox () { env DBUS_SESSION_BUS_ADDRESS='' ~/.dropbox-dist/dropboxd & }
+runsshagent () { source "${DS_HOME}/sshagent.sh" ; }
+
+# Services
+runapache () { sudo "/etc/init.d/apache${2:-2}" "${1:-restart}" ; }
+runlamp () { "${LAMPHOME}/ctlscript.sh"         "${1:-restart}" ; }
+runpg () { sudo "/etc/init.d/postgresql${2}"    "${1:-restart}" ; }
+
 autobash () {
-    appendunique 'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' \
+    appendunique \
+        'if [[ $- = *i* ]] && [ -z "${BASH_VERSION}" ] ; then bash ; fi' \
         "$HOME/.profile"
 }
 
-autovimode () {
+autovi () {
     appendunique 'set -o vi' \
         "$HOME/.zshrc" \
         "$HOME/.bashrc" \
+        "$HOME/.profile"
+}
+
+autozsh () {
+    appendunique \
+        'if [[ $- = *i* ]] && [ -z "${ZSH_VERSION}" ] ; then zsh ; fi' \
         "$HOME/.profile"
 }
 
@@ -50,34 +65,10 @@ setlogdir () {
     mkdir -p "${logdir}" 2>/dev/null
 
     if [ ! -d "${logdir}" -o ! -w "${logdir}" ] ; then
-        echo "$pfatal '$logdir' log dir unavailable." 1>&2
+        echo "FATAL: '$logdir' log dir unavailable." 1>&2
         return 10
     fi
 }
-
-shut () {
-    # Info: shuts down the computer only if truecrypt (-d) unmount.
-
-    typeset tcdismounted=true
-
-    if which truecrypt >/dev/null 2>&1 && \
-        truecrypt -t -l && \
-        ! truecrypt -d
-    then
-        tcdismounted=false
-    fi
-
-    if ${tcdismounted:-false} ; then
-        sudo shutdown -h now
-    fi
-}
-
-# ##############################################################################
-# Control script wrappers
-
-cta () { sudo "/etc/init.d/apache${2:-2}"   "${1:-restart}" ; }
-ctlamp () { "${LAMPHOME}/ctlscript.sh"      "${1:-restart}" ; }
-ctpg () { sudo "/etc/init.d/postgresql${2}" "${1:-restart}" ; }
 
 # ##############################################################################
 # IBM AIX platform

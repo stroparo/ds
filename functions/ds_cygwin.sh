@@ -6,6 +6,8 @@
 # ##############################################################################
 # Cygwin routines
 
+_is_cygwin || return
+
 cyd () {
     # Info: cd to the disk drive letter argument; fails if not in cygwin.
     # Syn: cyd {a|b|c|d|e|f|...}
