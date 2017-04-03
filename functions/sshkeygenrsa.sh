@@ -29,9 +29,6 @@ sshkeygenrsa () {
         return 1
     fi
 
-    if ssh-keygen -t rsa -b 4096 -C "${comment:-mykey}" -f "${keypath}" ; then
-        # Call the agent to add the newly generated key:
-        sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/sshagent.sh"
-    fi
+    ssh-keygen -t rsa -b 4096 -C "${comment:-mykey}" -f "${keypath}"
 }
 
