@@ -3,17 +3,6 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
-# ##############################################################################
-# Globals
-
-pfatal="FATAL:"
-pinfo="INFO:"
-pskip="SKIP:"
-pwarn="WARN:"
-
-# ##############################################################################
-# Aliases
-
 alias cdbak='d "${DS_ENV_BAK}" -A'
 alias cde='d "${DS_ENV}" -A'
 alias cdl='cd "${DS_ENV_LOG}" && (ls -AFlrt | tail -n 64)'
@@ -22,12 +11,16 @@ alias cdlgt='cd "${DS_ENV_LOG}" && (ls -AFlrt | grep "$(date +"%b %d")")'
 alias cdlt='cd "${DS_ENV_LOG}" && cd "$(ls -1d */|sort|tail -n 1)" && ls -AFlrt'
 alias t='d "${TEMP_DIRECTORY}" -A'
 
-# ##############################################################################
-# Functions
-
 dsinfo () { dsversion ; echo "DS_HOME='${DS_HOME}'" 1>&2 ; }
 dss () { ls -1 "$DS_HOME"/scripts/* | sed -e 's#.*/##' ; }
 dsversion () { echo "Daily Shells - ${DS_VERSION}" 1>&2 ; }
+
+unalias d 2>/dev/null; unset d 2>/dev/null
+d () {
+    dir="${1}" ; shift
+    cd "${dir}" || return 1 ; pwd 1>&2 ; ls -Fl "$@" 1>&2
+    if which git >/dev/null 2>&1; then git status -s 2>/dev/null ; fi
+}
 
 dsf () {
 
@@ -101,16 +94,6 @@ dsupgrade () {
     fi
 }
 
-# ##############################################################################
-# Base routines
-
-unalias d 2>/dev/null; unset d 2>/dev/null
-d () {
-    dir="${1}" ; shift
-    cd "${dir}" || return 1 ; pwd 1>&2 ; ls -Fl "$@" 1>&2
-    if which git >/dev/null 2>&1; then git status -s 2>/dev/null ; fi
-}
-
 sourcefiles () {
     # Info: Each arg is a glob; source all glob expanded paths.
     #  Tilde paths are accepted, as the expansion is yielded
@@ -147,7 +130,7 @@ sourcefiles () {
 
         if [ -z "$srcs" ] ; then
             if ! ${tolerant} ; then
-                $quiet || echo "$pfatal $nta Bad glob." 1>&2
+                $quiet || echo "FATAL: $nta Bad glob." 1>&2
                 return 1
             fi
             continue
@@ -224,25 +207,4 @@ _any_not_r () { ! _all_r "$@" ; }
 _any_not_w () { ! _all_w "$@" ; }
 _any_null () { for i in "$@" ; do [ -z "${i}" ] && return 0 ; done ; return 1 ; }
 
-ckenv () {
-    # Info: Checks number of arguments and sets hasgnu ("GNU is not Unix").
-    # Syn: {min-args} [max-args=min-args]
-
-    typeset args_slice_min="${1:-0}"
-    typeset args_slice_max="${2:-0}"
-    shift 2
-
-    if [ "${#}" -lt "${args_slice_min}" -o \
-           "${#}" -gt "${args_slice_max}" ] ; then
-        echo "Bad arguments:" "$@" 1>&2
-        return 1
-    fi
-
-    # hasgnu - "has GNU?" portability indicator
-    if find --version 2> /dev/null | grep -i -q 'gnu' ; then
-        export hasgnu=true
-    fi
-}
-
-# ##############################################################################
-
+_has_gnu () { find --version 2> /dev/null | grep -i -q 'gnu' ; }

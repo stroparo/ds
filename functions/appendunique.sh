@@ -1,36 +1,14 @@
-# DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
-
-# ##############################################################################
-
 appendunique () {
-    # Info: If string not present in file, append to it.
     # Syntax: string file1 [file2 ...]
-
-    typeset msgerrforfile="appendunique: ERROR for file"
-    typeset failedsome=false
+    [ -z "$1" ] && return 0
+    typeset fail=0
     typeset text="${1}" ; shift
-
-    if [ -z "$text" ] ; then return ; fi
-
     for f in "$@" ; do
-
-        [ -e "$f" ] || touch "$f"
-
+        [ ! -e "$f" ] && fail=1 && echo "ERROR '${f}' does not exist" 1>&2 && continue
         if ! fgrep -q "${text}" "${f}" ; then
-
-            if ! echo "${text}" >> "${f}" ; then
-                failedsome=true
-                echo "${msgerrforfile} '${f}' .." 1>&2
-            fi
+            ! echo "${text}" >> "${f}" && fail=1 && echo "ERROR appending '${f}'" 1>&2
         fi
     done
-
-    if ${failedsome} ; then
-        echo "appendunique: $fatal Text was '${text}'." 1>&2
-        return 1
-    fi
+    return ${fail}
 }
 
