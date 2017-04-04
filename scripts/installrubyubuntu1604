@@ -4,26 +4,10 @@
 
 # Argument is a gemfile to use to install global packages
 
-# ##############################################################################
 # Dependencies
-
-# Enforce Operating System
-if ! grep -q Ubuntu /etc/os-release || ! grep -q '16[.]04' /etc/os-release ; then
-    echo 'SKIP: Not in Ubuntu 16.04' 1>&2
-    exit
-fi
-
-# Daily Shells
-! . "${DS_HOME:-$HOME}"/ds.sh "${DS_HOME:-$HOME}" \
-    && echo "FATAL: sourcing daily shells" \
-    && exit 1
-[ -n "$DS_LOADED" ] || exit $?
-
-# APT
-export APTPROG=apt-get
-if which apt >/dev/null 2>&1 ; then
-    export APTPROG=apt
-fi
+(! grep -q Ubuntu /etc/os-release || ! grep -q '16[.]04' /etc/os-release) && exit
+. "${DS_HOME:-$HOME}"/ds.sh "${DS_HOME:-$HOME}" || exit 101
+export APTPROG=apt-get; which apt >/dev/null 2>&1 && export APTPROG=apt
 
 # ##############################################################################
 # Functions
@@ -109,8 +93,8 @@ installGemDeps () {
 }
 
 # ##############################################################################
-
 # Ruby
+
 installDependencies || exit $?
 installRbenv || exit $?
 
@@ -123,6 +107,7 @@ setDefaultVm "$RUBY_VERSION" || exit $?
 
 # ##############################################################################
 # Gems
+
 installBundler || exit $?
 installGemDeps || exit $?
 
