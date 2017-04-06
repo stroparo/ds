@@ -356,7 +356,7 @@ ee () {
     if [ -z "$hostarg" ] && [ -z "$eegroup" ] && ! $doall ; then
 
         searchterm="$1"
-        shift
+        [ $# -gt 0 ] && shift
 
         if [ -z "${searchterm}" ] ; then
             echo 'FATAL: Must pass an env name, or one of -a, -g eegroup, -h hostname.' 1>&2
@@ -389,23 +389,6 @@ EOF
         else
             eex "$@"
         fi
-    elif [ -n "$searchterm" ] ; then
-
-        if ! eesel "$searchterm" ; then
-            return 1
-        fi
-
-        if ! ${selectonly} ; then
-            if $useentrycmd && [ "${eecmd}" != "" ] ; then
-                eex ${eecmd}
-            elif ${eestdinon} ; then
-                eex "$@" <<EOF
-${eestdin}
-EOF
-            else
-                eex "$@"
-            fi
-        fi
     elif [ -n "$eegroup" ] ; then
         for i in $(eeg $(echo ${eegroup})) ; do
             if echogrep -q "$envre" "$i" ; then
@@ -430,6 +413,23 @@ EOF
                 fi
             fi
         done
+    elif [ -n "$searchterm" ] ; then
+
+        if ! eesel "$searchterm" ; then
+            return 1
+        fi
+
+        if ! ${selectonly} ; then
+            if $useentrycmd && [ "${eecmd}" != "" ] ; then
+                eex ${eecmd}
+            elif ${eestdinon} ; then
+                eex "$@" <<EOF
+${eestdin}
+EOF
+            else
+                eex "$@"
+            fi
+        fi
     fi
 }
 
