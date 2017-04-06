@@ -180,17 +180,17 @@ EOF
 eel () {
     # Enter environment - List available environments in EEPATH's ee.txt files.
 
-    typeset dodesc=0
+    typeset verbose=0
     typeset envre
     typeset quiet=false
 
     typeset oldind="${OPTIND}"
     OPTIND=1
-    while getopts ':de:q' option ; do
+    while getopts ':e:qv' option ; do
         case "${option}" in
-            d) dodesc=1;;
             e) envre="$OPTARG";;
             q) quiet=true;;
+            v) verbose=1;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
@@ -201,7 +201,7 @@ eel () {
             echo "==> '${eefile}' <==" 1>&2
         fi
 
-        awk -vdodesc=${dodesc} '
+        awk -vverbose=${verbose} '
 
         /^ *\[.*\] *$/ {
             if (waitingdesc) {
@@ -217,7 +217,7 @@ eel () {
         /^ *eedesc *=/ {
             gsub(/'"'"'| *eedesc= */, "");
             desc = $0;
-            if (dodesc) {
+            if (verbose) {
                 print name ": " desc;
             } else {
                 print name;
