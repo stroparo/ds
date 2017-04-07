@@ -325,7 +325,7 @@ eex () {
 #
 #   -e will need and only affect -a ang -g options.
 #   -i will forward stdin to all calls' standard inputs.
-#   -s will only select the environment and will work only when search term is given.
+#   -s will just select the environment (a no-op), and only if a search term is given.
 ee () {
     typeset doall=false
     typeset eefile eegroup eepath eestdin envre
