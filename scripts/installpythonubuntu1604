@@ -12,28 +12,37 @@ export PYV3='3.6.0'
 (! grep -q Ubuntu /etc/os-release || ! grep -q '16[.]04' /etc/os-release) && exit
 . "${DS_HOME:-$HOME}"/ds.sh "${DS_HOME:-$HOME}" || exit 101
 export APTPROG=apt-get; which apt >/dev/null 2>&1 && export APTPROG=apt
+[ -n "$ZSH_VERSION" ] && set -o shwordsplit
 
 # ##############################################################################
 # Functions
 
-_prep_dirs () {
+appendunique () {
+    # Syntax: string file1 [file2 ...]
+    [ -z "$1" ] && return 0
+    typeset fail=0
+    typeset text="${1}" ; shift
+    for f in "$@" ; do
+        [ ! -e "$f" ] && fail=1 && echo "ERROR '${f}' does not exist" 1>&2 && continue
+        if ! fgrep -q "${text}" "${f}" ; then
+            ! echo "${text}" >> "${f}" && fail=1 && echo "ERROR appending '${f}'" 1>&2
+        fi
+    done
+    return ${fail}
+}
 
-    # virtualenvs will stay in here:
+_make_dirs () {
+    # virtualenvs in ~/.ve and projects in ~/workspace
     mkdir ~/.ve
-
-    # projects will stay in here:
     mkdir ~/workspace
-
-    test -d ~/.ve && test -d ~/workspace
+    [ -d ~/.ve ] && [ -d ~/workspace ]
 }
 
 _prep_profiles () {
-
     appendunique 'export WORKON_HOME=~/.ve' \
         "${HOME}/.bashrc" \
         "${HOME}/.zshrc" \
-        || return $?https://github.com/yandex/
-
+        || return $?
     appendunique 'export PROJECT_HOME=~/workspace' \
         "${HOME}/.bashrc" \
         "${HOME}/.zshrc" \
@@ -41,13 +50,9 @@ _prep_profiles () {
 }
 
 _install_deps () {
-
-    aptaddppa 'jonathonf/python-3.6'
-
+    sudo apt-add-repository 'ppa:jonathonf/python-3.6'
     sudo $APTPROG update || return $?
-
-    typeset deps="git-core curl sqlite3"
-    sudo $APTPROG install -y $deps || return $?
+    sudo $APTPROG install -y git-core curl sqlite3 || return $?
 }
 
 _install_pyenv () {
@@ -59,22 +64,11 @@ _install_pyenv () {
     # Skip if already installed
     test -x "$HOME/.pyenv/bin/pyenv" && return
 
-    curl -L \
-        "https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer" \
-        | bash
-
-    appendunique 'export PATH="$HOME/.pyenv/bin:$PATH"' \
-        "${HOME}/.bashrc" \
-        "${HOME}/.zshrc"
-
-    appendunique 'eval "$(pyenv init -)"' \
-        "${HOME}/.bashrc" \
-        "${HOME}/.zshrc"
-
+    curl -L "$PYENV_INSTALLER" | bash
+    appendunique 'export PATH="$HOME/.pyenv/bin:$PATH"' ~/.bashrc ~/.zshrc
+    appendunique 'eval "$(pyenv init -)"' ~/.bashrc ~/.zshrc
     # Commenting this LOC out avoids conflicting with virtualenvwrapper...
-    appendunique '#eval "$(pyenv virtualenv-init -)"' \
-        "${HOME}/.bashrc" \
-        "${HOME}/.zshrc"
+    appendunique '#eval "$(pyenv virtualenv-init -)"' ~/.bashrc ~/.zshrc
 
     test -x "$HOME/.pyenv/bin/pyenv"
 }
@@ -104,7 +98,7 @@ _install_vewrapper () {
 
 # ##############################################################################
 
-_prep_dirs || exit $?
+_make_dirs || exit $?
 _prep_profiles || exit $?
 _install_deps || exit $?
 _install_pyenv || exit $?
