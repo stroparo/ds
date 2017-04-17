@@ -15,7 +15,8 @@ dsinfo () { dsversion ; echo "DS_HOME='${DS_HOME}'" 1>&2 ; }
 dss () { ls -1 "$DS_HOME"/scripts/* | sed -e 's#.*/##' ; }
 dsversion () { echo "Daily Shells - ${DS_VERSION}" 1>&2 ; }
 
-unalias d 2>/dev/null; unset d 2>/dev/null
+unalias d 2>/dev/null
+unset d 2>/dev/null
 d () {
     dir="${1}" ; shift
     cd "${dir}" || return 1 ; pwd 1>&2 ; ls -Fl "$@" 1>&2
