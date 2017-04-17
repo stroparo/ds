@@ -6,7 +6,11 @@
 # ##############################################################################
 # Post file
 
+: ${DS_ENV_LOG:=$HOME/log}
+export DS_ENV_LOG
+
 export DS_GLOB="ds*sh aliases.sh ee.sh setup.sh sshagent.sh"
+
 DS_LOADED=true
 
 [ -n "${DS_VERBOSE}" ] && echo && dsinfo
