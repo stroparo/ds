@@ -17,7 +17,7 @@ alias findf='find . -type f'
 alias nhr='rm nohup.out'
 alias nht='tail -9999f nohup.out'
 alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
-alias xgit="alias | grep 'git '"
+alias xgit="alias | grep -w git"
 
 if [[ $(grep --version 2>/dev/null) = *GNU* ]] ; then
     alias grep='grep --color=auto'
