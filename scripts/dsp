@@ -149,21 +149,20 @@ dsp () {
                 fi
             fi
         else
-            $QUIET || elog -f -n "${PNAME}" \
-                "Invalid number of args per process in n option, must be positive."
+            $QUIET || echo "FATAL: Invalid -n's argument, must be positive." 1>&2
             return 20
         fi
 
         # Halting control is best when processing multi-args at a time (n > 1):
         if [ "${entry}" = "${HALTSTRING}" ] ; then
             if [ "${argcount:-0}" -eq 0 ] ; then
-                $QUIET || elog -w "Halt string found but no arguments pending,"
-                $QUIET || elog -w " ie either the input was empty or the number"
-                $QUIET || elog -w " of entries was a multiple of n.."
+                $QUIET || echo "WARN: Halt string found but no arguments pending," 1>&2
+                $QUIET || echo "WARN:  ie either the input was empty or the number" 1>&2
+                $QUIET || echo "WARN:  of entries was a multiple of n.." 1>&2
                 break
             fi
 
-            $QUIET || elog -w "Halt string found; calling last job of this set.."
+            $QUIET || echo "WARN: Halt string found; calling last job of this set.." 1>&2
         fi
 
         # Prep command and its log filename:
@@ -189,8 +188,8 @@ dsp () {
     done
 
     if ! $QUIET && [ "${pcount}" -gt 0 ] ; then
-        elog "Finished launching a total of ${pcount} processes for this jobset."
-        elog "Processing last batch of `jobs -p | wc -l` jobs.."
+        echo "INFO: Finished launching a total of ${pcount} processes for this jobset." 1>&2
+        echo "INFO: Processing last batch of `jobs -p | wc -l` jobs.." 1>&2
     fi
 
     wait || return 1

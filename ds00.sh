@@ -153,14 +153,14 @@ sourcefiles () {
 
             if [ "${srcresult}" -ne 0 ] ; then
                 if ! $tolerant ; then
-                    $quiet || elog -f -n "${pname}" "${nta} Sourcing '${src}'."
+                    $quiet || echo "FATAL: ${nta} While sourcing '${src}'." 1>&2
                     return 1
                 fi
 
-                $quiet || elog -w -n "${pname}" "Tolerant fail for '${src}'."
+                $quiet || echo "WARN: Tolerant fail for '${src}'." 1>&2
             else
                 if $verbose && ! $quiet ; then
-                    elog -n "${pname}" "=> '${src}' completed successfully."
+                    echo "INFO: => '${src}' completed successfully." 1>&2
                 fi
             fi
         done <<EOF
@@ -168,7 +168,7 @@ ${srcs}
 EOF
     done
     if $verbose && test -n "${name}" ; then
-        elog -n "${pname}" "GROUP COMPLETE."
+        echo "INFO: group '${name}' sourcing complete." 1>&2
     fi
 }
 
