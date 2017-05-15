@@ -333,6 +333,11 @@ ee () {
     typeset hostarg loginarg
     typeset searchterm
     typeset selectonly=false
+    typeset usage="Pass one of:
+env name
+-a
+-g eegroup
+-h hostname (-l username)"
     typeset useentrycmd=false
 
     eereset
@@ -359,7 +364,7 @@ ee () {
         [ $# -gt 0 ] && shift
 
         if [ -z "${searchterm}" ] ; then
-            echo 'FATAL: Must pass an env name, or one of -a, -g eegroup, -h hostname.' 1>&2
+            echo "FATAL: ${usage}" 1>&2
 
             if [ -n "${envre}" ] ; then
                 echo "FATAL: -e needs and only affects -a ang -g options." 1>&2
