@@ -1,5 +1,5 @@
-DS - Daily Shells Library
-=========================
+Daily Shells - Commonly needed scripts
+======================================
 
 Author: Cristian Stroparo
 
