@@ -80,7 +80,8 @@ fi
 
 if which git >/dev/null 2>&1 ; then
 
-    alias bv='git branch -v'
+    alias bv='git branch -vv'
+    alias bav='git branch -avv'
     alias gh='git diff HEAD'
     alias glggas='git log --graph --decorate --all --stat'
     alias glogas='git log --graph --decorate --all --stat --oneline'
