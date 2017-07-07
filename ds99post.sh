@@ -19,9 +19,11 @@ DS_LOADED=true
 if [ -n "${DS_POST_CALLS}" ] ; then
     [ -n "$DS_VERBOSE" ] && echo "Running commands in DS_POST_CALLS ..." 1>&2
     while read nextcommand ; do
-        eval "${nextcommand}"
+        eval "${nextcommand}" || DS_POST_STATUS=1
     done <<EOF
 ${DS_POST_CALLS:-:}
 EOF
 fi
+
+return ${DS_POST_STATUS:-0}
 
