@@ -3,12 +3,6 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
-# ##############################################################################
-# Networking
-
-# Oneliners
-iwf () { iwconfig ; ifconfig ; }
-
 pushds () {
     # Info:
     #   Push ds scripts and source files to envs pointed to by arguments, packed into
