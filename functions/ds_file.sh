@@ -228,7 +228,6 @@ loc () {
 }
 
 # Function renymd - Rename a file by appending Ymd of current date as a suffix.
-#  Second argument yield one more string before the extension.
 # Syntax: filenames
 renymd () {
     typeset ymdname
