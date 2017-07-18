@@ -59,11 +59,13 @@ EOF
 
 installexa () {
     _is_linux || return
+    ls -1d ~/bin/exa >/dev/null 2>&1 && return
     [ ! -d ~/bin ] && ! mkdir ~/bin && return 1
     wget 'https://the.exa.website/releases/exa-0.4-linux-x86_64.zip' || return 1
-    unzip 'exa-0.4-linux-x86_64.zip' -d ~/bin || return 1
-    rm -f 'exa-0.4-linux-x86_64.zip'
-    ln -s 'exa-linux-x86_64' ~/bin/exa
+    mv 'exa-0.4-linux-x86_64.zip' /tmp/
+    unzip '/tmp/exa-0.4-linux-x86_64.zip' -d ~/bin
+    rm -f '/tmp/exa-0.4-linux-x86_64.zip'
+    ln -s exa-linux-x86_64 ~/bin/exa
     chmod u+x ~/bin/exa-linux-x86_64
 }
 
