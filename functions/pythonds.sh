@@ -3,8 +3,8 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
+# Python routines
 # ##############################################################################
-# Python ops routines
 
 addpystartup () {
     # Info: Add default .pystartup to home folder.
@@ -48,6 +48,7 @@ EOF
 }
 
 pipinstall () {
+    # Syn: [files listing pip packages]
 
     pip --version > /dev/null || return $?
 
@@ -55,6 +56,4 @@ pipinstall () {
         pip install ${p}
     done
 }
-
-# ##############################################################################
 
