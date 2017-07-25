@@ -64,7 +64,7 @@ gitconfigds () {
     fi
 }
 
-dsgitdeploy () {
+gitdeployds () {
     # Info: Configures git. Also handles windows installation if in cygwin.
     # Syn: List of quoted params for gitconfigds(), eg:
     #   "'core.autocrlf false' 'push.default simple'"
