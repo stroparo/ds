@@ -30,10 +30,10 @@ ${1}
 EOF
 }
 
-dsgitconfig () {
+gitconfigds () {
     # Info: Configure git.
     # Syntax: {email} {name} [other git config --global options]
-    # Example: dsgitconfig "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
+    # Example: gitconfigds "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
 
     typeset email gitfile name
 
@@ -66,7 +66,7 @@ dsgitconfig () {
 
 dsgitdeploy () {
     # Info: Configures git. Also handles windows installation if in cygwin.
-    # Syn: List of quoted params for dsgitconfig(), eg:
+    # Syn: List of quoted params for gitconfigds(), eg:
     #   "'core.autocrlf false' 'push.default simple'"
 
     which git >/dev/null 2>&1 || aptinstall -y 'git-core'
@@ -76,13 +76,13 @@ dsgitdeploy () {
     readmysign
     [ -e ~/.ssh/id_rsa ] || sshkeygenrsa "${MYEMAIL}"
 
-    eval dsgitconfig -e "\"${MYEMAIL}\"" -n "\"${MYSIGN}\"" $(echo "$1")
+    eval gitconfigds -e "\"${MYEMAIL}\"" -n "\"${MYSIGN}\"" $(echo "$1")
 
     if _is_cygwin ; then
         typeset cyggitconfig="$(cygpath "$USERPROFILE")/.gitconfig"
         touch "$cyggitconfig"
 
-        eval dsgitconfig \
+        eval gitconfigds \
             -f "\"${cyggitconfig}\"" \
             -e "\"${MYEMAIL}\"" \
             -n "\"${MYSIGN}\"" \
