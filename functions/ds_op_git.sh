@@ -3,10 +3,10 @@
 #    See README.md document in projects page at
 #    https://github.com/stroparo/ds
 
-# ##############################################################################
 # Git routines
+# ##############################################################################
 
-gitclones () {
+clonegits () {
     # Info: Clone repos passed in the argument, one per line (quote it).
     # Syntax: {repositories-one-per-line}
 
@@ -82,9 +82,6 @@ dsgitdeploy () {
         typeset cyggitconfig="$(cygpath "$USERPROFILE")/.gitconfig"
         touch "$cyggitconfig"
 
-        dsgitconfig 'core.filemode false'
-        dsgitconfig -f "${cyggitconfig}" 'core.filemode false'
-
         eval dsgitconfig \
             -f "\"${cyggitconfig}\"" \
             -e "\"${MYEMAIL}\"" \
@@ -92,6 +89,4 @@ dsgitdeploy () {
             $(echo "$1")
     fi
 }
-
-# ##############################################################################
 
