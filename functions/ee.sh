@@ -178,7 +178,7 @@ EOF
 }
 
 eel () {
-    # Enter environment - List available environments in EEPATH's ee.txt files.
+    # Info: List available environments in EEPATH's ee.txt files.
 
     typeset verbose=0
     typeset envre
@@ -304,29 +304,27 @@ eex () {
     fi
 }
 
-# Function ee
-#
-# Purpose:
-#   Enter-Environment main function. Uses eesel and eex helpers.
-#
-# Syntax (TODO):
-#   ee [-c] [-e envregex] [-i] [-s] ...
-#   ... [-a | -g eegroup | -h hostname [-l login]] [ee-search-term] command args
-#
-# IMPORTANT:
-#   ee-search-term must be informed only when not specifying one of -a, -g or -h.
-#
-# Remarks:
-#
-#   -c will use eecmd as the command. Only works when a search term is passed.
-#
-#   -h will override everything (search term, -a, and -g).
-#   -l will only function to supply the username for the hostname in -h.
-#
-#   -e will need and only affect -a ang -g options.
-#   -i will forward stdin to all calls' standard inputs.
-#   -s will just select the environment (a no-op), and only if a search term is given.
 ee () {
+    # Info: Enter-Environment main function. Uses eesel and eex helpers.
+
+    # Syntax (TODO):
+    #   ee [-c] [-e envregex] [-i] [-s] ...
+    #   ... [-a | -g eegroup | -h hostname [-l login]] [ee-search-term] command args
+    #
+    # IMPORTANT:
+    #   ee-search-term must be informed only when not specifying one of -a, -g or -h.
+    #
+    # Remarks:
+    #
+    #   -c will use eecmd as the command. Only works when a search term is passed.
+    #
+    #   -h will override everything (search term, -a, and -g).
+    #   -l will only function to supply the username for the hostname in -h.
+    #
+    #   -e will need and only affect -a ang -g options.
+    #   -i will forward stdin to all calls' standard inputs.
+    #   -s will just select the environment (a no-op), and only if a search term is given.
+
     typeset doall=false
     typeset eefile eegroup eepath eestdin envre
     typeset eestdinon=false
@@ -438,4 +436,3 @@ EOF
     fi
 }
 
-# ##############################################################################
