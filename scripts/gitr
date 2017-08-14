@@ -119,7 +119,10 @@ execCalls () {
     for repo in ${GITREPOS}; do
         reponame=${repo%.git}
         reponame=${repo##*/}
-        eval "${PROGRAM}" "${GITCMD}" "$@" > "$DS_ENV_LOG/${PROGRAM:-git}_$(date '+%Y%m%d_%OH%OM%OS')_${reponame}.log"
+        (cd $repo/.. && \
+          eval "${PROGRAM}" "${GITCMD}" "$@" \
+          > "$DS_ENV_LOG/${PROGRAM:-git}_$(date '+%Y%m%d_%OH%OM%OS')_${reponame}.log"
+        )
     done
 }
 
