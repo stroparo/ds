@@ -122,7 +122,7 @@ execCalls () {
         (cd $repo/.. && \
         echo "==> ${PROGRAM:-git} ${GITCMD} $@ # At '${PWD}'" 1>&2 && \
         eval "${PROGRAM:-git}" "${GITCMD}" "$@" \
-        | tee "$DS_ENV_LOG/${PROGRAM:-git}_$(date '+%Y%m%d_%OH%OM%OS')_${reponame}.log")
+        2>&1 | tee "$DS_ENV_LOG/${PROGRAM:-git}_$(date '+%Y%m%d_%OH%OM%OS')_${reponame}.log")
     done
 }
 
