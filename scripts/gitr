@@ -92,8 +92,8 @@ setGITRCMD () {
     export GITRCMD="$(cat <<EOF
 cd {}/..
 
-export HEADERMSG="==> ${PROGRAM} $@ # At '\${PWD}'"
-export CMDOUT="\$(eval "${PROGRAM}" "${GITCMD}" $@ 2>&1)"
+export HEADERMSG="==> ${PROGRAM:-git} ${GITCMD} $@ # At '\${PWD}'"
+export CMDOUT="\$(eval "${PROGRAM:-git}" "${GITCMD}" $@ 2>&1)"
 
 if [ -z "\$CMDOUT" ] || \
     ([ "${GITCMD}" = 'pull' ] && [ "\$CMDOUT" = 'Already up-to-date.' ]) || \
@@ -119,8 +119,9 @@ execCalls () {
     for repo in ${GITREPOS}; do
         reponame=${repo%.git}
         reponame=${repo##*/}
+        echo "==> ${PROGRAM:-git} ${GITCMD} $@ # At '\${PWD}'" 1>&2
         (cd $repo/.. && \
-          eval "${PROGRAM}" "${GITCMD}" "$@" \
+          eval "${PROGRAM:-git}" "${GITCMD}" "$@" \
           > "$DS_ENV_LOG/${PROGRAM:-git}_$(date '+%Y%m%d_%OH%OM%OS')_${reponame}.log"
         )
     done
