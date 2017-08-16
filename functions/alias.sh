@@ -69,10 +69,12 @@ fi
 if which apt >/dev/null 2>&1 || which apt-get >/dev/null 2>&1 ; then
     alias apd='sudo aptitude update && sudo aptitude'
     alias apdnoup='sudo aptitude'
-    alias apti='sudo aptitude update && sudo aptitude install -y'
+    alias apti='sudo aptitude install -y'
     alias apts='apt-cache search'
     alias aptshow='apt-cache show'
     alias aptshowpkg='apt-cache showpkg'
+    alias aptup='sudo aptitude update'
+    alias aptupg='sudo aptitude safe-upgrade'
     alias dpkgl='dpkg -L'
     alias dpkgs='dpkg -s'
     alias dpkgsel='dpkg --get-selections | egrep -i'
