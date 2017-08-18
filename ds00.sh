@@ -20,7 +20,7 @@ unset d 2>/dev/null
 d () {
     dir="${1}" ; shift
     cd "${dir}" || return 1 ; pwd 1>&2 ; ls -Fl "$@" 1>&2
-    if which git >/dev/null 2>&1; then git status -s 2>/dev/null ; fi
+    if which git >/dev/null 2>&1; then git branch -avv ; git status -s 2>/dev/null ; fi
 }
 
 dsf () {
