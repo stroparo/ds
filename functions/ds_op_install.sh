@@ -60,18 +60,27 @@ installdropbox () {
 }
 
 installexa () {
-    _is_linux || return
-    ls -1d ~/bin/exa >/dev/null 2>&1 && return
+    _is_debian || _is_ubuntu || return
+
+    which exa >/dev/null 2>&1 && return
 
     echo ${BASH_VERSION:+-e} '\n\n==> Installing exa...' 1>&2
 
     [ ! -d ~/bin ] && ! mkdir ~/bin && return 1
-    wget 'https://the.exa.website/releases/exa-0.4-linux-x86_64.zip' || return 1
-    mv 'exa-0.4-linux-x86_64.zip' /tmp/
-    unzip '/tmp/exa-0.4-linux-x86_64.zip' -d ~/bin
-    rm -f '/tmp/exa-0.4-linux-x86_64.zip'
-    ln -s exa-linux-x86_64 ~/bin/exa
-    chmod u+x ~/bin/exa-linux-x86_64
+
+    # Rust language
+    curl https://sh.rustup.rs -sSf | sh
+    pathmunge -x ~/.cargo/bin
+
+    # Deps
+    sudo apt update || return 1
+    sudo apt install libgit2-dev cmake git libhttp-parser2.1 || return 1
+
+    # Compile and install exa
+    git clone https://github.com/ogham/exa.git /tmp/exa
+    (cd /tmp/exa && make install)
+    sudo cp /tmp/exa/target/release/exa /usr/local/bin/exa \
+    && rm -rf /tmp/exa
 }
 
 installohmyzsh () {
