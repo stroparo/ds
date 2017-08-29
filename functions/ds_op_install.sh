@@ -90,6 +90,12 @@ installohmyzsh () {
     echo ${BASH_VERSION:+-e} '\n\n==> Installing ohmyzsh...' 1>&2
 
     sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+
+    # Plugin zsh-syntax-highlighting:
+    git clone 'https://github.com/zsh-users/zsh-syntax-highlighting.git' ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+    if ! grep -q 'plugins=.*zsh-syntax-highlighting' < ~/.zshrc ; then
+        sed -i -e 's/\(plugins=(.*\))/\1 zsh-syntax-highlighting)/' ~/.zshrc
+    fi
 }
 
 installpowerfonts () {
