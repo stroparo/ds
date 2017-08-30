@@ -74,7 +74,7 @@ installexa () {
 
     # Deps
     sudo apt update || return 1
-    sudo apt install libgit2-dev cmake git libhttp-parser2.1 || return 1
+    sudo apt install -y libgit2-dev cmake git libhttp-parser2.1 || return 1
 
     # Compile and install exa
     git clone https://github.com/ogham/exa.git /tmp/exa
