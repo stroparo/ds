@@ -67,14 +67,13 @@ if which ag >/dev/null 2>&1 ; then
 fi
 
 if which apt >/dev/null 2>&1 || which apt-get >/dev/null 2>&1 ; then
-    alias apd='sudo aptitude update && sudo aptitude'
-    alias apdnoup='sudo aptitude'
-    alias apti='sudo aptitude install -y'
+    alias apd='sudo aptitude'
+    alias apdsafeup='sudo aptitude safe-upgrade'
+    alias apti='sudo apt install'
     alias apts='apt-cache search'
     alias aptshow='apt-cache show'
     alias aptshowpkg='apt-cache showpkg'
-    alias aptup='sudo aptitude update'
-    alias aptupg='sudo aptitude safe-upgrade'
+    alias aptup='sudo apt update'
     alias dpkgl='dpkg -L'
     alias dpkgs='dpkg -s'
     alias dpkgsel='dpkg --get-selections | egrep -i'
