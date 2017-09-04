@@ -80,9 +80,9 @@ installexa () {
     sudo apt install -y libgit2-dev cmake git libhttp-parser2.1 || return 1
 
     # Compile and install exa
-    git clone https://github.com/ogham/exa.git /tmp/exa
-    (cd /tmp/exa && make install)
-    sudo cp /tmp/exa/target/release/exa /usr/local/bin/exa \
+    git clone https://github.com/ogham/exa.git /tmp/exa \
+    && (cd /tmp/exa && make install) \
+    && sudo cp /tmp/exa/target/release/exa /usr/local/bin/exa \
     && rm -rf /tmp/exa
 }
 
