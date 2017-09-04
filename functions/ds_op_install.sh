@@ -62,7 +62,7 @@ installdropbox () {
 installexa () {
     which exa >/dev/null 2>&1 && return
 
-    if ! egrep -i -q 'debian|ubuntu' /etc/issue ; then
+    if ! egrep -i -q 'debian|ubuntu' /etc/*rel* ; then
         echo "FATAL: installexa routine only supports Debian or Ubuntu." 1>&2
         return 1
     fi
