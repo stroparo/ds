@@ -60,16 +60,19 @@ installdropbox () {
 }
 
 installexa () {
-    _is_debian || _is_ubuntu || return
-
     which exa >/dev/null 2>&1 && return
+
+    if ! egrep -i -q 'debian|ubuntu' /etc/issue ; then
+        echo "FATAL: installexa routine only supports Debian or Ubuntu." 1>&2
+        return 1
+    fi
 
     echo ${BASH_VERSION:+-e} '\n\n==> Installing exa...' 1>&2
 
     [ ! -d ~/bin ] && ! mkdir ~/bin && return 1
 
     # Rust language
-    curl https://sh.rustup.rs -sSf | sh
+    [ -d ~/.cargo/bin ] || (curl https://sh.rustup.rs -sSf | sh)
     pathmunge -x ~/.cargo/bin
 
     # Deps
@@ -90,16 +93,17 @@ installohmyzsh () {
     echo ${BASH_VERSION:+-e} '\n\n==> Installing ohmyzsh...' 1>&2
 
     sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+    [ "$?" -ne 0 ] && return 1
 
     # Plugin zsh-syntax-highlighting:
     git clone 'https://github.com/zsh-users/zsh-syntax-highlighting.git' ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-    if ! grep -q 'plugins=.*zsh-syntax-highlighting' < ~/.zshrc ; then
+    if [ -f ~/.zshrc ] && ! grep -q 'plugins=.*zsh-syntax-highlighting' ~/.zshrc ; then
         sed -i -e 's/\(plugins=(.*\))/\1 zsh-syntax-highlighting)/' ~/.zshrc
     fi
 }
 
 installpowerfonts () {
-    _is_linux || return
+    [[ "$(uname -a)" = *[Ll]inux* ]] || return
     [ -e "$HOME/.local/share/fonts/Inconsolata for Powerline.otf" ] && return
 
     echo ${BASH_VERSION:+-e} '\n\n==> Installing powerline fonts...' 1>&2
