@@ -18,9 +18,12 @@ dsversion () { echo "Daily Shells - ${DS_VERSION}" 1>&2 ; }
 unalias d 2>/dev/null
 unset d 2>/dev/null
 d () {
-    dir="${1}" ; shift
-    cd "${dir}" || return 1 ; pwd 1>&2 ; ls -Fl "$@" 1>&2
-    if which git >/dev/null 2>&1; then [ -e ./.git ] && git branch -avv ; git status -s 2>/dev/null ; fi
+    dir="${1}"
+    shift
+    cd "${dir}" || return 1
+    pwd 1>&2
+    ls -Fl "$@" 1>&2
+    [ -e ./.git ] && git branch -avv
 }
 
 dsf () {
