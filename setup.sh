@@ -20,8 +20,8 @@ fi
 . "${INSTALL_DIR}/ds.sh" "${INSTALL_DIR}" >/dev/null 2>&1
 
 if [ -n "${DS_LOADED}" ] ; then
-    appendunique "$DS_LOAD_CODE" "$HOME/.bashrc"
-    appendunique "$DS_LOAD_CODE" "$HOME/.zshrc"
+    appendunique -n "$DS_LOAD_CODE" "$HOME/.bashrc"
+    appendunique -n "$DS_LOAD_CODE" "$HOME/.zshrc"
     echo "INFO: DS installed." 1>&2
 else
     echo "FATAL: DS not loaded." 1>&2
