@@ -298,9 +298,9 @@ eex () {
     fi
 
     if [ -n "${eeid}" ] ; then
-        ssh -t -i "${eeid}" -l "${eeu}" "${eeh}" "$@"
+        ssh -tt -i "${eeid}" -l "${eeu}" "${eeh}" "$@"
     else
-        ssh -t -l "${eeu}" "${eeh}" "$@"
+        ssh -tt -l "${eeu}" "${eeh}" "$@"
     fi
 }
 
