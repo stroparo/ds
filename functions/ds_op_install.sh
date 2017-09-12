@@ -88,12 +88,12 @@ installexa () {
 
 installohmyzsh () {
     which zsh >/dev/null || return 1
-    [ -d "${HOME}/.oh-my-zsh" ] && return
 
-    echo ${BASH_VERSION:+-e} '\n\n==> Installing ohmyzsh...' 1>&2
+    echo ${BASH_VERSION:+-e} '\n\n==> Setting ohmyzsh up...' 1>&2
 
-    sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
-    [ "$?" -ne 0 ] && return 1
+    if [ ! -d "${HOME}/.oh-my-zsh" ] ; then
+        sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+    fi
 
     # Plugin zsh-syntax-highlighting:
     git clone 'https://github.com/zsh-users/zsh-syntax-highlighting.git' ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
