@@ -81,9 +81,12 @@ installexa () {
 
     # Compile and install exa
     git clone https://github.com/ogham/exa.git /tmp/exa \
-    && (cd /tmp/exa && make install) \
-    && sudo cp /tmp/exa/target/release/exa /usr/local/bin/exa \
-    && rm -rf /tmp/exa
+    && (cd /tmp/exa && make install)
+    if [ -f /tmp/exa/target/release/exa ] ; then
+        sudo cp /tmp/exa/target/release/exa /usr/local/bin/exa \
+        && ls -l /usr/local/bin/exa \
+        && rm -rf /tmp/exa
+    fi
 }
 
 installohmyzsh () {
