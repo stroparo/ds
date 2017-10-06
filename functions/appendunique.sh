@@ -1,5 +1,5 @@
 appendunique () {
-    # Syntax: string file1 [file2 ...]
+    # Syntax: [-n] string file1 [file2 ...]
     [ "$1" = '-n' ] && shift && typeset newline=true
     [ -z "$1" ] && return 0
     typeset fail=0
