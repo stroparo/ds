@@ -31,3 +31,5 @@ Syntax: printawk -F fieldsep -O outsep -p pattern {1st field} [2nd field [3rd ..
         ${outsep:+-vOFS=${outsep}} \
         "${pattern}${pattern:+ }{print ${printargs};}"
 }
+
+alias paw=printawk

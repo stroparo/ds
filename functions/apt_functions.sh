@@ -15,21 +15,6 @@ if ! which aptitude >/dev/null 2>&1 ; then
     sudo "$APTCMD" update && sudo "$APTCMD" install -y aptitude
 fi
 
-aptaddppa () {
-    # Adds ppa repositories
-    # Syn: {ppa} ...
-
-    sudo which apt-add-repository >/dev/null || return 1
-
-    for ppa in "$@" ; do
-        if ! (ls -1 /etc/apt/sources.list.d \
-                | grep -q "$(echo "${ppa:-DUMMY}" | sed -e 's#/#-.*#g')")
-        then
-            sudo apt-add-repository "ppa:${ppa}"
-        fi
-    done
-}
-
 # ##############################################################################
 # aptdeploy and helpers
 
@@ -139,6 +124,24 @@ dpkgstat () {
                 stat = $0; printf("%-32s%s\n", pkg, stat);
             }
         '
+}
+
+# ##############################################################################
+# PPA
+
+aptaddppa () {
+    # Adds ppa repositories
+    # Syn: {ppa} ...
+
+    sudo which apt-add-repository >/dev/null || return 1
+
+    for ppa in "$@" ; do
+        if ! (ls -1 /etc/apt/sources.list.d \
+                | grep -q "$(echo "${ppa:-DUMMY}" | sed -e 's#/#-.*#g')")
+        then
+            sudo apt-add-repository "ppa:${ppa}"
+        fi
+    done
 }
 
 # ##############################################################################
