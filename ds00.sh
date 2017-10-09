@@ -180,10 +180,6 @@ EOF
 
 _is_interactive () { [[ "$-" = *i* ]] ; }
 
-_is_debian () { [[ "$(uname -a)" = *[Db]ebian* ]] ; }
-_is_redhat () { [[ "$(uname -a)" = *[Rr]ed *[Hh]at* ]] ; }
-_is_ubuntu () { [[ "$(uname -a)" = *[Uu]buntu* ]] ; }
-
 _all_dirs_rwx () {
     # Tests if any of the directory arguments are neither readable nor w nor x.
     for i in "$@" ; do
