@@ -78,7 +78,7 @@ deploygit () {
 
     eval configuregit -e "\"${MYEMAIL}\"" -n "\"${MYSIGN}\"" $(echo "$1")
 
-    if _is_cygwin ; then
+    if [[ "$(uname -a)" = *[Cc]ygwin* ]] ; then
         typeset cyggitconfig="$(cygpath "$USERPROFILE")/.gitconfig"
         touch "$cyggitconfig"
 

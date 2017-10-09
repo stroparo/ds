@@ -6,11 +6,11 @@
 # ##############################################################################
 # Cygwin routines
 
-_is_cygwin || return 0
+[[ "$(uname -a)" = *[Cc]ygwin* ]] || return 0
 
 cyd () {
     # Info: cd to the disk drive letter argument; fails if not in cygwin.
     # Syn: cyd {a|b|c|d|e|f|...}
-    _is_cygwin && cd /cygdrive/"${1:-c}" && ls -AFhl 1>&2
+    [[ "$(uname -a)" = *[Cc]ygwin* ]] && cd /cygdrive/"${1:-c}" && ls -AFhl 1>&2
 }
 
