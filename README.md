@@ -11,6 +11,8 @@ The _DS - Daily Shells Library_ is a collection of useful shell routines in the 
 
 Currently the ___Bash___ and ___Zsh___ shells are supported.
 
+Some features of this project replicate GNU tools features and those were intentional as to have this possibilities in a non-GNU environment. (Perhaps you are on IBM AIX where policies or sysadmins do not allow for the GNU toolbox for AIX etc.)
+
 Help
 ----
 
