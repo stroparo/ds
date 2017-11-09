@@ -10,7 +10,7 @@ appendunique () {
             echo "ERROR '${f}' does not exist" 1>&2
             continue
         fi
-        if ! fgrep -q "$text" "$f" ; then
+        if ! grep -F -q "$text" "$f" ; then
             ${newline:-false} && echo ${BASH_VERSION:+-e} '\n' >> "$f"
             if ! echo "$text" >> "$f" ; then
                 fail=1
