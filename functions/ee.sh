@@ -96,7 +96,7 @@ Syntax: {pub-key text, literal for the remote fgrep matching}
         fi
 
         ee "$env" bash <<EOF
-lineno=\$(fgrep -n '${keytext}' ~/.ssh/authorized_keys | cut -d: -f1)
+lineno=\$(grep -F -n '${keytext}' ~/.ssh/authorized_keys | cut -d: -f1)
 if [ -n "\$lineno" ] ; then
     ex - ~/.ssh/authorized_keys <<END
 \${lineno}
