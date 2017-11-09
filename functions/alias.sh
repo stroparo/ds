@@ -20,7 +20,7 @@ alias vvvi='set -x; [[ $0 = *bash* ]] && set -b; set -o vi;export EDITOR=vim'
 alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
 alias xgit="alias | grep -w git"
 
-if [[ $(grep --version 2>/dev/null) = *GNU* ]] ; then
+if (command grep --help | command grep -q -- --color) ; then
     alias grep='grep --color=auto'
     alias egrep='egrep --color=auto'
     alias fgrep='fgrep --color=auto'
