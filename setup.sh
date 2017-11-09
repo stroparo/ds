@@ -5,10 +5,19 @@ INSTALL_DIR=${1:-$HOME/.ds}
 BACKUP_FILENAME="${INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
 DS_LOAD_CODE='[ -r "${HOME}/.ds/ds.sh" ] && source "${HOME}/.ds/ds.sh" "${HOME}/.ds" 1>&2'
 
-# Param DL_PROG - what program to use for downloading:
+# Param downloader program (curl/wget)
 DL_PROG="wget"
+DL_OPTS=''
 OUT_OPTION='-O'
-which curl &> /dev/null && DL_PROG="curl" && OUT_OPTION='-fLSso'
+if which curl &> /dev/null ; then
+  DL_PROG="curl"
+  DL_OPTS='-LSfs'
+  OUT_OPTION='-o'
+fi
+! which wget \
+  && ! which curl \
+  && echo "FATAL: curl or wget missing" 1>&2 \
+  && exit 1
 
 # Backup:
 mv -f "${INSTALL_DIR}" "${BACKUP_FILENAME}" >/dev/null 2>&1
@@ -19,7 +28,7 @@ fi
 
 # Download the main package and install:
 $DL_PROG 'https://github.com/stroparo/ds/archive/master.zip' \
-  $OUT_OPTION "${INSTALL_DIR}.zip" \
+  $DL_OPTS $OUT_OPTION "${INSTALL_DIR}.zip" \
   && unzip "${INSTALL_DIR}.zip" -d "$HOME" \
   && mv "$HOME/ds-master" "${INSTALL_DIR}"
 
