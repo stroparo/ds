@@ -7,8 +7,8 @@ DS_LOAD_CODE='[ -r "${HOME}/.ds/ds.sh" ] && source "${HOME}/.ds/ds.sh" "${HOME}/
 
 # Param DL_PROG - what program to use for downloading:
 DL_PROG="wget"
-OUT_OPTION='-fLSsO'
-which curl &> /dev/null && DL_PROG="curl" && OUT_OPTION='-o'
+OUT_OPTION='-O'
+which curl &> /dev/null && DL_PROG="curl" && OUT_OPTION='-fLSso'
 
 # Backup:
 mv -f "${INSTALL_DIR}" "${BACKUP_FILENAME}" >/dev/null 2>&1
