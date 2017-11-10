@@ -57,7 +57,7 @@ export GITCMD="$1"
 shift
 
 export GITREPOS="$(
-if ${FULL:-false} ; then
+if [ -z "$GGIGNORE" ] || ${FULL:-false} ; then
     find . -type d -name ".git"
 else
     find . -type d -name ".git" | egrep -i -v "${GGIGNORE}/[.]git"
