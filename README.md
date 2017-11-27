@@ -79,23 +79,29 @@ Usage & Examples
 
 ### Aggregate a file
 
-```getmax fieldsep field files...```
+```getmax fieldsep field files...
+```
 
-```getmin fieldsep field files...```
+```getmin fieldsep field files...
+```
 
-```getsum fieldsep field files...```
+```getsum fieldsep field files...
+```
 
 ### Append a string to a file only once
 
-```appendunique string file1 file2 ...```
+```appendunique string file1 file2 ...
+```
 
 ### End of line: windows to linux
 
-```dos2unix file1 file2 ...```
+```dos2unix file1 file2 ...
+```
 
 ### Grep context emulation (GNU grep's -A, -B & -C options)
 
-```grepc [-a afterlines] [-b beforelines] [-c contextlines]```
+```grepc [-a afterlines] [-b beforelines] [-c contextlines]
+```
 
 Use -a, -b and -c to emulate GNU grep's -A, -B and -C options, respectively.
 
@@ -103,11 +109,13 @@ Default behavior is ```-c 10```.
 
 ### Grepping a process
 
-```pgr ExtendedREGEX```
+```pgr ExtendedREGEX
+```
 
 ### INI file section extraction
 
-```getsection sectionpattern filename```
+```getsection sectionpattern filename
+```
 
 File ab.txt:
 
@@ -121,7 +129,8 @@ e=3
 f=4
 ```
 
-```getsection a ab.txt```
+```getsection a ab.txt
+```
 
 Will output:
 
@@ -132,28 +141,35 @@ c=2
 
 ### Looping commands
 
-```loop command [arguments ...]```
+```loop command [arguments ...]
+```
 
 ### Path munging
 
-```pathmunge [-v varname] [-x] {path} [path2 [path3 ...]]```
+```pathmunge [-v varname] [-x] {path} [path2 [path3 ...]]
+```
 
 * ```-v varname``` causes the ```varname``` variable to be munged instead of the default (```PATH```)
 * ```-x``` causes the variable to be exported
 
 ### Printing fields with awk
 
-```printawk [-F fieldsep] fieldno1 [fieldno2 ...]```
+```printawk [-F fieldsep] fieldno1 [fieldno2 ...]
+```
 
 * ```-F fieldsep``` works (as in awk) e.g. ```printawk -F, 1 2 ...```
 
 Example:
 
-```printawk 1 3 5``` prints fields 1, 3 and 5
+```printawk 1 3 5
+```
+
+Prints fields 1, 3 and 5
 
 ### Rename files in a tidy fashion
 
-```rentidy {dir}```
+```rentidy {dir}
+```
 
 Renames files and directories recursively at {dir}.
 
@@ -161,9 +177,16 @@ Underscores, camel case instances and other special characters are substituted b
 
 ### User confirmation and input
 
-```userconfirm message```
+```userconfirm message
+```
 
-```userinput message``` - input will be stored in the ```userinput``` variable
+```userinput message
+```
 
-```validinput {message} {ere-extended-regex}``` - input will be stored in the ```userinput``` variable; prompts user for the input repeatedly until it matches the regular expression
+Input will be stored in the ```userinput``` variable
+
+```validinput {message} {ere-extended-regex}
+```
+
+Input will be stored in the ```userinput``` variable; prompts user for the input repeatedly until it matches the regular expression
 
