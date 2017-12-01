@@ -40,20 +40,6 @@ autozsh () {
     "$HOME/.profile"
 }
 
-pgralert () {
-  # Info: Awaits found processes to finish then starts beeping until interrupted.
-
-  while pgr "${1}" > /dev/null ; do sleep 1 ; done
-  while true ; do echo '\a' ; sleep 8 ; done
-}
-
-psfunoshells () {
-  ps -fu "${UID:-$(id -u)}" -U "${UID:-$(id -u)}" \
-  | grep -v bash \
-  | grep -v zsh \
-  | grep -v sshd
-}
-
 setlogdir () {
   # Info: Create and check log directory.
   # Syntax: {log-directory}
