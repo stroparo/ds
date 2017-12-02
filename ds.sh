@@ -6,9 +6,7 @@
 export DS_HOME="${1:-${HOME%/}/.ds}"
 
 DS_CONF="${DS_HOME}/conf"
-DS_VERSION='DS version 0.2.0 - 2017-01-01 00:00'
-
-# Start
+DS_VERSION='DS version 0.3.0 - 2017-12-02 00:00'
 
 . "${DS_HOME}/ds00.sh" || return 10
 
@@ -23,9 +21,17 @@ if [ -n "$DS_VERBOSE" ] ; then
 fi
 
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/functions/*sh"
+
+# ds01*..ds09*:
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds0[1-9]*sh"
+
+# ds10*..ds89* (do not touch 90's as these are reserved):
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds[1-8][0-9]*sh"
+
+# ds[letters]*:
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds[A-Za-z]*sh"
+
 echo
 sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/sshagent.sh"
+
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds99post.sh"
