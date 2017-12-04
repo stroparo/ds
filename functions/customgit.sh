@@ -15,12 +15,12 @@ gciup () { git commit -m "Updated $1" ; }
 gciwp () { git commit -m "Work in progress $1" ; }
 
 # gitr DS script wrappers:
-grl () { gitr l ; }
-grlp () { gitr -p l ; }
-grlpv () { gitr -p -v l ; }
-grp () { gitr p ; }
-grpp () { gitr -p p ; }
-grppv () { gitr -p -v p ; }
-grs () { gitr ss ; }
-grsp () { gitr -p ss ; }
-grspv () { gitr -p -v ss ; }
+grl () { gitr.sh l ; }
+grlp () { gitr.sh -p l ; }
+grlpv () { gitr.sh -p -v l ; }
+grp () { gitr.sh p ; }
+grpp () { gitr.sh -p p ; }
+grppv () { gitr.sh -p -v p ; }
+grs () { gitr.sh ss ; }
+grsp () { gitr.sh -p ss ; }
+grspv () { gitr.sh -p -v ss ; }
