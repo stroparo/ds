@@ -34,13 +34,13 @@ $DL_PROG 'https://github.com/stroparo/ds/archive/master.zip' \
 
 if [ $? -ne 0 ] ; then
   echo "FATAL: installation error." 1>&2
-  
+
   if ! mv -f "${BACKUP_FILENAME}" "${INSTALL_DIR}" >/dev/null 2>&1 ; then
     echo "INFO: backup restored." 1>&2
   else
     echo "FATAL: could not restore the backup at '${BACKUP_FILENAME}'." 1>&2
   fi
-  
+
   exit 1
 else
   rm -rf "${BACKUP_FILENAME}"
