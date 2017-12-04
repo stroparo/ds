@@ -127,7 +127,7 @@ execCalls () {
 }
 
 execCallsParallel () {
-    (dsp -p 32 -q -t -z "$PROGRAM" "$GITRCMD" <<EOF
+    (dsp.sh -p 32 -q -t -z "$PROGRAM" "$GITRCMD" <<EOF
 ${GITREPOS}
 EOF
 )
