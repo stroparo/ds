@@ -13,7 +13,7 @@ fi
 echo ${BASH_VERSION:+-e} '\n\n==> Setting ohmyzsh up...' 1>&2
 
 if [ ! -d "${HOME}/.oh-my-zsh" ] ; then
-  sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+  sh -c "$(curl -LSfs https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 fi
 
 # Plugin zsh-syntax-highlighting:
