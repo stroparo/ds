@@ -27,7 +27,7 @@ chmodshells () {
 
     for dir in "$@" ; do
         if _all_dirs_w "${dir}" ; then
-            files=$(findscripts "${dir}")
+            files=$(findscripts.sh "${dir}")
             if [ -n "$files" ] ; then
                 chmod ${verbose} "${mode}" $(echo ${files})
             fi

@@ -23,7 +23,7 @@ aliasnoext () {
     for dir in "$@" ; do
         if _all_dirs_w "${dir}" ; then
 
-            scripts=$(findscripts "${dir}")
+            scripts=$(findscripts.sh "${dir}")
             [ -z "$scripts" ] && continue
 
             while read script ; do
