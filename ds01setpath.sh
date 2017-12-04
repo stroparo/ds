@@ -7,8 +7,7 @@
 # Executables and PATH
 
 # STRONGLY RECOMMENDED munging the PATH before anything else:
-pathmunge -x "${DS_HOME}" "${DS_HOME}/bin" "${DS_HOME}/scripts"
+pathmunge -x "${DS_HOME}" "$(ls -1 -d "$DS_HOME"/*/ | grep -v 'functions/$')"
 pathmunge -a -v 'EEPATH' -x "${DS_HOME}"
 
 chmodshells ${DS_VERBOSE:+-v} -a "${DS_HOME}" | grep -v retained 1>&2
-
