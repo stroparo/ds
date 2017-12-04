@@ -31,6 +31,9 @@ sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds[1-8][0-9]*sh"
 # ds[letters]*:
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds[A-Za-z]*sh"
 
+# env*:
+sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/env*sh"
+
 echo
 sourcefiles ${DS_VERBOSE:+-v} "${DS_HOME}/sshagent.sh"
 
