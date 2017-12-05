@@ -72,8 +72,8 @@ deploygit () {
     which git >/dev/null 2>&1 || aptinstall -y 'git-core'
     which git >/dev/null 2>&1 || return 1
 
-    readmyemail
-    readmysign
+    echo "Email:"; read MYEMAIL
+    echo "Sign/comment:"; read MYSIGN
     [ -e ~/.ssh/id_rsa ] || sshkeygenrsa "${MYEMAIL}"
 
     eval configuregit -e "\"${MYEMAIL}\"" -n "\"${MYSIGN}\"" $(echo "$1")
