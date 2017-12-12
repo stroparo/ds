@@ -23,7 +23,9 @@ d () {
     cd "${dir}" || return 1
     pwd 1>&2
     ls -Fl "$@" 1>&2
-    [ -e ./.git ] && git branch -avv
+    if [ -e ./.git ] ; then
+        git branch -avv
+    fi
 }
 
 dsf () {
