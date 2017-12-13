@@ -16,7 +16,6 @@ alias findd='find . -type d'
 alias findf='find . -type f'
 alias nhr='rm nohup.out'
 alias nht='tail -9999f nohup.out'
-alias vvvi='set -x; [[ $0 = *bash* ]] && set -b; set -o vi;export EDITOR=vim'
 alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
 alias xgit="alias | grep -w git"
 
@@ -125,11 +124,4 @@ if which git >/dev/null 2>&1 ; then
     alias grup='git remote update'
     alias grv='git remote -v'
   fi
-fi
-
-if which youtube-dl >/dev/null 2>&1 ; then
-  alias ydl='youtube-dl'
-  alias ydlaudio='youtube-dl -f 140'
-  alias ydlaudiobest='youtube-dl -f bestaudio'
-  alias ydlx='youtube-dl -x'
 fi
