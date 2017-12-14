@@ -15,10 +15,9 @@ if which curl &> /dev/null ; then
   DL_OPTS='-LSfs'
   OUT_OPTION='-o'
 fi
-! which wget \
-  && ! which curl \
-  && echo "FATAL: curl or wget missing" 1>&2 \
-  && exit 1
+! which curl && echo "FATAL: curl missing" 1>&2 && exit 1
+! which unzip && echo "FATAL: unzip missing" 1>&2 && exit 1
+! which wget && echo "FATAL: wget missing" 1>&2 && exit 1
 
 # Error exit if installation path already occupied:
 if [ -d "${INSTALL_DIR}" ] ; then
