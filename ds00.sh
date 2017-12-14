@@ -28,6 +28,13 @@ d () {
     fi
 }
 
+dsbackup () {
+    typeset timestamp="$(date +%Y%m%d-%OH%OM%OS)"
+
+    cp -a "$DS_HOME" "$DS_HOME-$timestamp" \
+        && echo "$DS_HOME-$timestamp"
+}
+
 dsf () {
 
     typeset filename item items itemslength
@@ -65,38 +72,41 @@ dsload () {
 
     typeset dshome="${1:-${DS_HOME:-${HOME}/.ds}}"
 
-    if [ ! -f "${dshome}/ds.sh" ] ; then
-
+    if [ -f "${dshome}/ds.sh" ] ; then
+        . "${dshome}/ds.sh" "$ds_home"
+    else
         echo "INFO: Installing DS into '${dshome}' ..." 1>&2
-
         export DS_HOME="$dshome"
-
-        wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash
+        (wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash)
+            && . "${dshome}/ds.sh" "${dshome}" 1>&2
+        if [ $? -ne 0 ] || [ -z "${DS_LOADED}" ] ; then
+            echo "FATAL: Could not load DS - Daily Shells." 1>&2
+            return 1
+        else
+            return 0
+        fi
     fi
-
-    if ! . "${dshome}/ds.sh" "${dshome}" 1>&2 || [ -z "${DS_LOADED}" ] ; then
-        echo "FATAL: Could not load DS - Daily Shells." 1>&2
-        return 1
-    fi
-
 }
 
 dsupgrade () {
+    typeset backup=$(dsbackup)
 
-    typeset timestamp="$(date +%Y%m%d-%OH%OM%OS)"
-
-    mv "$DS_HOME" "$DS_HOME-$timestamp" 2>/dev/null
-    if [ -d "$DS_HOME" ] ; then
-        echo "FATAL: Could not move out '$DS_HOME'..." 1>&2
+    if [ -z "$backup" ] ; then
+        echo "FATAL: backup failed... sequence cancelled" 1>&2
         return 1
     fi
 
-    if dsload "$DS_HOME" ; then
-        rm -f -r "$DS_HOME-$timestamp"
+    if [ -n "$backup" ] && rm -rf "$DS_HOME" && dsload "$DS_HOME" ; then
+        echo "SUCCESS: upgrade complete (beware of any backups left at DS_HOME-{timestamp})"
     else
-        echo "FATAL: upgrade failed ... restoring '$DS_HOME-$timestamp' ..."
-        rm -f -r "$DS_HOME"
-        mv "$DS_HOME-$timestamp" "$DS_HOME"
+        echo "FATAL: upgrade failed ... restoring '${backup}' ..." 1>&2
+        rm -f -r "$DS_HOME" \
+            && mv -f "$backup" "$DS_HOME" \
+            && echo "SUCCESS: restored '${backup}' into '${DS_HOME}'"
+        if [ $? -ne 0 ] ; then
+            echo "FATAL: restore failed" 1>&2
+            return 1
+        fi
     fi
 }
 
