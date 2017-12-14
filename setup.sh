@@ -2,6 +2,7 @@
 
 # Globals:
 INSTALL_DIR=${1:-$HOME/.ds}
+TEMP_DIR=$HOME
 BACKUP_FILENAME="${INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
 DS_LOAD_CODE='[ -r "${HOME}/.ds/ds.sh" ] && source "${HOME}/.ds/ds.sh" "${HOME}/.ds" 1>&2'
 
@@ -19,31 +20,24 @@ fi
   && echo "FATAL: curl or wget missing" 1>&2 \
   && exit 1
 
-# Backup:
-mv -f "${INSTALL_DIR}" "${BACKUP_FILENAME}" >/dev/null 2>&1
-if [ -e "${INSTALL_DIR}" ] && [ ! -e "${BACKUP_FILENAME}" ] ; then
-  echo "FATAL: could not backup DS to '${BACKUP_FILENAME}'" 1>&2
+# Error exit if installation path already occupied:
+if [ -d "${INSTALL_DIR}" ] ; then
+  echo "FATAL: This is a first setup only script and '${INSTALL_DIR}' dir already exists" 1>&2
+  echo "       ... if you want to proceed first remove it or move it out of there" 1>&2
+  echo "       ... and rerun this" 1>&2
   exit 1
 fi
 
 # Download the main package and install:
 $DL_PROG 'https://github.com/stroparo/ds/archive/master.zip' \
   $DL_OPTS $OUT_OPTION "${INSTALL_DIR}.zip" \
-  && unzip "${INSTALL_DIR}.zip" -d "$HOME" \
-  && mv "$HOME/ds-master" "${INSTALL_DIR}"
+  && unzip "${INSTALL_DIR}.zip" -d "$TEMP_DIR" \
+  && mv "$TEMP_DIR/ds-master" "${INSTALL_DIR}"
 
 if [ $? -ne 0 ] ; then
   echo "FATAL: installation error." 1>&2
-
-  if ! mv -f "${BACKUP_FILENAME}" "${INSTALL_DIR}" >/dev/null 2>&1 ; then
-    echo "INFO: backup restored." 1>&2
-  else
-    echo "FATAL: could not restore the backup at '${BACKUP_FILENAME}'." 1>&2
-  fi
-
+  rm -f -r "${INSTALL_DIR}"
   exit 1
-else
-  rm -rf "${BACKUP_FILENAME}"
 fi
 
 . "${INSTALL_DIR}/ds.sh" "${INSTALL_DIR}" >/dev/null 2>&1
