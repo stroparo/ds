@@ -29,10 +29,11 @@ d () {
 }
 
 dsbackup () {
+    typeset dshome="${1:-${DS_HOME:-${HOME}/.ds}}"
     typeset timestamp="$(date +%Y%m%d-%OH%OM%OS)"
 
-    cp -a "$DS_HOME" "$DS_HOME-$timestamp" \
-        && echo "$DS_HOME-$timestamp"
+    cp -a "$dshome" "$dshome-$timestamp" \
+        && echo "$dshome-$timestamp"
 }
 
 dsf () {
