@@ -77,7 +77,7 @@ dsload () {
     else
         echo "INFO: Installing DS into '${dshome}' ..." 1>&2
         export DS_HOME="$dshome"
-        (wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash)
+        (wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash) \
             && . "${dshome}/ds.sh" "${dshome}" 1>&2
         if [ $? -ne 0 ] || [ -z "${DS_LOADED}" ] ; then
             echo "FATAL: Could not load DS - Daily Shells." 1>&2
