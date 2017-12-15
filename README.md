@@ -38,13 +38,13 @@ Installation
 Either:
 
 ```bash
-curl -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash
+bash -c "$(curl -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
 ```
 
 or:
 
 ```bash
-wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash
+bash -c "$(wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
 ```
 
 ### Manual
