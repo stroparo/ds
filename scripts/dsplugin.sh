@@ -111,6 +111,7 @@ EOF
 
     if [ $? -ne 0 ] ; then
       echo "WARN: There was some error for '${plugin}'." 1>&2
+      rm -f -r "${repo}"
     fi
 
     # Safety for next iteration:
