@@ -19,7 +19,7 @@ ckds () {
 }
 ckds || exit $?
 
-! which git /dev/null && echo "FATAL: git not in path" 1>&2 && exit 1
+! which git >/dev/null && echo "FATAL: git not in path" 1>&2 && exit 1
 
 # ##############################################################################
 # Globals
