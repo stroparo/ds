@@ -11,7 +11,7 @@ which apt-get >/dev/null 2>&1 && export APTCMD=apt-get
 which apt >/dev/null 2>&1 && export APTCMD=apt
 if [ -z "$APTCMD" ] ; then return ; fi
 
-if ! which aptitude >/dev/null 2>&1 ; then
+if ! which aptitude >/dev/null 2>&1 && which sudo >/dev/null 2>&1 ; then
     sudo "$APTCMD" update && sudo "$APTCMD" install -y aptitude
 fi
 
