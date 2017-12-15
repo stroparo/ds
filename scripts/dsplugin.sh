@@ -107,6 +107,7 @@ EOF
     fi
 
     repo_url=$(_assemble_url "$domain" "$user" "$repo")
+    echo "==> Cloning '$repo_url'..."
 
     git clone --depth 1 "$repo_url" \
       && rm -f -r "${repo}/.git" \
