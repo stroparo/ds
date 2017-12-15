@@ -83,6 +83,16 @@ The script that performs this is ```dsplugin.sh``` (also aliased to just ```dspl
 
 It expects ```user/repo``` as the argument and it will use ___github.com___ as the default. To use another domain just prepend it with a slash like in ```domain/user/repo``` (exactly as in an HTTPS clone URL).
 
+### Examples
+
+```bash
+dsplugin stroparo/ds-extras
+```
+
+```bash
+dsplugin stroparo/ds-stroparo
+```
+
 Usage & Examples
 ----------------
 
