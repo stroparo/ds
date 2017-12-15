@@ -105,7 +105,7 @@ EOF
 
     git clone --depth 1 "$repo_url" \
       && rm -f -r "${repo}/.git" \
-      && cp -a "${repo}/*" "${DS_HOME}/" \
+      && cp -a "${repo}"/* "${DS_HOME}/" \
       && rm -f -r "${repo}" \
       && echo "INFO: Plugin '${plugin}' installed successfully"
 
