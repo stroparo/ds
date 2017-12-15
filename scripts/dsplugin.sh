@@ -69,9 +69,9 @@ _assemble_url () {
   # Syntax: {domain} {user} {repo}
 
   if [ ${USE_SSH:-false} ] ; then
-    echo "git@${1}:${2}/${3%.git}.git"
+    echo "git@${1#https://}:${2}/${3%.git}.git"
   else
-    echo "https://${1}/${2}/${3%.git}.git"
+    echo "https://${1#https://}/${2}/${3%.git}.git"
   fi
 }
 

@@ -53,7 +53,7 @@ You might want to install DS manually when there is a network restriction such a
 
 Execute:
 
-1. Create the directory to house the installation, which will be known as and pointed to by the DS_HOME variable.
+1. Create the directory to house the final install which the official DS_HOME variable will point to.
 2. Place the files in that DS_HOME directory.
 3. Source **ds.sh** in your shell profile i.e.
 
@@ -68,7 +68,7 @@ The default DS_HOME is $HOME/.ds (~/.ds) so if you install in there, just source
 source ~/.ds/ds.sh
 ```
 
-Otherwise, specify the directory (after sourcing, $DS_HOME will point to it) both in the filename and as the first argument:
+Otherwise, specify the directory (after sourcing it will be pointed to by the $DS_HOME environment variable) both as ds.sh's dirname as well as the last argument:
 
 ```bash
 source {dir}/ds.sh {dir}
