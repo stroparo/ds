@@ -9,8 +9,8 @@
 alias cls='clear'
 alias dfg='df -gP'
 alias dfh='df -hP'
+alias dumr='du -ma | sort -rn'
 alias dums='du -ma | sort -n'
-alias dumg='du -ma | sort -rn'
 if which exa >/dev/null 2>&1 ; then alias e='exa -il'; alias ea='exa -ila'; fi
 alias findd='find . -type d'
 alias findf='find . -type f'
