@@ -3,7 +3,7 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
-# ##############################################################################
+# #############################################################################
 # Ops routines
 
 pgr () { ps -ef | egrep -i "$1" | egrep -v "grep.*(${1})" ; }

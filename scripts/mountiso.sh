@@ -3,7 +3,7 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
-# ##############################################################################
+# #############################################################################
 
 mountiso () { sudo mount -o loop -t iso9660 "$@" ; }
 

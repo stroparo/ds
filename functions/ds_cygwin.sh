@@ -3,7 +3,7 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
-# ##############################################################################
+# #############################################################################
 # Cygwin routines
 
 [[ "$(uname -a)" = *[Cc]ygwin* ]] || return 0

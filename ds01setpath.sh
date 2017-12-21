@@ -3,7 +3,7 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
-# ##############################################################################
+# #############################################################################
 # Executables and PATH
 
 # STRONGLY RECOMMENDED munging the PATH before anything else:

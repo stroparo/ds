@@ -4,7 +4,7 @@
 #    https://github.com/stroparo/ds
 
 # Git routines
-# ##############################################################################
+# #############################################################################
 
 clonegits () {
     # Info: Clone repos passed in the argument, one per line (quote it).

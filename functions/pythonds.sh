@@ -4,7 +4,7 @@
 #  https://github.com/stroparo/ds
 
 # Python routines
-# ##############################################################################
+# #############################################################################
 
 addpystartup () {
     # Info: Add default .pystartup to home folder.

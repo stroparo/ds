@@ -3,7 +3,7 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
-# ##############################################################################
+# #############################################################################
 # EE - Enter-Environment routines for ssh and scp operations
 
 # Dependencies:

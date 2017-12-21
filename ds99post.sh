@@ -3,7 +3,7 @@
 #   See README.md document in projects page at
 #   https://github.com/stroparo/ds
 
-# ##############################################################################
+# #############################################################################
 # Post file
 
 DS_LOADED=true
