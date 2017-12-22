@@ -17,15 +17,13 @@ gciwp () { git commit -m "Work in progress $1" ; }
 # #############################################################################
 # gitr DS script wrappers:
 
-gra () { gitr.sh add -A ; }
-grap () { gitr.sh -p add -A ; }
-grapv () { gitr.sh -p -v add -A ; }
+gitra () { gitr.sh add -A ; }
 grci () { gitr.sh commit -m "$@" ; }
 
 # branch - display current branch
-grbc () { gitr.sh branch | egrep '^(==|[*])' ; }
+grcurr () { gitr.sh branch | egrep '^(==|[*])' ; }
 
-# diff - cached index vs argument (git default ie HEAD)
+# diff - cached index vs argument; git default ie HEAD
 grdca () { gitr.sh diff --cached "$@" ; }
 
 # pull
