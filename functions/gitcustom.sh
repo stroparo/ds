@@ -15,6 +15,7 @@ gciup () { git commit -m "Updated $1" ; }
 gciwp () { git commit -m "Work in progress $1" ; }
 
 # gitr DS script wrappers:
+grcb () { gitr.sh branch | egrep '^(==|[*])' ; }
 grl () { gitr.sh l ; }
 grlp () { gitr.sh -p l ; }
 grlpv () { gitr.sh -p -v l ; }
