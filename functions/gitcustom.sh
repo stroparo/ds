@@ -21,7 +21,7 @@ gitra () { gitr.sh add -A ; }
 grci () { gitr.sh commit -m "$@" ; }
 
 # branch - display current branch
-grcurr () { gitr.sh branch | egrep '^(==|[*])' ; }
+grcurr () { gitr.sh branch -v "$@" | egrep '^(==|[*])' ; }
 
 # diff - cached index vs argument; git default ie HEAD
 grdca () { gitr.sh diff --cached "$@" ; }
