@@ -27,8 +27,9 @@ stashclone () {
   done
   shift "$((OPTIND-1))"
 
-  if [ $# -ne 2 ] ; then
-    echo "FATAL: Must have 2 args namely project user and repo name." 1>&2
+  if [ $# -ne 3 ] ; then
+    echo "FATAL: Must have 3 args: hostname group|project repo-name" 1>&2
+    exit 1
   fi
 
   repo_host="$1"
