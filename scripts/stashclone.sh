@@ -1,12 +1,15 @@
-clonefromstash () {
+#!/usr/bin/env bash
+
+stashclone () {
   # Syntax: {repo_host} {project_user} {repo_name}
   # Options: [-d targetdir=$PWD/repo_name] [-u stash_user]
 
   # Examples:
-  #  cloneFromStash -u stashuser repohost someproject somereponame
+  #  stashclone -u stashuser repohost someproject somereponame
 
   # Mandatory:
   typeset repo_host project_user repo_name
+  typeset repo_proto=https
 
   # For options:
   typeset stash_user working_repo_dir
@@ -31,8 +34,10 @@ clonefromstash () {
   repo_host="$1"
   project_user="$2"
   repo_name="$(basename "${3%.git}")"
+  if [[ $repo_proto = http:* ]]; then repo_proto='http'; fi
 
-  repo_url_prefix="https://${stash_user:+${stash_user}@}${repo_host}/stash/scm"
+  repo_url_prefix="${repo_proto}://${stash_user:+${stash_user}@}${repo_host}"
+  repo_url_prefix="${repo_url_prefix}/stash/scm"
 
   : ${working_repo_dir:=$PWD/$repo_name}
 
@@ -45,3 +50,4 @@ clonefromstash () {
   fi
 }
 
+stashclone "$@"
