@@ -17,22 +17,22 @@ gciwp () { git commit -m "Work in progress $1" ; }
 # #############################################################################
 # gitr DS script wrappers:
 
-gtraa () { gitr.sh add -A ; }
-gtrbvc () { gitr.sh branch -v "$@" | egrep '^(==|[*])' ; }
+gtraa () { gitr.sh add -A "$@" ; }
+gtrbvc () { gitr.sh -v branch -v "$@" | egrep '^(==|[*])' ; }
 gtrci () { gitr.sh commit -m "$@" ; }
 gtrdca () { gitr.sh diff --cached "$@" ; }
 
 # pull
-gtrl () { gitr.sh l ; }
-gtrlp () { gitr.sh -p l ; }
-gtrlpv () { gitr.sh -p -v l ; }
+gtrl () { gitr.sh "$@" l ; }
+gtrlp () { gitr.sh "$@" -p l ; }
+gtrlpv () { gitr.sh "$@" -p -v l ; }
 
 # gitr push
-gtrp () { gitr.sh p ; }
-gtrpp () { gitr.sh -p p ; }
-gtrppv () { gitr.sh -p -v p ; }
+gtrp () { gitr.sh "$@" p ; }
+gtrpp () { gitr.sh "$@" -p p ; }
+gtrppv () { gitr.sh "$@" -p -v p ; }
 
 # gitr status -s
-gtrs () { gitr.sh ss ; }
-gtrsp () { gitr.sh -p ss ; }
-gtrspv () { gitr.sh -p -v ss ; }
+gtrs () { gitr.sh "$@" ss ; }
+gtrsp () { gitr.sh "$@" -p ss ; }
+gtrspv () { gitr.sh "$@" -p -v ss ; }
