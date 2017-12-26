@@ -18,7 +18,7 @@ gciwp () { git commit -m "Work in progress $1" ; }
 # gitr DS script wrappers:
 
 gtraa () { gitr.sh add -A "$@" ; }
-gtrbvc () { gitr.sh -v branch -v "$@" | egrep '^(==|[*])' ; }
+gtrbvc () { gitr.sh -v branch -v "$@" | egrep '^(==|[*]---)' ; }
 gtrci () { gitr.sh commit -m "$@" ; }
 gtrdca () { gitr.sh diff --cached "$@" ; }
 

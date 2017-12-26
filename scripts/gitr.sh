@@ -123,6 +123,9 @@ execCalls () {
         echo "==> ${PROGRAM:-git} ${GITCMD} $@ # At '${PWD}'" 1>&2 && \
         eval "${PROGRAM:-git}" "${GITCMD}" "$@" \
         2>&1 | tee "$DS_ENV_LOG/${PROGRAM:-git}_$(date '+%Y%m%d_%OH%OM%OS')_${reponame}.log")
+        if ${VERBOSE:-false} ; then
+            echo '---'
+        fi
     done
 }
 
