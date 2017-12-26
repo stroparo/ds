@@ -34,7 +34,13 @@ stashclone () {
   repo_host="$1"
   project_user="$2"
   repo_name="$(basename "${3%.git}")"
-  if [[ $repo_proto = http:* ]]; then repo_proto='http'; fi
+
+  if [[ $repo_host = http*://* ]]; then
+    if [[ $repo_host = http:* ]]; then
+      repo_proto='http'
+    fi
+    repo_host=${repo_host##*://}
+  fi
 
   repo_url_prefix="${repo_proto}://${stash_user:+${stash_user}@}${repo_host}"
   repo_url_prefix="${repo_url_prefix}/stash/scm"
