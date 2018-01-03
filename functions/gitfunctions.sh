@@ -32,7 +32,7 @@ EOF
 
 configuregit () {
     # Info: Configure git.
-    # Syntax: {email} {name} [other git config --global options]
+    # Syn: [-e email] [-n name] [other git config --global options]
     # Example: configuregit "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
 
     typeset email gitfile name
@@ -67,16 +67,15 @@ configuregit () {
 deploygit () {
     # Info: Configures git. Also handles windows installation if in cygwin.
     # Syn: List of quoted params for configuregit(), eg:
-    #   "'core.autocrlf false' 'push.default simple'"
+    #   'core.autocrlf false' 'push.default simple'
 
     which git >/dev/null 2>&1 || aptinstall -y 'git-core'
     which git >/dev/null 2>&1 || return 1
 
     echo "Email:"; read MYEMAIL
     echo "Sign/comment:"; read MYSIGN
-    [ -e ~/.ssh/id_rsa ] || sshkeygenrsa "${MYEMAIL}"
 
-    eval configuregit -e "\"${MYEMAIL}\"" -n "\"${MYSIGN}\"" $(echo "$1")
+    eval configuregit -e "\"${MYEMAIL}\"" -n "\"${MYSIGN}\"" "$@"
 
     if [[ "$(uname -a)" = *[Cc]ygwin* ]] ; then
         typeset cyggitconfig="$(cygpath "$USERPROFILE")/.gitconfig"
@@ -86,7 +85,7 @@ deploygit () {
             -f "\"${cyggitconfig}\"" \
             -e "\"${MYEMAIL}\"" \
             -n "\"${MYSIGN}\"" \
-            $(echo "$1")
+            "$@"
     fi
 }
 
