@@ -21,13 +21,13 @@ if [ -n "${DS_POST_CALLS}" ] ; then
   while read acommand ; do
 
     if [ -n "${DS_VERBOSE}" ] ; then
-      echo "==> Next command:" 1>&2
+      echo "==> Next command in DS_POST_CALLS:" 1>&2
       echo "${acommand}" 1>&2
     fi
 
     if ! eval "${acommand}" ; then
       DS_POST_STATUS=1
-      echo "FATAL: failed command '${acommand}'" 1>&2
+      echo "ERROR: Command '${acommand}'" 1>&2
     fi
 
   done <<EOF
