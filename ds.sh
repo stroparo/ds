@@ -20,8 +20,5 @@ sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds0[1-9]*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds[1-8][0-9]*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds[A-Za-z]*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/env*sh"
-
-echo
 sourcefiles -v "${DS_HOME}/sshagent.sh"
-
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds99post.sh"
