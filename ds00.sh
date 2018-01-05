@@ -11,7 +11,7 @@ alias cdlgt='cd "${DS_ENV_LOG}" && (ls -AFlrt | grep "$(date +"%b %d")")'
 alias cdlt='cd "${DS_ENV_LOG}" && cd "$(ls -1d */|sort|tail -n 1)" && ls -AFlrt'
 alias t='d "${TEMP_DIRECTORY}" -A'
 
-dsversion () { echo "==> Daily Shells - ${DS_VERSION}" 1>&2 ; }
+dsversion () { echo "==> Daily Shells - ${DS_VERSION}" ; }
 
 unalias d 2>/dev/null
 unset d 2>/dev/null
@@ -34,7 +34,7 @@ dsbackup () {
     && echo "$dshome-$timestamp"
 }
 
-dsf () {
+dsgetfunctions () {
 
   typeset filename item items itemslength
 
@@ -67,8 +67,8 @@ dsgetscripts () {
 dshelp () {
   echo "DS - Daily Shells Library - Help
 
-dsf - list daily shells' functions
-dss - list daily shells' scripts
+dsgetfunctions - list daily shells' functions
+dsgetscripts - list daily shells' scripts
 dshelp - display this help messsage
 dsinfo - display environment information
 dsversion - display the version of this Daily Shells instance
@@ -76,7 +76,7 @@ dsversion - display the version of this Daily Shells instance
 }
 
 dsinfo () {
-  dsversion
+  dsversion 1>&2
   echo "DS_HOME='${DS_HOME}'" 1>&2
 }
 
