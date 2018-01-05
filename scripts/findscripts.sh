@@ -10,5 +10,5 @@
 typeset re_shells='perl|python|ruby|sh'
 
 awk 'FNR == 1 && $0 ~ /^#!.*('"$re_shells"') */ { print FILENAME; }
-    FNR > 1 { nextfile; }' \
-    $(find "$@" -type f | egrep -v '[.](git|hg|svn)')
+  FNR > 1 { nextfile; }' \
+  $(find "$@" -type f | egrep -v '[.](git|hg|svn)')
