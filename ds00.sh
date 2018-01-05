@@ -174,10 +174,10 @@ sourcefiles () {
                 fi
 
                 $quiet || echo "WARN: Tolerant fail for '${src}'." 1>&2
-            else
-                if $verbose && ! $quiet ; then
-                    echo "INFO: => '${src}' completed successfully." 1>&2
-                fi
+            # else
+            #     if $verbose && ! $quiet ; then
+            #         echo "INFO: => '${src}' completed successfully." 1>&2
+            #     fi
             fi
         done <<EOF
 ${srcs}

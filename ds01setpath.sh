@@ -18,5 +18,9 @@ done
 
 pathmunge -a -v 'EEPATH' -x "${DS_HOME}"
 
-chmodshells ${DS_VERBOSE:+-v} -a "${DS_HOME}"
+if [[ $DS_VERBOSE = vv ]] ; then
+  chmodshells -a -v "${DS_HOME}"
+else
+  chmodshells -a "${DS_HOME}"
+fi
 true

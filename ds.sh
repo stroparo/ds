@@ -6,20 +6,22 @@
 export DS_HOME="${1:-${HOME%/}/.ds}"
 
 export DS_CONF="${DS_HOME}/conf"
-export DS_VERSION='DS version 0.3.0 - 2017-12-02 00:00'
+export DS_VERSION='DS version 0.4.0 - 2018-01-05 21:40 UTC'
 
 . "${DS_HOME}/ds00.sh" || return 10
 
-if [ -n "$DS_VERBOSE" ] ; then
+if [[ $DS_VERBOSE = vv ]] ; then
     echo 'Files to be sourced:' 1>&2
     ls -l "${DS_HOME}/functions/"*sh
     ls -l "${DS_HOME}/ds0"[1-9]*sh
     ls -l "${DS_HOME}/ds"[1-8][0-9]*sh
     ls -l "${DS_HOME}/ds"[A-Za-z]*sh
+    ls -l "${DS_HOME}/env"*sh
     ls -l "${DS_HOME}/sshagent.sh"
     ls -l "${DS_HOME}/ds99post.sh"
 fi
 
+# functions
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/functions/*sh"
 
 # ds01*..ds09*:
