@@ -100,9 +100,13 @@ echogrep () {
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
     re="$1" ; shift
-    text="$(for i in "$@" ; do echo "${i}" ; done)"
+    if [ $# -eq 0 ] ; then return ; fi
 
-    if [ -z "$text" ] ; then return ; fi
+    # Beware that subst commands do not append newlines
+    #  to the variable if echoing nothing ie if an arg
+    #  is empty it will not be added to the text
+    #  variable as an empty line - CAUTION HERE
+    text="$(for i in "$@" ; do echo "${i}" ; done)"
 
     egrep ${iopt} ${qopt} ${vopt} "$re" <<EOF
 ${text}
