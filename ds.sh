@@ -1,7 +1,6 @@
-# DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
+# Daily Shells Library
+# More instructions and licensing at:
+# https://github.com/stroparo/ds
 
 export DS_HOME="${1:-${HOME%/}/.ds}"
 

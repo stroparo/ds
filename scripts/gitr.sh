@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-# DS - Daily Shells Library
-# License:
-#   See README.md document in projects page at
-#   https://github.com/stroparo/ds
+# Daily Shells Library
+# More instructions and licensing at:
+# https://github.com/stroparo/ds
 
 export PNAME="$(basename "$0")"
 export USAGE="
