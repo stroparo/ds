@@ -23,8 +23,8 @@ sshkeygenrsa () {
     read keypath
   done
   # Non interactive, might still exist...
-  if [ -e "$keypath" ] ; then
-    echo "FATAL: Key '${keypath}' already exists, type another path" 1>&2
+  if [ -e "${keypath}" ] ; then
+    echo "FATAL: Key '${keypath}' already exists" 1>&2
     echo "${usage}" 1>&2
     exit 1
   fi
@@ -32,14 +32,18 @@ sshkeygenrsa () {
   keydir="$(dirname "${keypath}")"
 
   if [ ! -d "${keydir}" ] ; then
+
     mkdir "${keydir}"
+
     if [ ! -d "${keydir}" ] ; then
       echo "FATAL: Could not create dir '${keydir}'." 1>&2
       return 1
     fi
   fi
 
-  ssh-keygen -t rsa -b 4096 -C "${comment:-mykey}" -f "${keypath}"
+  ssh-keygen -t rsa -b 4096 -C "${comment:-mykey}" -f "${keypath}" \
+    && chmod 700 "${keypath}" \
+    && ls -l "${keypath}"
 }
 
-sshkeygenrsa "$@" || return $?
+sshkeygenrsa "$@" || exit $?
