@@ -7,28 +7,36 @@
 
 sshkeygenrsa () {
   # Info: Generate id_rsa if none present for the current user.
-  # Syntax: {comment} [keypath]
 
-  typeset comment="$1"
+  typeset comment="${1:-${USER}@$(hostname)}"
+  typeset keydir
   typeset keypath="${2:-${HOME}/.ssh/id_rsa}"
+  typeset usage="Usage: {comment} [keypath]"
 
-  while [ -z "${comment}" ] ; do
+  while [[ $- = *i* ]] && [ -z "${comment}" ] ; do
     echo 'SSH key comment (email, name or whatever)'
     read comment
   done
 
-  while [ -e "${keypath}" ] ; do
+  while [[ $- = *i* ]] && [ -e "${keypath}" ] ; do
     echo "Key '${keypath}' already exists, type another path"
     read keypath
   done
-
-  if [[ $keypath = $HOME/.ssh* ]] && [ ! -d "$HOME/.ssh" ] ; then
-    mkdir "$HOME/.ssh"
+  # Non interactive, might still exist...
+  if [ -e "$keypath" ] ; then
+    echo "FATAL: Key '${keypath}' already exists, type another path" 1>&2
+    echo "${usage}" 1>&2
+    exit 1
   fi
 
-  if [ ! -d "$(dirname "$keypath")" ] ; then
-    echo "FATAL: No directory available to store '$keypath'." 1>&2
-    return 1
+  keydir="$(dirname "${keypath}")"
+
+  if [ ! -d "${keydir}" ] ; then
+    mkdir "${keydir}"
+    if [ ! -d "${keydir}" ] ; then
+      echo "FATAL: Could not create dir '${keydir}'." 1>&2
+      return 1
+    fi
   fi
 
   ssh-keygen -t rsa -b 4096 -C "${comment:-mykey}" -f "${keypath}"
