@@ -43,7 +43,12 @@ sshkeygenrsa () {
 
   ssh-keygen -t rsa -b 4096 -C "${comment:-mykey}" -f "${keypath}" \
     && chmod 700 "${keypath}" \
-    && ls -l "${keypath}"
+    && echo \
+    && echo "==> '${keypath}' file:" \
+    && ls -l "${keypath}" \
+    && echo \
+    && echo "==> '${keypath}' contents:" \
+    && cat "${keypath}"
 }
 
 sshkeygenrsa "$@" || exit $?
