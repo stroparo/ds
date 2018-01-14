@@ -20,7 +20,7 @@ if [ -n "${DS_POST_CALLS}" ] ; then
   while read acommand ; do
 
     if [ -n "${DS_VERBOSE}" ] ; then
-      echo "==> Next command in DS_POST_CALLS:" 1>&2
+      echo ${BASH_VERSION:+-e} "==> Next command in DS_POST_CALLS: \c" 1>&2
       echo "${acommand}" 1>&2
     fi
 
