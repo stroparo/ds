@@ -1,41 +1,58 @@
 #!/usr/bin/env sh
 
-# Globals:
+# Daily Shells Library
+# More instructions and licensing at:
+# https://github.com/stroparo/ds
+
+# #############################################################################
+# Globals
+
 INSTALL_DIR=${1:-$HOME/.ds}
 TEMP_DIR=$HOME
 BACKUP_FILENAME="${INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
 DS_LOAD_CODE='[ -r "${HOME}/.ds/ds.sh" ] && source "${HOME}/.ds/ds.sh" "${HOME}/.ds" 1>&2'
+DS_PKG_URL="https://github.com/stroparo/ds/archive/master.zip"
 
-# Param downloader program (curl/wget)
-DL_PROG="wget"
-DL_OPTS=''
-OUT_OPTION='-O'
-if which curl &> /dev/null ; then
-  DL_PROG="curl"
-  DL_OPTS='-LSfs'
-  OUT_OPTION='-o'
+# Setup the downloader program (curl/wget)
+if which curl >/dev/null 2>&1 ; then
+  export DLPROG=curl
+  export DLOPT='-LSfs'
+  export DLOUT='-o'
+elif which wget >/dev/null 2>&1 ; then
+  export DLPROG=wget
+  export DLOPT=''
+  export DLOUT='-O'
+else
+  echo "FATAL: curl and wget missing" 1>&2
+  exit 1
 fi
-! which curl && echo "FATAL: curl missing" 1>&2 && exit 1
-! which unzip && echo "FATAL: unzip missing" 1>&2 && exit 1
-! which wget && echo "FATAL: wget missing" 1>&2 && exit 1
+
+# #############################################################################
+# Checks
 
 # Error exit if installation path already occupied:
-if [ -d "${INSTALL_DIR}" ] ; then
+if [ -d "$INSTALL_DIR" ] ; then
   echo "FATAL: This is a first setup only script and '${INSTALL_DIR}' dir already exists" 1>&2
   echo "       ... if you want to proceed first remove it or move it out of there" 1>&2
   echo "       ... and rerun this" 1>&2
   exit 1
 fi
 
+# #############################################################################
+# Install
+
 # Download the main package and install:
-$DL_PROG 'https://github.com/stroparo/ds/archive/master.zip' \
-  $DL_OPTS $OUT_OPTION "${INSTALL_DIR}.zip" \
+"$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "$DS_PKG_URL" \
   && unzip "${INSTALL_DIR}.zip" -d "$TEMP_DIR" \
   && mv "$TEMP_DIR/ds-master" "${INSTALL_DIR}"
+INST_RESULT=$?
 
-if [ $? -ne 0 ] ; then
+# #############################################################################
+# Verification
+
+if [ $INST_RESULT -ne 0 ] ; then
   echo "FATAL: installation error." 1>&2
-  rm -f -r "${INSTALL_DIR}"
+  rm -f -r "$INSTALL_DIR"
   exit 1
 fi
 
@@ -49,3 +66,5 @@ else
   echo "FATAL: could not load DS." 1>&2
   exit 99
 fi
+
+# #############################################################################
