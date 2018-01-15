@@ -60,7 +60,7 @@ dsgetscripts () {
     | grep -v "${ignore_expr}")"
 
   for root in "$roots" ; do
-    findscripts.sh "root"
+    findscripts.sh "$root"
   done
 }
 
