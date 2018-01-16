@@ -9,7 +9,7 @@ DS_LOADED=true
 
 # Logging path:
 : ${DS_ENV_LOG:=$HOME/log} ; export DS_ENV_LOG
-if [ -d "${DS_ENV_LOG}" ] ; then
+if [ ! -d "${DS_ENV_LOG}" ] ; then
   mkdir -p "${DS_ENV_LOG}" 2>/dev/null
 fi
 
