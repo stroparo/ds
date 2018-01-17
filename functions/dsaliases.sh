@@ -19,11 +19,17 @@ alias nht='tail -9999f nohup.out'
 alias xcd="alias | egrep \"'c?d \" | fgrep -v 'cd -'"
 alias xgit="alias | grep -w git"
 
+# #############################################################################
+# Grep
+
 if (command grep --help | command grep -q -- --color) ; then
   alias grep='grep --color=auto'
   alias egrep='egrep --color=auto'
   alias fgrep='fgrep --color=auto'
 fi
+
+# #############################################################################
+# Ls
 
 if [[ $(ls --version 2>/dev/null) = *GNU* ]] ; then
   alias ls='ls --color=auto'
@@ -35,6 +41,9 @@ else
   alias ll='ls -AFl'
   alias lt='ls -Flrt'
 fi
+
+# #############################################################################
+# Ag aka the silver searcher
 
 if which ag >/dev/null 2>&1 ; then
   alias agi='ag -i'
@@ -69,6 +78,9 @@ if which ag >/dev/null 2>&1 ; then
   alias agxml='ag --xml'
 fi
 
+# #############################################################################
+# APT dpkg etcetera
+
 if which apt >/dev/null 2>&1 || which apt-get >/dev/null 2>&1 ; then
   alias apd='sudo aptitude'
   alias apdsafeup='sudo aptitude safe-upgrade'
@@ -82,6 +94,9 @@ if which apt >/dev/null 2>&1 || which apt-get >/dev/null 2>&1 ; then
   alias dpkgsel='dpkg --get-selections | egrep -i'
   alias upalt='sudo update-alternatives'
 fi
+
+# #############################################################################
+# Git
 
 if which git >/dev/null 2>&1 ; then
 
@@ -125,3 +140,13 @@ if which git >/dev/null 2>&1 ; then
     alias grv='git remote -v'
   fi
 fi
+
+# #############################################################################
+# Tmux
+
+alias tls='tmux ls'
+alias tat='tmux attach -t'
+alias tns='tmux new-session -s'
+alias tks='tmux kill-session -s'
+
+# #############################################################################
