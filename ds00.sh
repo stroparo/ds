@@ -89,10 +89,12 @@ dsload () {
   if [ -f "${dshome}/ds.sh" ] ; then
     . "${dshome}/ds.sh" "$ds_home"
   else
-    echo "INFO: Installing DS into '${dshome}' ..." 1>&2
     export DS_HOME="$dshome"
+
+    echo "INFO: Installing DS into '${dshome}' ..." 1>&2
     bash -c "$(wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" \
       && . "${dshome}/ds.sh" "${dshome}" 1>&2
+
     if [ $? -ne 0 ] || [ -z "${DS_LOADED}" ] ; then
       echo "FATAL: Could not load DS - Daily Shells." 1>&2
       return 1
@@ -103,22 +105,27 @@ dsload () {
 }
 
 dsupgrade () {
-  typeset backup=$(dsbackup)
+  typeset backup
 
-  if [ -z "$backup" ] ; then
-    echo "FATAL: backup failed... sequence cancelled" 1>&2
+  if [ -z "$DS_HOME" ] ; then
+    echo "dsupgrade: FATAL: No DS_HOME set." 1>&2
     return 1
   fi
 
-  if [ -n "$backup" ] && rm -rf "$DS_HOME" && dsload "$DS_HOME" ; then
-    echo "SUCCESS: upgrade complete (beware of any backups left at DS_HOME-{timestamp})"
+  backup=$(dsbackup)
+
+  if [ -z "$backup" ] ; then
+    echo "dsupgrade: FATAL: backup failed... sequence cancelled" 1>&2
+    return 1
+  elif rm -rf "$DS_HOME" && dsload "$DS_HOME" ; then
+    echo "dsupgrade: SUCCESS: upgrade complete (beware of any backups left at $DS_HOME-{some timestamp})"
   else
-    echo "FATAL: upgrade failed ... restoring '${backup}' ..." 1>&2
+    echo "dsupgrade: FATAL: upgrade failed ... restoring '${backup}' ..." 1>&2
     rm -f -r "$DS_HOME" \
       && mv -f "$backup" "$DS_HOME" \
-      && echo "SUCCESS: restored '${backup}' into '${DS_HOME}'"
+      && echo "dsupgrade: SUCCESS: restored '${backup}' into '${DS_HOME}'"
     if [ $? -ne 0 ] ; then
-      echo "FATAL: restore failed" 1>&2
+      echo "dsupgrade: FATAL: restore failed" 1>&2
       return 1
     fi
   fi
