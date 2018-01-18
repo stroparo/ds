@@ -72,8 +72,12 @@ deploygit () {
     which git >/dev/null 2>&1 || aptinstall -y 'git-core'
     which git >/dev/null 2>&1 || return 1
 
-    echo "Email:"; read MYEMAIL
-    echo "Sign/comment:"; read MYSIGN
+    if [ -z "$MYEMAIL" ] ; then
+        echo "Email:"; read MYEMAIL
+    fi
+    if [ -z "$MYSIGN" ] ; then
+        echo "Sign/comment:"; read MYSIGN
+    fi
 
     eval configuregit -e "\"${MYEMAIL}\"" -n "\"${MYSIGN}\"" "$@"
 
