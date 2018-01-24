@@ -69,7 +69,8 @@ deploygit () {
     # Syn: List of quoted params for configuregit(), eg:
     #   'core.autocrlf false' 'push.default simple'
 
-    which git >/dev/null 2>&1 || aptinstall -y 'git-core'
+    which git >/dev/null 2>&1 || \
+        (sudo apt update && sudo apt install -y 'git-core')
     which git >/dev/null 2>&1 || return 1
 
     if [ -z "$MYEMAIL" ] ; then
