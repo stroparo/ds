@@ -63,7 +63,7 @@ gitset () {
   [ -n "$email" ] && git config $replace $where user.email "$email"
   [ -n "$name" ]  && git config $replace $where user.name "$name"
 
-  while [ $# -ge 2 ] ; then
+  while [ $# -ge 2 ] ; do
     echo "==>" git config $replace $where "$1" "$2" 1>&2
     git config $replace $where "$1" "$2"
     echo '---'
