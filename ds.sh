@@ -14,6 +14,7 @@ export DS_VERSION='v0.4.0 2018-01-05'
 # DS core
 
 . "${DS_HOME}/ds00.sh" || return 10
+sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds0[1-9]*sh"
 
 # #############################################################################
 # Functions
@@ -27,7 +28,6 @@ fi
 # #############################################################################
 # DS additional core sources
 
-sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds0[1-9]*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds[1-8][0-9]*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds[A-Za-z]*sh"
 
