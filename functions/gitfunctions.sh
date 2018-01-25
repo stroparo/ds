@@ -50,7 +50,7 @@ gitset () {
   shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
   if [ -n "$where" ]; then
-    if _any_not_w "${where}" ; then
+    if [ ! -w "${where}" ] ; then
       echo "FATAL: Must pass writeable file to -f option." 1>&2
       return 1
     else
