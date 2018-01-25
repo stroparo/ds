@@ -7,90 +7,66 @@
 # #############################################################################
 
 clonegits () {
-    # Info: Clone repos passed in the argument, one per line (quote it).
-    # Syntax: {repositories-one-per-line}
+  # Info: Clone repos passed in the argument, one per line (quote it).
+  # Syntax: {repositories-one-per-line}
 
-    [ -z "${1}" ] && return
+  [ -z "${1}" ] && return
 
-    while read repo ; do
-        [ -z "${repo}" ] && continue
+  while read repo ; do
+    [ -z "${repo}" ] && continue
 
-        if [ ! -d "$(basename "${repo%.git}")" ] ; then
-            if ! git clone "${repo}" ; then
-                echo "FATAL: Cloning '${repo}' repository." 1>&2
-                return 1
-            fi
-        else
-            echo "SKIP: '$(basename "${repo%.git}")' repository already exists." 1>&2
-        fi
+    if [ ! -d "$(basename "${repo%.git}")" ] ; then
+      if ! git clone "${repo}" ; then
+        echo "FATAL: Cloning '${repo}' repository." 1>&2
+        return 1
+      fi
+    else
+      echo "SKIP: '$(basename "${repo%.git}")' repository already exists." 1>&2
+    fi
 
-        echo '' 1>&2
-    done <<EOF
+    echo '' 1>&2
+  done <<EOF
 ${1}
 EOF
 }
 
-configuregit () {
-    # Info: Configure git.
-    # Syn: [-e email] [-n name] [other git config --global options]
-    # Example: configuregit "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
+gitset () {
+  # Info: Configure git.
+  # Syn: [-e email] [-n name] [-f file] [-r]
+  # Example: gitset "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
 
-    typeset email gitfile name
+  typeset email name replace where
 
-    typeset oldind="${OPTIND}"
-    OPTIND=1
-    while getopts ':e:f:n:' opt ; do
-        case "${opt}" in
-        e) email="${OPTARG}" ;;
-        f) gitfile="${OPTARG}" ;;
-        n) name="${OPTARG}" ;;
-        esac
-    done
-    shift $((OPTIND-1)) ; OPTIND="${oldind}"
+  typeset oldind="${OPTIND}"
+  OPTIND=1
+  while getopts ':e:f:n:r' opt ; do
+    case "${opt}" in
+    e) email="${OPTARG}" ;;
+    f) where="${OPTARG}" ;;
+    n) name="${OPTARG}" ;;
+    r) replace="--replace-all";;
+    esac
+  done
+  shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
-    if [ -n "$gitfile" ] && _any_not_w "${gitfile}"; then
-        echo "FATAL: Must pass writeable file to -f option." 1>&2
-        return 1
-    fi
-
-    if [ -w "${gitfile}" ] ; then
-        [ -n "${email}" ] && git config -f "${gitfile}" user.email "${email}"
-        [ -n "${name}" ] &&  git config -f "${gitfile}" user.name "${name}"
-        for i in "$@" ; do git config -f "${gitfile}" $(echo ${i}) ; done
+  if [ -n "$where" ]; then
+    if _any_not_w "${where}" ; then
+      echo "FATAL: Must pass writeable file to -f option." 1>&2
+      return 1
     else
-        [ -n "${email}" ] && git config --global user.email "${email}"
-        [ -n "${name}" ] &&  git config --global user.name "${name}"
-        for i in "$@" ; do git config --global $(echo ${i}) ; done
+      where="-f ${where}"
     fi
+  else
+    where='--global'
+  fi
+
+  [ -n "$email" ] && git config $replace $where user.email "$email"
+  [ -n "$name" ]  && git config $replace $where user.name "$name"
+
+  while [ $# -ge 2 ] ; then
+    echo "==>" git config $replace $where "$1" "$2" 1>&2
+    git config $replace $where "$1" "$2"
+    echo '---'
+    shift 2
+  done
 }
-
-deploygit () {
-    # Info: Configures git. Also handles windows installation if in cygwin.
-    # Syn: List of quoted params for configuregit(), eg:
-    #   'core.autocrlf false' 'push.default simple'
-
-    which git >/dev/null 2>&1 || \
-        (sudo apt update && sudo apt install -y 'git-core')
-    which git >/dev/null 2>&1 || return 1
-
-    if [ -z "$MYEMAIL" ] ; then
-        echo "Email:"; read MYEMAIL
-    fi
-    if [ -z "$MYSIGN" ] ; then
-        echo "Sign/comment:"; read MYSIGN
-    fi
-
-    eval configuregit -e "\"${MYEMAIL}\"" -n "\"${MYSIGN}\"" "$@"
-
-    if [[ "$(uname -a)" = *[Cc]ygwin* ]] ; then
-        typeset cyggitconfig="$(cygpath "$USERPROFILE")/.gitconfig"
-        touch "$cyggitconfig"
-
-        eval configuregit \
-            -f "\"${cyggitconfig}\"" \
-            -e "\"${MYEMAIL}\"" \
-            -n "\"${MYSIGN}\"" \
-            "$@"
-    fi
-}
-
