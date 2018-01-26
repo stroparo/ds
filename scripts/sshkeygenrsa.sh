@@ -48,7 +48,7 @@ sshkeygenrsa () {
     && ls -l "${keypath}" \
     && echo \
     && echo "==> '${keypath}' contents:" \
-    && cat "${keypath}"
+    && cat "${keypath}.pub"
 }
 
 sshkeygenrsa "$@" || exit $?
