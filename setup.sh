@@ -53,7 +53,7 @@ INST_RESULT=$?
 if [ $INST_RESULT -ne 0 ] ; then
   echo "FATAL: installation error." 1>&2
   rm -f -r "$INSTALL_DIR"
-  exit 1
+  exit $INST_RESULT
 fi
 
 . "${INSTALL_DIR}/ds.sh" "${INSTALL_DIR}" >/dev/null 2>&1
