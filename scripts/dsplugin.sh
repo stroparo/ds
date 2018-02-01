@@ -87,6 +87,7 @@ main () {
 
   typeset domain
   typeset repo
+  typeset repo_dir
   typeset repo_url
   typeset user
 
@@ -109,13 +110,14 @@ EOF
       domain=github.com
     fi
 
+	repo_dir=${repo%.git}
     repo_url=$(_assemble_url "$domain" "$user" "$repo")
     echo "==> Cloning '$repo_url'..."
 
     git clone --depth 1 "$repo_url" \
-      && rm -f -r "${repo}/.git" \
-      && cp -a "${repo%.git}"/* "${DS_HOME}/" \
-      && rm -f -r "${repo}" \
+      && rm -f -r "${repo_dit}/.git" \
+      && cp -a "${repo_dir}"/* "${DS_HOME}/" \
+      && rm -f -r "${repo_dir}" \
       && echo \
 	  && echo "INFO: Plugin '${plugin}' installed successfully" \
 	  && echo
