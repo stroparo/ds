@@ -24,7 +24,10 @@ ckds || exit $?
 # #############################################################################
 # Globals
 
+export WORKDIR="$HOME"
+
 export PNAME="$(basename "$0")"
+
 export USAGE="
 NAME
   ${PNAME} - Installs Daily Shells plugins
@@ -111,9 +114,11 @@ EOF
 
     git clone --depth 1 "$repo_url" \
       && rm -f -r "${repo}/.git" \
-      && cp -a "${repo}"/* "${DS_HOME}/" \
+      && cp -a "${repo%.git}"/* "${DS_HOME}/" \
       && rm -f -r "${repo}" \
-      && echo && echo "INFO: Plugin '${plugin}' installed successfully" && echo
+      && echo \
+	  && echo "INFO: Plugin '${plugin}' installed successfully" \
+	  && echo
 
     if [ $? -ne 0 ] ; then
       echo "WARN: There was some error for '${plugin}'." 1>&2
@@ -129,9 +134,9 @@ EOF
 # #############################################################################
 # Main
 
-cd /tmp
+cd "$WORKDIR"
 if [[ $PWD != /tmp ]] ; then
-  echo "FATAL: Could not cd to /tmp." 1>&2
+  echo "FATAL: Could not cd to '$WORKDIR'." 1>&2
   exit 1
 fi
 
