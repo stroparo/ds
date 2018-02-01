@@ -137,7 +137,7 @@ EOF
 # Main
 
 cd "$WORKDIR"
-if [[ $PWD != /tmp ]] ; then
+if [ "$PWD" != "$WORKDIR" ] ; then
   echo "FATAL: Could not cd to '$WORKDIR'." 1>&2
   exit 1
 fi
