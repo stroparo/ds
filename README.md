@@ -60,7 +60,7 @@ curl -LSf -k -o /tmp/ds.zip \
   https://github.com/stroparo/ds/archive/master.zip \
   && unzip /tmp/ds.zip -d "$HOME" \
   && cd "$HOME"/ds-master \
-  && [ "$PWD" = "$HOME"/ds-master ] \
+  && [ "$(basename "$PWD")" = 'ds-master' ] \
   && ./setup.sh -f
 ```
 
