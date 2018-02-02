@@ -66,9 +66,9 @@ fi
 if [ -e ./ds.sh ] ; then
   echo "Daily Shells setup: installing..." 1>&2
   mkdir "${INSTALL_DIR}" \
-    && cp -f -R ./* "$INSTALL_DIR"/
+    && cp -f -R -v "$PWD"/* "$INSTALL_DIR"/
   INST_RESULT=$?
-  echo "Installation dir persisted at '$INSTALL_DIR'"
+  echo "Installation dir persisted at '$$PWD'"
 else
   echo "Daily Shells setup: downloading and installing..." 1>&2
   "$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "$DS_PKG_URL" \
