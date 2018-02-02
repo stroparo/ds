@@ -38,7 +38,7 @@ Installation
 With curl:
 
 ```bash
-bash -c "$(curl -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
+bash -c "$(curl -LSf -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
 ```
 
 If you do not have curl but have wget:
@@ -50,7 +50,7 @@ bash -c "$(wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup
 In restrictive environments with no SSL recognition, allow insecure download:
 
 ```bash
-FORCE=true bash -c "$(curl -k -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
+FORCE=true bash -c "$(curl -LSf -k -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
 ```
 
 Last resort as maybe your network will allow downloading zip files:
