@@ -9,11 +9,8 @@
 
 USAGE="[-h] [-f]"
 
-TEMP_DIR=$HOME
-
-DS_LOAD_CODE='[ -r "${HOME}/.ds/ds.sh" ] && source "${HOME}/.ds/ds.sh" "${HOME}/.ds" 1>&2'
 DS_PKG_URL="https://github.com/stroparo/ds/archive/master.zip"
-
+TEMP_DIR=$HOME
 
 # #############################################################################
 # Options
@@ -32,6 +29,8 @@ shift "$((OPTIND-1))"
 
 INSTALL_DIR=${1:-$HOME/.ds}
 BACKUP_FILENAME="${INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
+
+DS_LOAD_CODE="[ -r \"${INSTALL_DIR}/ds.sh\" ] && source \"${INSTALL_DIR}/ds.sh\" \"${INSTALL_DIR}\" 1>&2"
 
 # Setup the downloader program (curl/wget)
 if which curl >/dev/null 2>&1 ; then
@@ -64,11 +63,19 @@ fi
 # #############################################################################
 # Install
 
-# Download the main package and install:
-"$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "$DS_PKG_URL" \
-  && unzip "${INSTALL_DIR}.zip" -d "$TEMP_DIR" \
-  && mv "$TEMP_DIR/ds-master" "${INSTALL_DIR}"
-INST_RESULT=$?
+if [ -e ./ds.sh ] ; then
+  echo "Daily Shells setup: installing..." 1>&2
+  mkdir "${INSTALL_DIR}" \
+    && cp -f -R ./* "$INSTALL_DIR"/
+  INST_RESULT=$?
+  echo "Installation dir persisted at '$INSTALL_DIR'"
+else
+  echo "Daily Shells setup: downloading and installing..." 1>&2
+  "$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "$DS_PKG_URL" \
+    && unzip "${INSTALL_DIR}.zip" -d "$TEMP_DIR" \
+    && mv "$TEMP_DIR/ds-master" "${INSTALL_DIR}"
+  INST_RESULT=$?
+fi
 
 # #############################################################################
 # Verification
