@@ -61,7 +61,8 @@ curl -LSf -k -o /tmp/ds.zip \
   && unzip /tmp/ds.zip -d "$HOME" \
   && cd "$HOME"/ds-master \
   && [ "$(basename "$PWD")" = 'ds-master' ] \
-  && ./setup.sh -f
+  && ./setup.sh -f \
+  && . ~/.ds/ds.sh
 ```
 
 ### Manual
