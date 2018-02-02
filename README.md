@@ -35,16 +35,22 @@ Installation
 
 ### Automatic
 
-Either:
+With curl:
 
 ```bash
 bash -c "$(curl -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
 ```
 
-or:
+If you do not have curl but have wget:
 
 ```bash
 bash -c "$(wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
+```
+
+In restrictive environments with no SSL recognition, allow insecure download:
+
+```bash
+FORCE=true bash -c "$(curl -k -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
 ```
 
 ### Manual
