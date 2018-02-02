@@ -87,20 +87,20 @@ dsload () {
   typeset dshome="${1:-${DS_HOME:-${HOME}/.ds}}"
 
   if [ -f "${dshome}/ds.sh" ] ; then
-    . "${dshome}/ds.sh" "$ds_home"
+    . "${dshome}/ds.sh" "$ds_home" || return $?
+  fi
+
+  export DS_HOME="$dshome"
+
+  echo "INFO: Installing DS into '${dshome}' ..." 1>&2
+  bash -c "$(wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" \
+    && . "${dshome}/ds.sh" "${dshome}" 1>&2
+
+  if [ $? -ne 0 ] || [ -z "${DS_LOADED}" ] ; then
+    echo "FATAL: Could not load DS - Daily Shells." 1>&2
+    return 1
   else
-    export DS_HOME="$dshome"
-
-    echo "INFO: Installing DS into '${dshome}' ..." 1>&2
-    bash -c "$(wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" \
-      && . "${dshome}/ds.sh" "${dshome}" 1>&2
-
-    if [ $? -ne 0 ] || [ -z "${DS_LOADED}" ] ; then
-      echo "FATAL: Could not load DS - Daily Shells." 1>&2
-      return 1
-    else
-      return 0
-    fi
+    return 0
   fi
 }
 
