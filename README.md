@@ -53,6 +53,17 @@ In restrictive environments with no SSL recognition, allow insecure download:
 FORCE=true bash -c "$(curl -k -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
 ```
 
+Last resort as maybe your network will allow downloading zip files:
+
+```bash
+curl -LSf -k -o /tmp/ds.zip \
+  https://github.com/stroparo/ds/archive/master.zip \
+  && unzip /tmp/ds.zip -d "$HOME" \
+  && cd "$HOME"/ds-master \
+  && [ "$PWD" = "$HOME"/ds-master ] \
+  && ./setup.sh -f
+```
+
 ### Manual
 
 You might want to install DS manually when there is a network restriction such as no Internet access for the host etc.
