@@ -5,7 +5,13 @@
 # #############################################################################
 # Globals
 
-export DS_HOME="${1:-${HOME%/}/.ds}"
+# DS_HOME
+DS_HOME="${1:-${HOME%/}/.ds}"
+# Squeeze slashes
+if which tr >/dev/null 2>&1 ; then
+  DS_HOME="$(echo "$DS_HOME" | tr -s /)"
+fi
+export DS_HOME
 
 export DS_CONF="${DS_HOME}/conf"
 export DS_VERSION='v0.4.0 2018-01-05'
