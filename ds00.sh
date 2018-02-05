@@ -3,6 +3,28 @@
 #  See README.md document in projects page at
 #  https://github.com/stroparo/ds
 
+# Globals
+
+SETUP_URL='https://raw.githubusercontent.com/stroparo/ds/master/setup.sh'
+
+# Setup the downloader program (curl/wget)
+if which curl >/dev/null 2>&1 ; then
+  export DLPROG=curl
+  export DLOPT='-LSfs'
+  export DLOUT='-o'
+  if ${FORCE:-false} ; then
+    export DLOPT="-k $DLOPT"
+  fi
+elif which wget >/dev/null 2>&1 ; then
+  export DLPROG=wget
+  export DLOPT=''
+  export DLOUT='-O'
+else
+  echo "FATAL: curl and wget missing" 1>&2
+  exit 1
+fi
+
+# Aliases
 alias cdbak='d "${DS_ENV_BAK}" -A'
 alias cde='d "${DS_ENV}" -A'
 alias cdl='cd "${DS_ENV_LOG}" && (ls -AFlrt | tail -n 64)'
@@ -11,6 +33,7 @@ alias cdlgt='cd "${DS_ENV_LOG}" && (ls -AFlrt | grep "$(date +"%b %d")")'
 alias cdlt='cd "${DS_ENV_LOG}" && cd "$(ls -1d */|sort|tail -n 1)" && ls -AFlrt'
 alias t='d "${TEMP_DIRECTORY}" -A'
 
+# Oneliners
 dsversion () { echo "==> Daily Shells - ${DS_VERSION}" ; }
 
 unalias d 2>/dev/null
@@ -87,13 +110,14 @@ dsload () {
   typeset dshome="${1:-${DS_HOME:-${HOME}/.ds}}"
 
   if [ -f "${dshome}/ds.sh" ] ; then
-    . "${dshome}/ds.sh" "$ds_home" || return $?
+    . "${dshome}/ds.sh" "$ds_home"
+    return $?
   fi
 
   export DS_HOME="$dshome"
 
   echo "INFO: Installing DS into '${dshome}' ..." 1>&2
-  bash -c "$(wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" \
+  bash -c "$($DLPROG $DLOPT $DLOUT - "$SETUP_URL")" dummy "$dshome" \
     && . "${dshome}/ds.sh" "${dshome}" 1>&2
 
   if [ $? -ne 0 ] || [ -z "${DS_LOADED}" ] ; then
