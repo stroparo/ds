@@ -7,8 +7,11 @@ mungemagic () {
     # Munge descendant bin* and lib* directories to PATH and library variables.
     # Syn: {directory}
 
-    typeset mungeroot="$(cd "${1}"; echo "$PWD")"
-    [ -e "$mungeroot" ] || return 1
+    typeset mungeroot="${1}"
+    [ -d "$mungeroot" ] || return 1
+
+    # Make mungeroot path canonical:
+    mungeroot="$(cd "${mungeroot}"; echo "$PWD")"
 
     pathmunge -x "$mungeroot"{,/bin}
     pathmunge -x -v LIBPATH "$mungeroot"/lib
