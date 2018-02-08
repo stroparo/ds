@@ -110,7 +110,7 @@ EOF
       domain=github.com
     fi
 
-	repo_dir=${repo%.git}
+    repo_dir=${repo%.git}
     repo_url=$(_assemble_url "$domain" "$user" "$repo")
     echo "==> Cloning '$repo_url'..."
 
@@ -119,8 +119,8 @@ EOF
       && cp -a "${repo_dir}"/* "${DS_HOME}/" \
       && rm -f -r "${repo_dir}" \
       && echo \
-	  && echo "INFO: Plugin '${plugin}' installed successfully" \
-	  && echo
+      && echo "INFO: Plugin '${plugin}' installed successfully" \
+      && echo
 
     if [ $? -ne 0 ] ; then
       echo "WARN: There was some error for '${plugin}'." 1>&2
