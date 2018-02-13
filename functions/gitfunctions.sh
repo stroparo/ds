@@ -12,16 +12,17 @@ clonegits () {
 
   [ -z "${1}" ] && return
 
-  while read repo ; do
+  while read repo repo_path ; do
     [ -z "${repo}" ] && continue
+    [ -z "${repo_path}" ] && repo_path="$(basename "${repo%.git}")"
 
-    if [ ! -d "$(basename "${repo%.git}")" ] ; then
-      if ! git clone "${repo}" ; then
-        echo "FATAL: Cloning '${repo}' repository." 1>&2
+    if [ ! -d "$repo_path" ] ; then
+      if ! git clone "$repo" "$repo_path" ; then
+        echo "FATAL: Cloning '$repo' repository to '${repo_path}/'." 1>&2
         return 1
       fi
     else
-      echo "SKIP: '$(basename "${repo%.git}")' repository already exists." 1>&2
+      echo "SKIP: '$repo_path' repository already exists." 1>&2
     fi
 
     echo '' 1>&2
