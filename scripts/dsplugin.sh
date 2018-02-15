@@ -85,17 +85,15 @@ _assemble_url () {
 
 main () {
 
-  typeset domain
-  typeset repo
+  typeset domain user repo remainder # for repo URLs
   typeset repo_dir
   typeset repo_url
-  typeset user
 
   for plugin in "$@" ; do
 
     [ -z "$plugin" ] && echo "WARN: empty arg ignored" && continue
 
-    IFS='/' read domain user repo <<EOF
+    IFS='/' read domain user repo remainder <<EOF
 ${plugin}
 EOF
 
@@ -110,7 +108,12 @@ EOF
       domain=github.com
     fi
 
-    repo_dir=${repo%.git}
+    # Support longer URLs (more than one dir after the user):
+    if [ -n "$remainder" ] ; then
+      repo="${repo}/${remainder}"
+    fi
+
+    repo_dir=$(basename "${repo%.git}")
     repo_url=$(_assemble_url "$domain" "$user" "$repo")
     echo "==> Cloning '$repo_url'..."
 
