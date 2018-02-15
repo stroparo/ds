@@ -91,6 +91,8 @@ main () {
 
   for plugin in "$@" ; do
 
+    plugin="${plugin#http*//}"
+
     [ -z "$plugin" ] && echo "WARN: empty arg ignored" && continue
 
     IFS='/' read domain user repo remainder <<EOF
