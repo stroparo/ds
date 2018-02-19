@@ -122,7 +122,7 @@ EOF
       && cp -a "${repo_dir}"/* "${DS_HOME}/" \
       && rm -f -r "${repo_dir}" \
       && echo \
-      && echo "INFO: Plugin '${plugin}' installed successfully" \
+      && echo "INFO: Plugin at '${repourl}' installed successfully" \
       && echo
 
     if [ $? -ne 0 ] ; then
