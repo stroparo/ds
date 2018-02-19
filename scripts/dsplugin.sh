@@ -84,7 +84,7 @@ main () {
 
     protocol=$(echo "$plugin" | grep -o "^.*://")
     protocol=${protocol%://}
-    : ${protocol:=https://}
+    : ${protocol:=https}
     plugin="${plugin#*://}"
 
     [ -z "$plugin" ] && echo "WARN: empty arg ignored" && continue
