@@ -73,25 +73,18 @@ fi
 # #############################################################################
 # Functions
 
-_assemble_url () {
-  # Syntax: {domain} {user} {repo}
-
-  if ${USE_SSH:-false} ; then
-    echo "git@${1#https://}:${2}/${3%.git}.git"
-  else
-    echo "https://${1#https://}/${2}/${3%.git}.git"
-  fi
-}
-
 main () {
 
   typeset domain user repo remainder # for repo URLs
+  typeset protocol=https
   typeset repo_dir
   typeset repo_url
 
   for plugin in "$@" ; do
 
-    plugin="${plugin#http*//}"
+    protocol=$(echo "$plugin" | grep -o "^.*://")
+    protocol=${protocol%://}
+    plugin="${plugin#*://}"
 
     [ -z "$plugin" ] && echo "WARN: empty arg ignored" && continue
 
@@ -116,7 +109,12 @@ EOF
     fi
 
     repo_dir=$(basename "${repo%.git}")
-    repo_url=$(_assemble_url "$domain" "$user" "$repo")
+    if ${USE_SSH:-false} ; then
+      repo_url="git@$domain/$user/${repo%.git}.git"
+    else
+      repo_url="${protocol}://$domain/$user/${repo%.git}.git"
+    fi
+
     echo "==> Cloning '$repo_url'..."
 
     git clone --depth 1 "$repo_url" \
