@@ -76,7 +76,7 @@ fi
 main () {
 
   typeset domain user repo remainder # for repo URLs
-  typeset protocol=https
+  typeset protocol
   typeset repo_dir
   typeset repo_url
 
@@ -84,6 +84,7 @@ main () {
 
     protocol=$(echo "$plugin" | grep -o "^.*://")
     protocol=${protocol%://}
+    : ${protocol:=https://}
     plugin="${plugin#*://}"
 
     [ -z "$plugin" ] && echo "WARN: empty arg ignored" && continue
