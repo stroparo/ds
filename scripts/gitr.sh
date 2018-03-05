@@ -93,7 +93,7 @@ set -e
 
 cd {}/..
 
-export HEADERMSG="==> ${PROGRAM:-git} ${GITCMD} $@ # At '\${PWD}'"
+export HEADERMSG="\$(eval echo "==>" "${PROGRAM:-git}" "${GITCMD}" $@ \# At '\${PWD}')"
 export CMDOUT="\$(eval "${PROGRAM:-git}" "${GITCMD}" $@ 2>&1)"
 
 if [ -z "\$CMDOUT" ] || \
