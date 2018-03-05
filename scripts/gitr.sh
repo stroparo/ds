@@ -89,6 +89,8 @@ cmdexpand () {
 
 setGITRCMD () {
     export GITRCMD="$(cat <<EOF
+set -e
+
 cd {}/..
 
 export HEADERMSG="==> ${PROGRAM:-git} ${GITCMD} $@ # At '\${PWD}'"
