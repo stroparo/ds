@@ -93,7 +93,7 @@ set -e
 
 cd {}/..
 
-export HEADERMSG="\$(eval echo "==>" "${PROGRAM:-git}" "${GITCMD}" $@ \# At '\${PWD}')"
+export HEADERMSG="\$(echo "${PROGRAM:-git}" "${GITCMD}" $@ "# At '\${PWD}'")"
 export CMDOUT="\$(eval "${PROGRAM:-git}" "${GITCMD}" $@ 2>&1)"
 
 if [ -z "\$CMDOUT" ] || \
@@ -112,6 +112,8 @@ if ${VERBOSE:-false} || \${hasoutput:-false} ; then
 fi
 EOF
 )"
+
+# echo "GITRCMD=$GITRCMD" # DEBUG
 }
 
 execCalls () {
