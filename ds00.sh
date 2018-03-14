@@ -39,14 +39,12 @@ dsversion () { echo "==> Daily Shells - ${DS_VERSION}" ; }
 unalias d 2>/dev/null
 unset d 2>/dev/null
 d () {
-  if [ -e "$dir" ] ; then
-    cd "$dir"
-  else
-    for dir in "$@" ; do
-      found="$(find . -type d -name "*${dir}*" | head -1)"
-      if [ -n "$found" ] ; then cd "${found}" && pwd 1>&2 ; fi
-    done
-  fi
+  if [ -e "$1" ] ; then cd "$1" ; shift ; fi
+  for dir in "$@" ; do
+    found=$(ls -1d *"${dir}"* | head -1)
+    if [ -z "$found" ] ; then found="$(find . -type d -name "*${dir}*" | head -1)" ; fi
+    if [ -n "$found" ] ; then cd "${found}" && pwd 1>&2 ; fi
+  done
   if [ -e ./.git ] ; then git branch -vv ; fi
 }
 
