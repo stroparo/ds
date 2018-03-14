@@ -43,8 +43,9 @@ d () {
   for dir in "$@" ; do
     found=$(ls -1d *"${dir}"* | head -1)
     if [ -z "$found" ] ; then found="$(find . -type d -name "*${dir}*" | head -1)" ; fi
-    if [ -n "$found" ] ; then cd "${found}" && pwd 1>&2 ; fi
+    if [ -n "$found" ] ; then echo "$found" ; cd "$found" ; fi
   done
+  pwd; which exa >/dev/null 2>&1 && exa -ila || ls -al
   if [ -e ./.git ] ; then git branch -vv ; fi
 }
 
