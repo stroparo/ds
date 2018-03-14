@@ -106,7 +106,7 @@ else
 fi
 
 if ${VERBOSE:-false} || \${hasoutput:-false} ; then
-    echo "\${HEADERMSG}"
+    echo "==> \${HEADERMSG}"
     echo "\${CMDOUT}"
     echo ''
 fi
