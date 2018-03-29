@@ -51,4 +51,11 @@ sshkeygenrsa () {
     && cat "${keypath}.pub"
 }
 
+sshsetfiles () {
+  chmod 700 "$HOME/.ssh"
+  [ -e "$HOME"/.ssh/authorized_keys ] && chmod 600 "$HOME"/.ssh/authorized_keys
+  chmod 600 "$HOME"/.ssh/id*
+}
+
 sshkeygenrsa "$@" || exit $?
+sshsetfiles
