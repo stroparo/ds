@@ -5,7 +5,7 @@ stashclone () {
   # Options: [-d targetdir=$PWD/repo_name] [-u stash_user]
 
   # Examples:
-  #  stashclone -u stashuser repohost {owner project/user/group} somereponame
+  #  stashclone -u stashuser repohost {owner project/user/group} [repo1 [repo2 [repo3 ...]]]
 
   # Mandatory:
   typeset repo_host project_user repo_name
@@ -32,29 +32,33 @@ stashclone () {
     exit 1
   fi
 
-  repo_host="$1"
-  project_user="$2"
-  repo_name="$(basename "${3%.git}")"
+  repo_host="$1"; shift
+  project_user="$2"; shift
 
-  if [[ $repo_host = http*://* ]]; then
-    if [[ $repo_host = http:* ]]; then
-      repo_proto='http'
+  for repo_name in "$@" ; do
+
+    repo_name="$(basename "${3%.git}")"
+
+    if [[ $repo_host = http*://* ]]; then
+      if [[ $repo_host = http:* ]]; then
+        repo_proto='http'
+      fi
+      repo_host=${repo_host##*://}
     fi
-    repo_host=${repo_host##*://}
-  fi
 
-  repo_url_prefix="${repo_proto}://${stash_user:+${stash_user}@}${repo_host}"
-  repo_url_prefix="${repo_url_prefix}/stash/scm"
+    repo_url_prefix="${repo_proto}://${stash_user:+${stash_user}@}${repo_host}"
+    repo_url_prefix="${repo_url_prefix}/stash/scm"
 
-  : ${working_repo_dir:=$PWD/$repo_name}
+    : ${working_repo_dir:=$PWD/$repo_name}
 
-  if [ -d "$working_repo_dir" ] ; then
-    echo "WARN: Repo already exists, nothing done ($working_repo_dir)" 1>&2
-  else
-    git clone \
-      "${repo_url_prefix}/${project_user}/${repo_name}.git" \
-      "${working_repo_dir}"
-  fi
+    if [ -d "$working_repo_dir" ] ; then
+      echo "WARN: Repo already exists, nothing done ($working_repo_dir)" 1>&2
+    else
+      git clone --depth=1 \
+        "${repo_url_prefix}/${project_user}/${repo_name}.git" \
+        "${working_repo_dir}"
+    fi
+  done
 }
 
-stashclone "$@"
+stashclone "$@" || exit $?
