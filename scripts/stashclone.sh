@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 stashclone () {
-  # Syntax: {repo_host} {project_user} {repo_name}
+  # Syntax: {repo_host} {owner} {repo_name}
   # Options: [-d targetdir=$PWD/repo_name] [-u stash_user]
 
   # Examples:
-  #  stashclone -u stashuser repohost someproject somereponame
+  #  stashclone -u stashuser repohost {owner project/user/group} somereponame
 
   # Mandatory:
   typeset repo_host project_user repo_name
