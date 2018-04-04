@@ -61,7 +61,7 @@ stashclone () {
     repo_url_full="${repo_url_prefix}/${project_user}/${repo_name}.git"
 
     echo "    URL: '${repo_url_full}'"
-    git clone --depth=1 "${repo_url_full}"
+    git clone "${repo_url_full}"
   done
 
   if [ -n "$working_repo_dir" ] && [ $# -gt 2 ] ; then
