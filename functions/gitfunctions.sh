@@ -55,7 +55,7 @@ gitset () {
       echo "FATAL: Must pass writeable file to -f option." 1>&2
       return 1
     else
-      where="-f ${where}"
+      where="-f${where}"
     fi
   else
     where='--global'
