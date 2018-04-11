@@ -17,6 +17,8 @@ fi
 # Evaluate each line in the DS_POST_CALLS variable:
 
 if [ -n "${DS_POST_CALLS}" ] ; then
+  DS_POST_STATUS=0
+
   while read acommand ; do
 
     if [ -n "${DS_VERBOSE}" ] ; then
