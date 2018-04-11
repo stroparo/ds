@@ -37,15 +37,17 @@ gitset () {
   # Example: gitset "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
 
   typeset email name replace where
+  typeset verbose=false
 
   typeset oldind="${OPTIND}"
   OPTIND=1
-  while getopts ':e:f:n:r' opt ; do
+  while getopts ':e:f:n:rv' opt ; do
     case "${opt}" in
     e) email="${OPTARG}" ;;
     f) where="${OPTARG}" ;;
     n) name="${OPTARG}" ;;
     r) replace="--replace-all";;
+    v) verbose=true;;
     esac
   done
   shift $((OPTIND-1)) ; OPTIND="${oldind}"
@@ -61,13 +63,22 @@ gitset () {
     where='--global'
   fi
 
-  [ -n "$email" ] && git config $replace $where user.email "$email"
-  [ -n "$name" ]  && git config $replace $where user.name "$name"
+  if [ -n "$email" ] ; then
+    $verbose && echo "==>" git config $replace $where "$1" "$2" 1>&2
+    git config $replace $where user.email "$email"
+    $verbose && echo '---'
+  fi
+
+  if [ -n "$name" ]  ; then
+    $verbose && echo "==>" git config $replace $where "$1" "$2" 1>&2
+    git config $replace $where user.name "$name"
+    $verbose && echo '---'
+  fi
 
   while [ $# -ge 2 ] ; do
-    echo "==>" git config $replace $where "$1" "$2" 1>&2
+    $verbose && echo "==>" git config $replace $where "$1" "$2" 1>&2
     git config $replace $where "$1" "$2"
-    echo '---'
+    $verbose && echo '---'
     shift 2
   done
 }
