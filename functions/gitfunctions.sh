@@ -66,18 +66,21 @@ gitset () {
   if [ -n "$email" ] ; then
     $verbose && echo "==>" git config $replace $where "user.email" "$email" 1>&2
     git config $replace $where user.email "$email"
+    $verbose && echo "\$?=$?"
     $verbose && echo '---'
   fi
 
   if [ -n "$name" ]  ; then
     $verbose && echo "==>" git config $replace $where "user.name" "$name" 1>&2
     git config $replace $where user.name "$name"
+    $verbose && echo "\$?=$?"
     $verbose && echo '---'
   fi
 
   while [ $# -ge 2 ] ; do
     $verbose && echo "==>" git config $replace $where "$1" "$2" 1>&2
     git config $replace $where "$1" "$2"
+    $verbose && echo "\$?=$?"
     $verbose && echo '---'
     shift 2
   done
