@@ -34,7 +34,7 @@ EOF
 gitchangeorigin () {
   # Usage: {pattern} {replacement} [repo paths]
   typeset pattern="$1"
-  typeset replace"$2"
+  typeset replace="$2"
   shift 2
 
   for repo in "$@" ; do
