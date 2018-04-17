@@ -31,6 +31,27 @@ ${1}
 EOF
 }
 
+gitchangeorigin () {
+  # Usage: {pattern} {replacement} [repo paths]
+  typeset pattern="$1"
+  typeset replace"$2"
+  shift 2
+
+  for repo in "$@" ; do
+    (
+      cd $repo
+      origin="$(git remote -v | grep origin | head -1 | printawk 2)"
+      origin_edited="$(echo "$origin" | sed -e "s/$pattern/$replace/")"
+      echo "Old: $origin"
+      echo "New: $origin_edited"
+      git remote remove origin
+      git remote add origin "$origin_edited"
+      git pull origin master
+      git push -u origin master
+    )
+  done
+}
+
 gitset () {
   # Info: Configure git.
   # Syn: [-e email] [-n name] [-f file] [-r]
