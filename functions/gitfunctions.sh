@@ -38,6 +38,7 @@ gitchangeorigin () {
   shift 2
 
   for repo in "$@" ; do
+    echo "==> Repo: '$repo'"
     (
       cd $repo
       origin="$(git remote -v | grep origin | head -1 | printawk 2)"
