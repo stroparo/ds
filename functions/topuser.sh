@@ -1,7 +1,4 @@
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 topuser () {
     # Info: Outputs top info for user processes (topas for AIX).

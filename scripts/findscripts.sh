@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 # Info: Finds scripts in root dirs passed as arguments.
 

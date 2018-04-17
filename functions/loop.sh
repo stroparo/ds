@@ -1,7 +1,4 @@
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 loop () {
     # Info: Pass a command to be executed every secs seconds.

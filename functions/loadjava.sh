@@ -1,7 +1,4 @@
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 loadjava () {
     # Info: Loads environment variables based on JAVA_HOME path.

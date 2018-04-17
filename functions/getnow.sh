@@ -1,7 +1,4 @@
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 getnow () {
     # Info: Setup NOW* environment variables based on the system's date.

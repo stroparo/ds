@@ -1,7 +1,4 @@
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 haltsafe () {
     # Info: halts only if any truecrypt is unmounted correctly.

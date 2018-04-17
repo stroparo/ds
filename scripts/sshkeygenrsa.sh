@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 sshkeygenrsa () {
   # Info: Generate id_rsa if none present for the current user.

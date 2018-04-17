@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 # Desktop tray workaround (export empty DBUS_SESSION_BUS_ADDRESS for process):
 # This first approach doesnt work as Dropbox often updates itself:

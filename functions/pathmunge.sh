@@ -1,7 +1,4 @@
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 pathmunge () {
     # Info: prepend (-a causes to append) directory to PATH global.

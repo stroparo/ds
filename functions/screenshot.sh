@@ -1,7 +1,4 @@
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 screenshot () {
     # Info: Take a screenshot of the desktop, by default after 5 seconds.

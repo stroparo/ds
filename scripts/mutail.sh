@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 # Info: Tail multiple files.
 # Syntax: mutail [-n lines] file1[ file2[ file3 ...]]

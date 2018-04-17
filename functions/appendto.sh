@@ -1,7 +1,4 @@
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 appendto () {
     # Info: Append to variable (arg1), the given text (arg2).

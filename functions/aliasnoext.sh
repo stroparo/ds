@@ -1,7 +1,4 @@
 # DS - Daily Shells Library
-# License:
-#  See README.md document in projects page at
-#  https://github.com/stroparo/ds
 
 aliasnoext () {
     # Info: Pick arg-dirs' scripts and yield corresponding aliases with no extension.
