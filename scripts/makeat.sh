@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 # Daily Shells Library
-# More instructions and licensing at:
-# https://github.com/stroparo/ds
 
 # Info: Call configure, make & makeinstall for custom dir/prefix.
 # Rmk: Default prefix is ~/opt/root

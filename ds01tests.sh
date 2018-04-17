@@ -1,6 +1,4 @@
 # Daily Shells Library
-# More instructions and licensing at:
-# https://github.com/stroparo/ds
 
 # #############################################################################
 # Filesystem testing routines

@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 # Daily Shells Library
-# More instructions and licensing at:
-# https://github.com/stroparo/ds
 
 export PNAME="$(basename "$0")"
 export USAGE="

@@ -1,8 +1,6 @@
 #!/usr/bin/env sh
 
 # Daily Shells Library
-# More instructions and licensing at:
-# https://github.com/stroparo/ds
 
 # #############################################################################
 # Fixed globals
