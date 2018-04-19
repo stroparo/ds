@@ -18,11 +18,10 @@ clonegits () {
 
     if [ ! -d "$repo_path" ] ; then
       if ! git clone "$repo" "$repo_path" ; then
-        echo "FATAL: Cloning '$repo' repository to '${repo_path}/'." 1>&2
-        return 1
+        echo "clonegits: ERROR: Cloning '$repo' repository to '${repo_path}/'." 1>&2
       fi
     else
-      echo "SKIP: '$repo_path' repository already exists." 1>&2
+      echo "clonegits: SKIP: '$repo_path' repository already exists." 1>&2
     fi
 
     echo '' 1>&2
