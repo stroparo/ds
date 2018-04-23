@@ -22,13 +22,13 @@ else
 fi
 
 # Aliases
-alias cdbak='d "${DS_ENV_BAK}" -A'
-alias cde='d "${DS_ENV}" -A'
+alias cdbak='d "${DS_ENV_BAK}"'
+alias cde='d "${DS_ENV}"'
 alias cdl='cd "${DS_ENV_LOG}" && (ls -AFlrt | tail -n 64)'
-alias cdll='d "${DS_ENV_LOG}" -Art'
+alias cdll='cd "${DS_ENV_LOG}" && ls -AFlrt'
 alias cdlgt='cd "${DS_ENV_LOG}" && (ls -AFlrt | grep "$(date +"%b %d")")'
 alias cdlt='cd "${DS_ENV_LOG}" && cd "$(ls -1d */|sort|tail -n 1)" && ls -AFlrt'
-alias t='d "${TEMP_DIRECTORY}" -A'
+alias t='d "${TEMP_DIRECTORY}"'
 
 # Oneliners
 dsversion () { echo "==> Daily Shells - ${DS_VERSION}" ; }
