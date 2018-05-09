@@ -7,17 +7,19 @@ pathmunge () {
     #   -x causes variable to be exported.
 
     typeset doexport=false
+    typeset idempotent=false
     typeset mungeafter=false
     typeset varname=PATH
     typeset mgdpath mgdstring previous
 
     typeset oldind="${OPTIND}"
     OPTIND=1
-    while getopts ':av:x' opt ; do
+    while getopts ':aiv:x' opt ; do
         case "${opt}" in
-        a) mungeafter=true ;;
+        a) mungeafter=true;;
+        i) idempotent=true;;
         v) varname="${OPTARG}" ;;
-        x) doexport=true ;;
+        x) doexport=true;;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
@@ -25,6 +27,12 @@ pathmunge () {
     for i in "$@" ; do
         mgdpath="$(eval echo "\"${i}\"")"
         previous="$(eval echo '"${'"${varname}"'}"')"
+
+        if ${idempotent:-false} \
+          && $(echo "${varname}" | grep -F -q -w "${mgdpath}")
+        then
+          continue
+        fi
 
         if ${mungeafter} ; then
             mgdstring="${previous}${previous:+:}${mgdpath}"

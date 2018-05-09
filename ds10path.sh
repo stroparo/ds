@@ -13,7 +13,7 @@ do
   pathmunge -x "$dir"
 done
 
-pathmunge -a -v 'EEPATH' -x "${DS_HOME}"
+pathmunge -a -i -v 'EEPATH' -x "${DS_HOME}"
 
 if [[ $DS_VERBOSE = vv ]] ; then
   chmodshells -a -v "${DS_HOME}"

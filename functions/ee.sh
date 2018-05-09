@@ -15,9 +15,11 @@
 # attribute=value
 #
 # Mandatory attributes:
-# eedesc='description'
 # eeu=user
 # eeh=hostname
+#
+# Recommended attributes:
+# eedesc='description'
 #
 # Optional attributes:
 # eecmd='some command'
