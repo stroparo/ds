@@ -29,7 +29,7 @@ pathmunge () {
         previous="$(eval echo '"${'"${varname}"'}"')"
 
         if ${idempotent:-false} \
-          && $(echo "${varname}" | grep -F -q -w "${mgdpath}")
+          && $(eval echo "\"\$${varname}\"" | grep -F -q -w "${mgdpath}")
         then
           continue
         fi
