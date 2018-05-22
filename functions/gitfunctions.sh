@@ -30,8 +30,16 @@ ${1}
 EOF
 }
 
+confgits () {
+  for repo in "$@" ; do
+    [ -d "$repo/.git" ] || continue
+    touch "$repo/.git/config"
+    gitset -e "$MYEMAIL" -n "$MYSIGN" -r -v -f "$repo/.git/config"
+  done
+}
+
 gitchangeorigin () {
-  # Usage: {pattern} {replacement} [repo paths]
+  # Usage: {sed-pattern} {replacement} [repo paths]
   typeset pattern="$1"
   typeset replace="$2"
   shift 2
