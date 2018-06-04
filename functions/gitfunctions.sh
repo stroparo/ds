@@ -38,7 +38,7 @@ confgits () {
   done
 }
 
-gitchangeorigin () {
+gitremotepatternreplace () {
   # Usage: {sed-pattern} {replacement} [repo paths]
   typeset pattern="$1"
   typeset replace="$2"
