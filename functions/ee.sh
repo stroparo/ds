@@ -32,13 +32,13 @@ eeauth () {
 
     typeset pname=eeauth
     typeset usage="Function eeauth - Push identity file to ee environments
-Syntax: [-e ee-envregex] [-i] [-p {port:-22}] {identfile:-~/.ssh/id_rsa.pub}
+Syntax: [-e ee-envregex] [-i] [-p {ssh_port:-22}] {identfile:-~/.ssh/id_rsa.pub}
 Remark: -i option triggers user confirmation for each environment.
 "
     typeset expression
     typeset identfile
     typeset interactive=false
-    typeset port=22
+    typeset ssh_port=22
 
     typeset oldind="${OPTIND}"
     OPTIND=1
@@ -47,7 +47,7 @@ Remark: -i option triggers user confirmation for each environment.
             e) expression="$OPTARG";;
             h) echo "$usage" ; return ;;
             i) interactive=true;;
-            p) port="$OPTARG";;
+            p) ssh_port="$OPTARG";;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
@@ -60,7 +60,7 @@ Remark: -i option triggers user confirmation for each environment.
             continue
         fi
         ee -s $env
-        ssh-copy-id -i "$identfile" "${ee}"
+        ssh-copy-id -i "$identfile" -p "$ssh_port" "${ee}"
     done
 }
 
