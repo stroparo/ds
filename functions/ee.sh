@@ -32,7 +32,7 @@ eeauth () {
 
     typeset pname=eeauth
     typeset usage="Function eeauth - Push identity file to ee environments
-Syntax: [-e ee-envregex] [-i] {identfile:-~/.ssh/id_rsa.pub} [-p {port:-22}]
+Syntax: [-e ee-envregex] [-i] [-p {port:-22}] {identfile:-~/.ssh/id_rsa.pub}
 Remark: -i option triggers user confirmation for each environment.
 "
     typeset expression
