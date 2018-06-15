@@ -32,25 +32,27 @@ eeauth () {
 
     typeset pname=eeauth
     typeset usage="Function eeauth - Push identity file to ee environments
-Syntax: [-e ee-envregex] [-i] {identfile}
+Syntax: [-e ee-envregex] [-i] {identfile:-~/.ssh/id_rsa.pub} [-p {port:-22}]
 Remark: -i option triggers user confirmation for each environment.
 "
     typeset expression
     typeset identfile
     typeset interactive=false
+    typeset port=22
 
     typeset oldind="${OPTIND}"
     OPTIND=1
-    while getopts ':e:hi' opt ; do
+    while getopts ':e:hip:' opt ; do
         case "${opt}" in
             e) expression="$OPTARG";;
             h) echo "$usage" ; return ;;
             i) interactive=true;;
+            p) port="$OPTARG";;
         esac
     done
     shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
-    identfile="$1"
+    identfile="${1:-$HOME/.ssh/id_rsa.pub}"
     ! ls -l "$identfile" && return 1
 
     for env in $(eel -q | egrep "${expression}") ; do
