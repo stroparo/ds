@@ -106,6 +106,8 @@ dsload () {
 
   typeset dshome="${1:-${DS_HOME:-${HOME}/.ds}}"
 
+  figlet dsload 2>/dev/null
+
   if [ -f "${dshome}/ds.sh" ] ; then
     . "${dshome}/ds.sh" "$ds_home"
     return $?
