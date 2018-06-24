@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 
 # DS - Daily Shells Library
+# Generate RSA ssh key
+
+# #############################################################################
+# Helpers
+
+_print_header () {
+  echo "################################################################################"
+  echo "$@"
+  echo "################################################################################"
+}
+
+# #############################################################################
+# Main routines
 
 sshkeygenrsa () {
   # Info: Generate id_rsa if none present for the current user.
@@ -54,5 +67,9 @@ sshsetfiles () {
   chmod 600 "$HOME"/.ssh/id*
 }
 
+# #############################################################################
+# Main program
+
+_print_header sshkeygenrsa
 sshkeygenrsa "$@" || exit $?
 sshsetfiles
