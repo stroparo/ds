@@ -3,6 +3,8 @@
 # DS - Daily Shells Library
 # Generate RSA ssh key
 
+PROGNAME="sshkeygenrsa.sh"
+
 # #############################################################################
 # Helpers
 
@@ -34,9 +36,9 @@ sshkeygenrsa () {
   done
   # Non interactive, might still exist...
   if [ -e "${keypath}" ] ; then
-    echo "FATAL: Key '${keypath}' already exists" 1>&2
+    echo "${PROGNAME:+$PROGNAME: }SKIP: Key '${keypath}' already exists" 1>&2
     echo "${usage}" 1>&2
-    exit 1
+    exit
   fi
 
   keydir="$(dirname "${keypath}")"
