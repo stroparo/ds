@@ -75,8 +75,8 @@ dsgetfunctions () {
 }
 
 dsgetscripts () {
-  typeset ignore_expr='/(conf|functions|templates)'
-  typeset roots="$(find $DS_HOME/scripts -type d | grep -v "${ignore_expr}")"
+  typeset ignore_expr="$DS_HOME/(conf|functions|templates)"
+  typeset roots="$(find $DS_HOME/scripts -type d | grep -E -v "${ignore_expr}")"
 
   for root in $roots ; do
     findscripts.sh "$root"
