@@ -95,7 +95,7 @@ export HEADERMSG="\$(echo "${PROGRAM:-git}" "${GITCMD}" $@ "# At '\${PWD}'")"
 export CMDOUT="\$(eval "${PROGRAM:-git}" "${GITCMD}" $@ 2>&1)"
 
 if [ -z "\$CMDOUT" ] || \
-    ([ "${GITCMD}" = 'pull' ] && [ "\$CMDOUT" = 'Already up-to-date.' ]) || \
+    ([ "${GITCMD}" = 'pull' ] && [ "\$CMDOUT" = 'Already up to date.' ]) || \
     ([ "${GITCMD}" = 'push' ] && [ "\$CMDOUT" = 'Everything up-to-date' ])
 then
     hasoutput=false
