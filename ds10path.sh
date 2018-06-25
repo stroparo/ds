@@ -3,15 +3,19 @@
 # #############################################################################
 # Executables and PATH
 
+ignore_expr="$DS_HOME/(conf|functions|templates)"
+
 # STRONGLY RECOMMENDED munging the PATH before anything else:
 pathmunge -x "${DS_HOME}"
 
-for dir in $(ls -1 -d "$DS_HOME"/*/ \
-  | grep -E -v '(functions|templates)/$' \
-  | sed -e 's#//*$##')
-do
-  pathmunge -x "$dir"
-done
+if ls -d "$DS_HOME"/*/ >/dev/null 2>&1 ; then
+  for dir in $(ls -1 -d "$DS_HOME"/*/ \
+    | grep -E -v "${ignore_expr}" \
+    | sed -e 's#//*$##')
+  do
+    pathmunge -x "$dir"
+  done
+fi
 
 pathmunge -a -i -v 'EEPATH' -x "${DS_HOME}"
 
