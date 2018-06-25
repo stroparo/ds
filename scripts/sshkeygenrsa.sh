@@ -23,7 +23,7 @@ sshkeygenrsa () {
   typeset comment="${1:-${USER}@$(hostname)}"
   typeset keydir
   typeset keypath="${2:-${HOME}/.ssh/id_rsa}"
-  typeset usage="Usage: {comment} [keypath]"
+  typeset usage="Usage: {comment} [keypath=~/.ssh/id_rsa]"
 
   while [[ $- = *i* ]] && [ -z "${comment}" ] ; do
     echo 'SSH key comment (email, name or whatever)'
