@@ -1,21 +1,22 @@
 # DS - Daily Shells Library
 
 haltsafe () {
-  # Info: halts only if any truecrypt is unmounted correctly.
+  # Info: halts only if any {true,vera}crypt is unmounted correctly.
 
-  typeset tcdismounted=true
+  typeset crypt_dismounted=true
+  typeset crypt_prog=veracrypt
 
-  if which truecrypt >/dev/null 2>&1 && \
-    truecrypt -t -l && \
-    ! truecrypt -d
+  if which $crypt_prog >/dev/null 2>&1 && \
+    $crypt_prog -t -l && \
+    ! $crypt_prog -d
   then
-    tcdismounted=false
+    crypt_dismounted=false
   fi
 
-  if ${tcdismounted:-false} ; then
+  if ${crypt_dismounted:-false} ; then
     sudo shutdown -h now
   else
-    echo "haltsafe: ERROR: truecrypt volumes still mounted." 1>&2
+    echo "haltsafe: ERROR: $crypt_prog volumes still mounted." 1>&2
     return 1
   fi
 }
