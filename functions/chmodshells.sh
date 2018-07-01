@@ -1,6 +1,6 @@
 # DS - Daily Shells Library
 
-chmodshells () {
+chmodscripts () {
     # Info: Sets mode for scripts inside the specified directories.
     # Deps: ds00 aliasnoext pathmunge
 

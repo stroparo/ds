@@ -20,8 +20,8 @@ fi
 pathmunge -a -i -v 'EEPATH' -x "${DS_HOME}"
 
 if [[ $DS_VERBOSE = vv ]] ; then
-  chmodshells -a -v "${DS_HOME}"
+  chmodscripts -a -v "${DS_HOME}"
 else
-  chmodshells -a "${DS_HOME}"
+  chmodscripts -a "${DS_HOME}"
 fi
 true
