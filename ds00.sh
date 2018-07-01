@@ -74,14 +74,15 @@ dsgetfunctions () {
   done | sort
 }
 
-dsgetscripts () {
+_dsgetscriptsdirs () {
   typeset ignore_expr="$DS_HOME/(conf|functions|templates)"
-
-  for root in $(ls -1 -d "$DS_HOME"/*/ \
-    | grep -E -v "${ignore_expr}" \
-    | sed -e 's#//*$##')
-  do
-    findscripts.sh "$root"
+  ls -1 -d "$DS_HOME"/*/ \
+      | grep -E -v "${ignore_expr}" \
+      | sed -e 's#//*$##'
+}
+dsgetscripts () {
+  for dir in $(_dsgetscriptsdirs) ; do
+    findscripts.sh "$dir"
   done
 }
 
