@@ -38,22 +38,14 @@ Installation
 With curl:
 
 ```bash
-bash -c "$(curl -LSf -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
+bash -c "$(curl -LSf "https://raw.githubusercontent.com/stroparo/ds/master/setup.sh" \
+  || curl -LSf "https://bitbucket.org/stroparo/ds/raw/master/setup.sh")"
+${DS_LOADED:-false} || . ~/.ds/ds.sh
 ```
 
-If you do not have curl but have wget:
+ERROR curl not found: If you do not have curl, substitute the 'curl [options]' call for ```wget -O -```.
 
-```bash
-bash -c "$(wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
-```
-
-In restrictive environments with no SSL recognition, allow insecure download:
-
-```bash
-FORCE=true bash -c "$(curl -LSf -k -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')" && . ~/.ds/ds.sh
-```
-
-Last resort as maybe your network will allow downloading zip files:
+Archive download (insecure SSL with curl -k option), and then call the setup script:
 
 ```bash
 curl -LSf -k -o /tmp/ds.zip \
@@ -62,7 +54,9 @@ curl -LSf -k -o /tmp/ds.zip \
   && cd "$HOME"/ds-master \
   && [ "$(basename "$PWD")" = 'ds-master' ] \
   && ./setup.sh -f \
-  && . ~/.ds/ds.sh
+  && . ~/.ds/ds.sh \
+  && ${DS_LOADED:-false} \
+  && rm -rf /tmp/ds.zip
 ```
 
 ### Manual
