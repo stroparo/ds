@@ -99,6 +99,7 @@ EOF
       echo "$USAGE" 1>&2
       exit 1
     elif [ -z "$repo" ] ; then
+      # Shift right and put in a default domain:
       repo=$user
       user=$domain
       domain=github.com
