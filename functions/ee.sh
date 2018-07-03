@@ -199,6 +199,7 @@ eel () {
     while read eefile ; do
 
         if ! $quiet ; then
+            echo
             echo "==> '${eefile}' <==" 1>&2
         fi
 
