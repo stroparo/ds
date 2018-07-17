@@ -42,7 +42,7 @@ d () {
     if [ -z "$found" ] ; then found="$(find . -type d -name "*${dir}*" | head -1)" ; fi
     if [ -n "$found" ] ; then echo "$found" ; cd "$found" ; fi
   done
-  pwd; which exa >/dev/null 2>&1 && exa -ila || ls -al
+  pwd; which exa >/dev/null 2>&1 && exa -ahil || ls -al
   if [ -e ./.git ] ; then git branch -vv ; fi
 }
 
