@@ -35,12 +35,12 @@ Installation
 
 ### Automatic
 
-With curl:
+Copy & paste the following command into your shell session in a terminal:
 
 ```bash
 bash -c "$(curl -LSf "https://raw.githubusercontent.com/stroparo/ds/master/setup.sh" \
   || curl -LSf "https://bitbucket.org/stroparo/ds/raw/master/setup.sh")"
-${DS_LOADED:-false} || . ~/.ds/ds.sh
+type dsload 2>/dev/null && dsload || . ~/.ds/ds.sh
 ```
 
 ERROR curl not found: If you do not have curl, substitute the 'curl [options]' call for ```wget -O -```.
