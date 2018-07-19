@@ -6,7 +6,7 @@
 # Function dubulk - Displays disk usage of filenames read from stdin.
 #  Handles massive file lists.
 dubulk () {
-  xargs -I{} -n 1000 du -sm -- {}
+  xargs -I{} -n 1 -- du -sm -- "{}"
 }
 
 # Function dudesc - Displays disk usage of filenames read from stdin.
