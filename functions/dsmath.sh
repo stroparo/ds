@@ -56,20 +56,7 @@ getsum () {
     typeset field="${2}"
     shift 2
 
-    awk -F"${sep}" -vfield="${field}" '
-        BEGIN {
-            sum = 0;
-        }
-
-        {
-            sum += $field;
-        }
-
-        END {
-            print sum;
-        }
-    ' "$@"
-
+    awk ${sep:+-F$sep} -vfield="${field}" '{ sum += $field; } END { print sum; }' "$@"
 }
 
 isinslice () {
