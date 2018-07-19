@@ -26,23 +26,23 @@ dufile () {
 
 # Function dugt1 - Displays disk usage of filenames read from stdin which are greater than 1MB.
 dugt1 () {
-  dubulk | sed -n -e '/^[1-9][0-9]*[.]/p'
+  dubulk | sed -n -e '/^[1-9][0-9]*/p'
 }
 
 # Function dugt1desc - Displays disk usage of filenames read from stdin which are greater than 1MB.
 #  Sorted in descending order.
 dugt1desc () {
-  dubulk | sed -n -e '/^[1-9][0-9]*[.]/p' | sort -rn
+  dubulk | sed -n -e '/^[1-9][0-9]*/p' | sort -rn
 }
 
 # Function dugt10 - Displays disk usage of filenames > 10MBm read from stdin.
 #  Sorted in descending order.
 dugt10 () {
-  dubulk | sed -n -e '/^[1-9][0-9][0-9]*[.]/p'
+  dubulk | sed -n -e '/^[1-9][0-9][0-9]*/p'
 }
 
 # Function dugt10desc - Displays disk usage of filenames > 10MBm read from stdin.
 #  Sorted in descending order.
 dugt10desc () {
-  dubulk | sed -n -e '/^[1-9][0-9][0-9]*[.]/p' | sort -rn
+  dubulk | sed -n -e '/^[1-9][0-9][0-9]*/p' | sort -rn
 }
