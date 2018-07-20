@@ -62,19 +62,28 @@ fi
 # #############################################################################
 # Install
 
-if [ -e ./ds.sh ] ; then
+if [ -e ./ds.sh ] && [ "$PWD" != "$INSTALL_DIR" ] ; then
   echo "Daily Shells setup: installing..." 1>&2
   mkdir "${INSTALL_DIR}" \
     && cp -f -R -v "$PWD"/* "$INSTALL_DIR"/
   INST_RESULT=$?
-  echo "Installation dir persisted at '$PWD'"
+  echo "INFO: Daily Shells setup dir used was '$PWD'"
 else
   echo "Daily Shells setup: downloading and installing..." 1>&2
   ("$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "$DS_PKG_URL" \
     || "$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "$DS_PKG_URL_ALT") \
-    && unzip "${INSTALL_DIR}.zip" -d "$TEMP_DIR" \
-    && mv "$TEMP_DIR/ds-master" "${INSTALL_DIR}"
-  INST_RESULT=$?
+    && unzip "${INSTALL_DIR}.zip" -d "$TEMP_DIR"
+
+  # Old: mv "$TEMP_DIR/ds-master" "${INSTALL_DIR}"
+  DL_RESULT=$?
+  if [ $DL_RESULT -eq 0 ] ; then
+    zip_dir=$(unzip -l "${INSTALL_DIR}.zip" | head -5 | tail -1 | awk '{print $NF;}')
+    echo "Zip dir: '$zip_dir'" 1>&2
+    mv -f -v "$TEMP_DIR"/"${zip_dir}" "${INSTALL_DIR}" 1>&2
+    INST_RESULT=$?
+  else
+    INST_RESULT=$DL_RESULT
+  fi
 fi
 
 # #############################################################################
