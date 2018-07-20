@@ -7,7 +7,8 @@
 
 USAGE="[-h] [-f]"
 
-DS_PKG_URL="https://github.com/stroparo/ds/archive/master.zip"
+DS_PKG_URL="https://bitbucket.org/stroparo/ds/get/master.zip"
+DS_PKG_URL_ALT="https://github.com/stroparo/ds/archive/master.zip"
 TEMP_DIR=$HOME
 
 # #############################################################################
@@ -69,7 +70,8 @@ if [ -e ./ds.sh ] ; then
   echo "Installation dir persisted at '$PWD'"
 else
   echo "Daily Shells setup: downloading and installing..." 1>&2
-  "$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "$DS_PKG_URL" \
+  ("$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "$DS_PKG_URL" \
+    || "$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "$DS_PKG_URL_ALT") \
     && unzip "${INSTALL_DIR}.zip" -d "$TEMP_DIR" \
     && mv "$TEMP_DIR/ds-master" "${INSTALL_DIR}"
   INST_RESULT=$?
