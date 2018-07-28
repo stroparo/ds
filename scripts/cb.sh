@@ -74,7 +74,7 @@ cb () {
         if [ -z "$input" ]; then
             $QUIET || echo "${USAGE}" 1>&2
         else # Copy to clipboard and print copied excerpt to the screen:
-            echo -n "$input" | xclip -selection c
+            echo -n "$input" | xclip -selection c || exit $?
             if [ ${#input} -gt 80 ] ; then
                 input="$(echo ${input} | cut -c1-80)$_trn_col...$_col_end"
             fi
