@@ -53,9 +53,7 @@ fi
 
 # Skip this setup altogether if installation path already occupied:
 if [ -d "$INSTALL_DIR" ] ; then
-  echo "SKIP: This is a first setup only script and '${INSTALL_DIR}' dir already exists" 1>&2
-  echo "       ... if you want to proceed first remove it or move it out of there" 1>&2
-  echo "       ... and rerun this" 1>&2
+  echo "SKIP: '${INSTALL_DIR}' dir already exists" 1>&2
   exit
 fi
 
