@@ -70,6 +70,11 @@ confgits () {
   done
 }
 
+gitenforcemyuser () {
+  [ -n "$MYEMAIL" ] && git config --global --replace-all user.email "$MYEMAIL"
+  [ -n "$MYSIGN" ] && git config --global --replace-all user.name "$MYSIGN"
+}
+
 gitremotepatternreplace () {
   # Usage: {sed-pattern} {replacement} [repo paths]
   typeset pattern="$1"
