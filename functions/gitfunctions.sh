@@ -30,6 +30,38 @@ ${1}
 EOF
 }
 
+clonemygits () {
+  typeset devdir="${DEV:-$HOME/workspace}"
+  typeset mygits
+
+  # Options:
+  typeset oldind="${OPTIND}"
+  OPTIND=1
+  while getopts ':d:' option ; do
+    case "${option}" in
+      d) devdir="${OPTARG}";;
+    esac
+  done
+  shift $((OPTIND-1)) ; OPTIND="${oldind}"
+
+  if [ -n "$1" ] ; then
+    mygits="$*"
+  else
+    mygits="$MYGITS"
+  fi
+  if [ -z "$mygits" ] ; then
+    echo "clonemygits: SKIP: no Git repos in MYGITS or args." 1>&2
+    return
+  fi
+
+  if [ -d "${devdir}" ] ; then
+    # Using the clonegits function from Daily Shells at stroparo.github.io/ds:
+    (cd "${devdir}" \
+      && [ "$(basename "$(pwd)")" = "$(basename "$devdir")" ] \
+      && clonegits "$mygits")
+  fi
+}
+
 confgits () {
   for repo in "$@" ; do
     [ -d "$repo/.git" ] || continue
