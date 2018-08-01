@@ -93,12 +93,19 @@ main () {
 ${plugin}
 EOF
 
-    if [ -z "$user" ] ; then
-      echo "FATAL: Must pass at least user/repo." 1>&2
+    if [ -z "$domain" ] ; then
+      echo "FATAL: Must pass at least [user/]repo." 1>&2
       echo 1>&2
       echo "$USAGE" 1>&2
       exit 1
+    elif [ -z "$user" ] ; then
+      echo "WARN: No 'domain/{user}/' prefix, defaulting to 'github.com/stroparo/'..." 1>&2
+      # Shift right and put in a default domain and user:
+      repo=$domain
+      user=stroparo
+      domain=github.com
     elif [ -z "$repo" ] ; then
+      echo "WARN: No domain, defaulting to 'github.com'..." 1>&2
       # Shift right and put in a default domain:
       repo=$user
       user=$domain
