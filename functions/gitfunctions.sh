@@ -77,22 +77,31 @@ gitenforcemyuser () {
 
 gitremotepatternreplace () {
   # Usage: {sed-pattern} {replacement} [repo paths]
+
+  typeset post_replace_sync=false
+  [ "$1" = '-s' ] && post_replace_sync=true && shift
+
   typeset pattern="$1"
   typeset replace="$2"
   shift 2
+
+  # TODO have it as an option
+  typeset branch=origin
 
   for repo in "$@" ; do
     echo "==> Repo: '$repo'"
     (
       cd $repo
-      origin="$(git remote -v | grep origin | head -1 | printawk 2)"
-      origin_edited="$(echo "$origin" | sed -e "s/$pattern/$replace/")"
-      echo "Old: $origin"
-      echo "New: $origin_edited"
+      origin="$(git remote -v | grep origin | head -1 | awk '{print $2;}')"
+      origin_edited="$(echo "$origin" | sed -e "s#${pattern}#${replace}#")"
+      echo "Old '$branch' branch: $origin"
+      echo "New '$branch' branch: $origin_edited"
       git remote remove origin
       git remote add origin "$origin_edited"
-      git pull origin master
-      git push -u origin master
+      if "${post_replace_sync:-false}" ; then
+        git pull origin
+        git push origin HEAD
+      fi
     )
   done
 }
