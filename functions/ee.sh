@@ -25,8 +25,8 @@
 # eecmd='some command'
 # eeid='some .pem or other file to be handled to ssh -i option'
 
-eecpfrom () { eesel "${1%%:*}" ; scp "${ee}:${1##*:}" "$2" ; }
-eecpto () { eesel "${2%%:*}" ; scp "$1" "${ee}:${2##*:}" ; }
+eecpfrom () { eesel "${1%%:*}" ; scp -P ${eeport:-22} "${ee}:${1##*:}" "$2" ; }
+eecpto () { eesel "${2%%:*}" ; scp -P ${eeport:-22} "$1" "${ee}:${2##*:}" ; }
 
 eeauth () {
 
