@@ -1,10 +1,31 @@
 # DS - Daily Shells Library
 
+# #############################################################################
 # Globals
 
 SETUP_URL='https://raw.githubusercontent.com/stroparo/ds/master/setup.sh'
 
-# Setup the downloader program (curl/wget)
+# #############################################################################
+# Globals - Mounts prefix root dir filename for Linux and Windows:
+
+if (uname -a | grep -i -q linux) ; then
+  MOUNTS_PREFIX="/media/$USER"
+  if egrep -i -q 'centos|fedora|oracle|red *hat' /etc/*release ; then
+    MOUNTS_PREFIX="/var/media/$USER"
+  fi
+elif (uname -a | egrep -i -q "cygwin|mingw|msys|win32|windows") ; then
+  if [ -d '/c/Windows' ] ; then
+    MOUNTS_PREFIX=""
+  elif [ -d '/drives/c/Windows' ] ; then
+    MOUNTS_PREFIX="/drives"
+  elif [ -d '/cygdrive/c/Windows' ] ; then
+    MOUNTS_PREFIX="/cygdrive"
+  fi
+fi
+
+# #############################################################################
+# Globals - the downloader program (curl/wget)
+
 if which curl >/dev/null 2>&1 ; then
   export DLPROG=curl
   export DLOPT='-LSfs'
@@ -21,7 +42,9 @@ else
   exit 1
 fi
 
+# #############################################################################
 # Aliases
+
 alias cdbak='d "${DS_ENV_BAK}"'
 alias cde='d "${DS_ENV}"'
 alias cdl='cd "${DS_ENV_LOG}" && (ls -AFlrt | tail -n 64)'
@@ -30,8 +53,13 @@ alias cdlgt='cd "${DS_ENV_LOG}" && (ls -AFlrt | grep "$(date +"%b %d")")'
 alias cdlt='cd "${DS_ENV_LOG}" && cd "$(ls -1d */|sort|tail -n 1)" && ls -AFlrt'
 alias t='d "${TEMP_DIRECTORY}"'
 
+# #############################################################################
 # Oneliners
+
 dsversion () { echo "==> Daily Shells - ${DS_VERSION}" ; }
+
+# #############################################################################
+# Functions
 
 unalias d 2>/dev/null
 unset d 2>/dev/null
