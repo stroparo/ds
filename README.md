@@ -19,10 +19,10 @@ Help
 The dshelp function is the help system entry point. It will output something like this:
 
 ```
-dsgetfunctions - list daily shells' functions
-dsgetscripts - list daily shells' scripts
 dshelp - display this help messsage
 dsinfo - display environment information
+dslistfunctions - list daily shells' functions
+dslistscripts - list daily shells' scripts
 dsversion - display the version of this Daily Shells instance
 ```
 

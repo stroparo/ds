@@ -85,6 +85,7 @@ main () {
     protocol=$(echo "$plugin" | grep -o "^.*://")
     protocol=${protocol%://}
     : ${protocol:=https}
+    original_plugin_string="${plugin}"
     plugin="${plugin#*://}"
 
     [ -z "$plugin" ] && echo "WARN: empty arg ignored" && continue
@@ -129,6 +130,8 @@ EOF
     git clone --depth 1 "$repo_url" \
       && rm -f -r "${repo_dit}/.git" \
       && cp -a "${repo_dir}"/* "${DS_HOME}/" \
+      && (grep -q "^${original_plugin_string}\$" "${HOME}/.dsplugins" \
+            || echo "${original_plugin_string}" >> "${HOME}/.dsplugins") \
       && rm -f -r "${repo_dir}" \
       && echo \
       && echo "INFO: Plugin at '${repo_url}' installed successfully" \

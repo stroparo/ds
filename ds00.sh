@@ -76,17 +76,22 @@ d () {
 
 dsbackup () {
   typeset dshome="${1:-${DS_HOME:-${HOME}/.ds}}"
+  typeset bakarea="${HOME}/.ds-backups"
   typeset timestamp="$(date +%Y%m%d-%OH%OM%OS)"
+  typeset bakdir="${bakarea}/${timestamp}"
 
-  cp -a "$dshome" "$dshome-$timestamp" \
-    && echo "$dshome-$timestamp"
+  [ -d "${bakdir}" ] || mkdir -p "${bakdir}"
+  ls -d "${bakdir}" >/dev/null || return $?
+
+  cp -a "${dshome}"/* "${bakdir}"/ \
+    && ls -1 -d "${bakdir}"
 }
 
-dsgetfunctions () {
+dslistfunctions () {
 
   typeset filename item items itemslength
 
-  for i in $(ls -1 "$DS_HOME"/functions/*sh) ; do
+  for i in $(ls -1 "${DS_HOME}"/functions/*sh) ; do
 
     items=$(egrep '^ *(function [_a-zA-Z0-9][_a-zA-Z0-9]* *[{]|[_a-zA-Z0-9][_a-zA-Z0-9]* *[(][)] *[{])' "$i" /dev/null | \
           sed -e 's#^.*functions/##' -e  's/[(][)].*$//')
@@ -103,12 +108,12 @@ dsgetfunctions () {
 }
 
 _dsgetscriptsdirs () {
-  typeset ignore_expr="$DS_HOME/(conf|functions|templates)"
-  ls -1 -d "$DS_HOME"/*/ \
-      | grep -E -v "${ignore_expr}" \
-      | sed -e 's#//*$##'
+  typeset ignore_expr="${DS_HOME}/(conf|functions|templates)"
+  ls -1 -d "${DS_HOME}"/*/ \
+    | grep -E -v "${ignore_expr}" \
+    | sed -e 's#//*$##'
 }
-dsgetscripts () {
+dslistscripts () {
   for dir in $(_dsgetscriptsdirs) ; do
     findscripts.sh "$dir"
   done
@@ -117,10 +122,10 @@ dsgetscripts () {
 dshelp () {
   echo "DS - Daily Shells Library - Help
 
-dsgetfunctions - list daily shells' functions
-dsgetscripts - list daily shells' scripts
 dshelp - display this help messsage
 dsinfo - display environment information
+dslistfunctions - list daily shells' functions
+dslistscripts - list daily shells' scripts
 dsversion - display the version of this Daily Shells instance
 " 1>&2
 }
@@ -137,6 +142,8 @@ dsload () {
   typeset dshome="${1:-${DS_HOME:-${HOME}/.ds}}"
 
   figlet dsload 2>/dev/null
+  echo
+  echo "==> Daily Shells 'dsload' started..."
 
   if [ -f "${dshome}/ds.sh" ] ; then
     . "${dshome}/ds.sh" "$ds_home"
@@ -144,13 +151,11 @@ dsload () {
   fi
 
   export DS_HOME="$dshome"
-
-  echo "INFO: Installing DS into '${dshome}' ..." 1>&2
-  bash -c "$($DLPROG $DLOPT $DLOUT - "$SETUP_URL")" dummy "$dshome" \
-    && . "${dshome}/ds.sh" "${dshome}" 1>&2
-
-  if [ $? -ne 0 ] || [ -z "${DS_LOADED}" ] ; then
-    echo "FATAL: Could not load DS - Daily Shells." 1>&2
+  echo "INFO: Installing DS into '${DS_HOME}' ..." 1>&2
+  unset DS_LOADED
+  bash -c "$($DLPROG $DLOPT $DLOUT - "$SETUP_URL")" dummy "${DS_HOME}"
+  if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" 1>&2 || [ -z "${DS_LOADED}" ] ; then
+    echo "dsload: FATAL: Could not load DS - Daily Shells." 1>&2
     return 1
   else
     return 0
@@ -160,22 +165,27 @@ dsload () {
 dsupgrade () {
   typeset backup
 
-  if [ -z "$DS_HOME" ] ; then
+  if [ -z "${DS_HOME}" ] ; then
     echo "dsupgrade: FATAL: No DS_HOME set." 1>&2
+    return 1
+  fi
+  if [ ! -d "${DS_HOME}" ] ; then
+    echo "dsupgrade: FATAL: No DS_HOME='${DS_HOME}' dir." 1>&2
     return 1
   fi
 
   backup=$(dsbackup)
 
-  if [ -z "$backup" ] ; then
+  if [ -z "${backup}" ] || [ ! -f "${backup}/ds.sh" ]; then
     echo "dsupgrade: FATAL: backup failed... sequence cancelled" 1>&2
     return 1
-  elif rm -rf "$DS_HOME" && dsload "$DS_HOME" ; then
-    echo "dsupgrade: SUCCESS: upgrade complete (beware of any backups left at $DS_HOME-{some timestamp})"
+  elif (rm -rf "${DS_HOME}" && dsload "${DS_HOME}" && dshashplugins.sh) ; then
+    echo "dsupgrade: SUCCESS: upgrade complete - backup of previous version at '${backup}'"
+    dsload "${DS_HOME}"
   else
     echo "dsupgrade: FATAL: upgrade failed ... restoring '${backup}' ..." 1>&2
-    rm -f -r "$DS_HOME" \
-      && mv -f "$backup" "$DS_HOME" \
+    rm -f -r "${DS_HOME}" \
+      && cp -a -f "${backup}" "${DS_HOME}" \
       && echo "dsupgrade: SUCCESS: restored '${backup}' into '${DS_HOME}'"
     if [ $? -ne 0 ] ; then
       echo "dsupgrade: FATAL: restore failed" 1>&2
