@@ -47,8 +47,8 @@ _hash_ds_plugins_locally () {
       echo "==> Daily Shells plugin '${plugin_string}' hashing from local dir: '${plugin_root}'..."
       echo
       if ls -1 -d "${plugin_root}/${plugin_barename}" >/dev/null 2>&1 ; then
-        cp -a "${plugin_root}/${plugin_barename}"/*.sh "$DS_HOME/" 1>&2 || failures=true
-        cp -a "${plugin_root}/${plugin_barename}"/*/ "$DS_HOME/" 1>&2 || failures=true
+        cp -a -v "${plugin_root}/${plugin_barename}"/*.sh "$DS_HOME/" 1>&2 || failures=true
+        cp -a -v "${plugin_root}/${plugin_barename}"/*/ "$DS_HOME/" 1>&2 || failures=true
         continue
       fi
     done
