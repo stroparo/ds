@@ -213,7 +213,13 @@ dsupgrade () {
   if [ $? -ne 0 ] || [ -z "${backup}" ] || [ ! -f "${backup}/ds.sh" ]; then
     echo "${progname}: FATAL: backup failed... sequence cancelled" 1>&2
     return 1
-  elif (rm -rf "${DS_HOME}" && dsload "${DS_HOME}" && dshashplugins.sh) ; then
+  elif (
+    rm -rf "${DS_HOME}" \
+    && > "${DS_PLUGINS_INSTALLED_FILE}" \
+    && dsload "${DS_HOME}" \
+    && dshashplugins.sh
+  )
+  then
     echo "${progname}: SUCCESS: upgrade complete - backup of previous version at '${backup}'"
     dsload "${DS_HOME}"
   else
