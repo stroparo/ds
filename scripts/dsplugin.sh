@@ -120,7 +120,7 @@ _install_plugins () {
 
     [ -z "${plugin}" ] && echo "${PROGNAME:+$PROGNAME: }WARN: empty arg ignored" && continue
 
-    if ! grep -q "${plugin_basename}\$" "${DS_PLUGINS_INSTALLED_FILE}" || ${FORCE:-false} ; then
+    if ! grep -q -w "${plugin_barename}" "${DS_PLUGINS_INSTALLED_FILE}" || ${FORCE:-false} ; then
       echo
       echo "${PROGNAME:+$PROGNAME: }INFO: plugin '${plugin_barename}' (${plugin}) installation..."
     else
