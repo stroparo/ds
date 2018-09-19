@@ -61,7 +61,7 @@ fi
 # Install
 
 if [ -e ./ds.sh ] && [ "$PWD" != "$INSTALL_DIR" ] ; then
-  echo "Daily Shells setup: installing..." 1>&2
+  echo "Daily Shells setup from local dir '${PWD}'..." 1>&2
   mkdir "${INSTALL_DIR}" \
     && cp -f -R -v "$PWD"/* "$INSTALL_DIR"/
   INST_RESULT=$?
