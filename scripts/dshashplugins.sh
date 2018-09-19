@@ -43,6 +43,9 @@ _hash_ds_plugins_locally () {
     plugin_barename="${plugin_basename%.git}"
 
     for plugin_root in "$@" ; do
+      echo
+      echo "==> Daily Shells plugin hashing from local dir: '${plugin_root}'..."
+      echo
       if ls -1 -d "${plugin_root}/${plugin_barename}" >/dev/null 2>&1 ; then
         cp -a "${plugin_root}/${plugin_barename}"/*.sh "$DS_HOME/" 1>&2 || failures=true
         cp -a "${plugin_root}/${plugin_barename}"/*/ "$DS_HOME/" 1>&2 || failures=true
@@ -67,6 +70,9 @@ _hash_ds_plugins () {
     return $?
   fi
 
+  echo
+  echo "==> Daily Shells plugin hashing from '${DS_PLUGINS_FILE}'..."
+  echo
   dsplugin.sh -f "${DS_PLUGINS_FILE}" || failures=true
 
   if ${failures:-false} ; then

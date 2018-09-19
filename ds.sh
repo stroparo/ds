@@ -11,6 +11,7 @@ if which tr >/dev/null 2>&1 ; then
 fi
 export DS_HOME
 
+export DS_BACKUPS_DIR="${HOME}/.ds-backups"
 export DS_CONF="${DS_HOME}/conf"
 export DS_PLUGINS_FILE="${HOME}/.dsplugins"
 export DS_PLUGINS_INSTALLED_FILE="${HOME}/.dsplugins-installed"
@@ -19,6 +20,8 @@ export DS_VERSION='v0.4.0 2018-01-05'
 # #############################################################################
 # DS core
 
+touch "${DS_PLUGINS_FILE}"
+touch "${DS_PLUGINS_INSTALLED_FILE}"
 . "${DS_HOME}/ds00.sh" || return 10
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds0[1-9]*sh"
 

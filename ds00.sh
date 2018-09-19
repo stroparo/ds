@@ -77,15 +77,48 @@ d () {
 
 dsbackup () {
   typeset dshome="${1:-${DS_HOME:-${HOME}/.ds}}"
-  typeset bakarea="${HOME}/.ds-backups"
   typeset timestamp="$(date +%Y%m%d-%OH%OM%OS)"
-  typeset bakdir="${bakarea}/${timestamp}"
+  typeset bakdir="${DS_BACKUPS_DIR}/${timestamp}"
 
   [ -d "${bakdir}" ] || mkdir -p "${bakdir}"
   ls -d "${bakdir}" >/dev/null || return $?
 
-  cp -a "${dshome}"/* "${bakdir}"/ \
-    && ls -1 -d "${bakdir}"
+  export DS_LAST_BACKUP=""
+  cp -a "${dshome}"/* "${bakdir}"/
+  if [ $? -eq 0 ] ; then
+    export DS_LAST_BACKUP="$(ls -1 -d "${bakdir}")"
+    echo "${DS_LAST_BACKUP}"
+    return 0
+  else
+    return 1
+  fi
+}
+
+dsrestorebackup () {
+  typeset progname="dsrestorebackup"
+
+  if [ -z "${DS_LAST_BACKUP}" ] ; then
+    echo "${progname}: SKIP: No last backup in the current session." 1>&2
+    return 1
+  fi
+
+  if [ -d "${DS_LAST_BACKUP}" ] ; then
+    echo "${progname}: INFO: Restoring Daily Shells backup..." 1>&2
+    rm -f -r "${DS_HOME}";  mkdir "${DS_HOME}"
+    if [ -d "${DS_HOME}" ] \
+      && [ ! -f "${DS_HOME}/ds.sh" ] \
+      && cp -a -v "${DS_LAST_BACKUP}/*" "${DS_HOME}/"
+    then
+      echo "${progname}: INFO: Backup restored" 1>&2
+      return 0
+    else
+      echo "${progname}: FATAL: Restore failed" 1>&2
+      return 1
+    fi
+  else
+    echo "${progname}: FATAL: There was no previous DS version backed up" 1>&2
+    return 1
+  fi
 }
 
 dslistfunctions () {
