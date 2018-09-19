@@ -120,7 +120,7 @@ _install_plugins () {
 
     [ -z "${plugin}" ] && echo "${PROGNAME:+$PROGNAME: }WARN: empty arg ignored" && continue
 
-    if ! grep -q "^${plugin_basename}\$" "${DS_PLUGINS_INSTALLED_FILE}" || ${FORCE:-false} ; then
+    if ! grep -q "${plugin_basename}\$" "${DS_PLUGINS_INSTALLED_FILE}" || ${FORCE:-false} ; then
       echo
       echo "${PROGNAME:+$PROGNAME: }INFO: plugin '${plugin_barename}' (${plugin}) installation..."
     else
@@ -168,7 +168,10 @@ EOF
     git clone --depth 1 "${repo_url}" \
       && rm -f -r "${repo_dir}/.git" \
       && cp -a "${repo_dir}"/* "${DS_HOME}/" \
-      && echo "${plugin_string}" >> "${DS_PLUGINS_INSTALLED_FILE}" \
+      && (grep -q "${plugin_basename}\$" "${DS_PLUGINS_FILE}" \
+            || echo "${plugin_string}" >> "${DS_PLUGINS_FILE}") \
+      && (grep -q "${plugin_basename}\$" "${DS_PLUGINS_INSTALLED_FILE}" \
+            || echo "${plugin_string}" >> "${DS_PLUGINS_INSTALLED_FILE}") \
       && rm -f -r "${repo_dir}" \
       && echo \
       && echo "${PROGNAME:+$PROGNAME: }INFO: Plugin at '${repo_url}' installed successfully" \
