@@ -3,7 +3,8 @@
 # #############################################################################
 # Globals
 
-SETUP_URL='https://raw.githubusercontent.com/stroparo/ds/master/setup.sh'
+DS_SETUP_URL="https://bitbucket.org/stroparo/ds/raw/master/setup.sh"
+DS_SETUP_URL_ALT="https://raw.githubusercontent.com/stroparo/ds/master/setup.sh"
 
 # #############################################################################
 # Globals - Mounts prefix root dir filename for Linux and Windows:
@@ -153,7 +154,7 @@ dsload () {
   export DS_HOME="$dshome"
   echo "INFO: Installing DS into '${DS_HOME}' ..." 1>&2
   unset DS_LOADED
-  bash -c "$($DLPROG $DLOPT $DLOUT - "$SETUP_URL")" dummy "${DS_HOME}"
+  bash -c "$($DLPROG $DLOPT $DLOUT - "$DS_SETUP_URL")" dummy "${DS_HOME}"
   if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" 1>&2 || [ -z "${DS_LOADED}" ] ; then
     echo "dsload: FATAL: Could not load DS - Daily Shells." 1>&2
     return 1
