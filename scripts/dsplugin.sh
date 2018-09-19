@@ -7,6 +7,11 @@
 
 # Plugin installer for Daily Shells
 
+PROGNAME="dsplugin.sh"
+
+# #############################################################################
+# Mandatory requirements
+
 ckds () {
   if [ -z "${DS_VERSION}" ] && ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1
   then
@@ -19,7 +24,7 @@ ckds () {
 }
 ckds || exit $?
 
-! which git >/dev/null && echo "FATAL: git not in path" 1>&2 && exit 1
+! which git >/dev/null && echo "${PROGNAME:+$PROGNAME: }FATAL: git not in path" 1>&2 && exit 1
 
 # #############################################################################
 # Globals
@@ -47,16 +52,18 @@ DESCRIPTION
 # Options:
 
 export DOMAIN=github.com
+export FORCE=false
 export QUIET=false
 export USE_SSH=false
 export VERBOSE=false
 
 OPTIND=1
-while getopts ':hqsv' opt ; do
+while getopts ':fhqsv' opt ; do
   case ${opt} in
 
     h) echo "${USAGE}" ; exit ;;
 
+    f) export FORCE=true;;
     q) export QUIET=true;;
     s) export USE_SSH=true;;
     v) export VERBOSE=true;;
@@ -73,12 +80,21 @@ fi
 # #############################################################################
 # Functions
 
+_check_core () {
+  if ! touch "${HOME}/.dsplugins" ; then
+    echo "${PROGNAME:+$PROGNAME: }FATAL: Could not touch ~/.dsplugins file." 1>&2
+    exit 1
+  fi
+}
+
 main () {
 
   typeset domain user repo remainder # for repo URLs
   typeset protocol
   typeset repo_dir
   typeset repo_url
+
+  _check_core
 
   for plugin in "$@" ; do
 
@@ -88,25 +104,34 @@ main () {
     original_plugin_string="${plugin}"
     plugin="${plugin#*://}"
 
-    [ -z "$plugin" ] && echo "WARN: empty arg ignored" && continue
+    [ -z "$plugin" ] && echo "${PROGNAME:+$PROGNAME: }WARN: empty arg ignored" && continue
+
+    if ! grep -q "^${original_plugin_string}\$" "${HOME}/.dsplugins" || ${FORCE:-false} ; then
+      echo
+      echo "${PROGNAME:+$PROGNAME: }INFO: plugin '${plugin}' installation..."
+    else
+      echo
+      echo "${PROGNAME:+$PROGNAME: }SKIP: plugin '${plugin}'."
+      continue
+    fi
 
     IFS='/' read domain user repo remainder <<EOF
 ${plugin}
 EOF
 
     if [ -z "$domain" ] ; then
-      echo "FATAL: Must pass at least [user/]repo." 1>&2
+      echo "${PROGNAME:+$PROGNAME: }FATAL: Must pass at least [user/]repo." 1>&2
       echo 1>&2
       echo "$USAGE" 1>&2
       exit 1
     elif [ -z "$user" ] ; then
-      echo "WARN: No 'domain/{user}/' prefix, defaulting to 'github.com/stroparo/'..." 1>&2
+      echo "${PROGNAME:+$PROGNAME: }WARN: No 'domain/{user}/' prefix, defaulting to 'github.com/stroparo/'..." 1>&2
       # Shift right and put in a default domain and user:
       repo=$domain
       user=stroparo
       domain=github.com
     elif [ -z "$repo" ] ; then
-      echo "WARN: No domain, defaulting to 'github.com'..." 1>&2
+      echo "${PROGNAME:+$PROGNAME: }WARN: No domain, defaulting to 'github.com'..." 1>&2
       # Shift right and put in a default domain:
       repo=$user
       user=$domain
@@ -125,25 +150,24 @@ EOF
       repo_url="${protocol}://$domain/$user/${repo%.git}.git"
     fi
 
-    echo "==> Cloning '$repo_url'..."
-
-    git clone --depth 1 "$repo_url" \
-      && rm -f -r "${repo_dit}/.git" \
+    echo "${PROGNAME:+$PROGNAME: }INFO: Cloning '${repo_url}'..."
+    git clone --depth 1 "${repo_url}" \
+      && rm -f -r "${repo_dir}/.git" \
       && cp -a "${repo_dir}"/* "${DS_HOME}/" \
-      && (grep -q "^${original_plugin_string}\$" "${HOME}/.dsplugins" \
-            || echo "${original_plugin_string}" >> "${HOME}/.dsplugins") \
+      && echo "${original_plugin_string}" >> "${HOME}/.dsplugins" \
       && rm -f -r "${repo_dir}" \
       && echo \
-      && echo "INFO: Plugin at '${repo_url}' installed successfully" \
+      && echo "${PROGNAME:+$PROGNAME: }INFO: Plugin at '${repo_url}' installed successfully" \
       && echo
 
     if [ $? -ne 0 ] ; then
-      echo "WARN: There was some error for '${plugin}'." 1>&2
+      echo "${PROGNAME:+$PROGNAME: }WARN: There was some error for '${plugin}'." 1>&2
       rm -f -r "${repo}"
     fi
 
     # Safety for next iteration:
-    unset domain repo repo_url user
+    unset domain user repo remainder
+    unset protocol repo_dir repo_url
   done
 
 }
@@ -153,7 +177,7 @@ EOF
 
 cd "$WORKDIR"
 if [ "${PWD%/}" != "${WORKDIR%/}" ] ; then
-  echo "FATAL: Could not cd to '${WORKDIR%/}'." 1>&2
+  echo "${PROGNAME:+$PROGNAME: }FATAL: Could not cd to '${WORKDIR%/}'." 1>&2
   exit 1
 fi
 
