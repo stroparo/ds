@@ -111,7 +111,7 @@ main () {
       echo "${PROGNAME:+$PROGNAME: }INFO: plugin '${plugin}' installation..."
     else
       echo
-      echo "${PROGNAME:+$PROGNAME: }SKIP: plugin '${plugin}'."
+      echo "${PROGNAME:+$PROGNAME: }SKIP: plugin '${plugin}' already installed."
       continue
     fi
 
