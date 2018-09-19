@@ -164,31 +164,32 @@ dsload () {
 
 dsupgrade () {
   typeset backup
+  typeset progname="dsupgrade"
 
   if [ -z "${DS_HOME}" ] ; then
-    echo "dsupgrade: FATAL: No DS_HOME set." 1>&2
+    echo "${progname}: FATAL: No DS_HOME set." 1>&2
     return 1
   fi
   if [ ! -d "${DS_HOME}" ] ; then
-    echo "dsupgrade: FATAL: No DS_HOME='${DS_HOME}' dir." 1>&2
+    echo "${progname}: FATAL: No DS_HOME='${DS_HOME}' dir." 1>&2
     return 1
   fi
 
-  backup=$(dsbackup)
+  backup="$(dsbackup)"
 
-  if [ -z "${backup}" ] || [ ! -f "${backup}/ds.sh" ]; then
-    echo "dsupgrade: FATAL: backup failed... sequence cancelled" 1>&2
+  if [ $? -ne 0 ] || [ -z "${backup}" ] || [ ! -f "${backup}/ds.sh" ]; then
+    echo "${progname}: FATAL: backup failed... sequence cancelled" 1>&2
     return 1
   elif (rm -rf "${DS_HOME}" && dsload "${DS_HOME}" && dshashplugins.sh) ; then
-    echo "dsupgrade: SUCCESS: upgrade complete - backup of previous version at '${backup}'"
+    echo "${progname}: SUCCESS: upgrade complete - backup of previous version at '${backup}'"
     dsload "${DS_HOME}"
   else
-    echo "dsupgrade: FATAL: upgrade failed ... restoring '${backup}' ..." 1>&2
+    echo "${progname}: FATAL: upgrade failed ... restoring '${backup}' ..." 1>&2
     rm -f -r "${DS_HOME}" \
       && cp -a -f "${backup}" "${DS_HOME}" \
-      && echo "dsupgrade: SUCCESS: restored '${backup}' into '${DS_HOME}'"
+      && echo "${progname}: SUCCESS: restored '${backup}' into '${DS_HOME}'"
     if [ $? -ne 0 ] ; then
-      echo "dsupgrade: FATAL: restore failed" 1>&2
+      echo "${progname}: FATAL: restore failed" 1>&2
       return 1
     fi
   fi
