@@ -60,20 +60,7 @@ alias t='d "${TEMP_DIRECTORY}"'
 dsversion () { echo "==> Daily Shells - ${DS_VERSION}" ; }
 
 # #############################################################################
-# Functions
-
-unalias d 2>/dev/null
-unset d 2>/dev/null
-d () {
-  if [ -e "$1" ] ; then cd "$1" ; shift ; fi
-  for dir in "$@" ; do
-    found=$(ls -1d *"${dir}"*/ | head -1)
-    if [ -z "$found" ] ; then found="$(find . -type d -name "*${dir}*" | head -1)" ; fi
-    if [ -n "$found" ] ; then echo "$found" ; cd "$found" ; fi
-  done
-  pwd; which exa >/dev/null 2>&1 && exa -ahil || ls -al
-  if [ -e ./.git ] ; then git branch -vv ; fi
-}
+# Provisioning functions
 
 dsbackup () {
   typeset dshome="${1:-${DS_HOME:-${HOME}/.ds}}"
@@ -97,19 +84,19 @@ dsbackup () {
 
 dsrestorebackup () {
   typeset progname="dsrestorebackup"
-  DS_LAST_BACKUP="${DS_LAST_BACKUP:-$1}"
+  DS_LAST_BACKUP="${DS_LAST_BACKUP:-${DS_BACKUPS_DIR}/${1##$DS_BACKUPS_DIR/}}"
 
   if [ -z "${DS_LAST_BACKUP}" ] ; then
     echo "${progname}: SKIP: No last backup in the current session." 1>&2
     return 1
   fi
 
-  if [ -d "${DS_BACKUPS_DIR}/${DS_LAST_BACKUP}" ] ; then
+  if [ -d "${DS_LAST_BACKUP}" ] ; then
     echo "${progname}: INFO: Restoring Daily Shells backup..." 1>&2
     rm -f -r "${DS_HOME}";  mkdir "${DS_HOME}"
     if [ -d "${DS_HOME}" ] \
       && [ ! -f "${DS_HOME}/ds.sh" ] \
-      && cp -a -v "${DS_BACKUPS_DIR}/${DS_LAST_BACKUP}/*" "${DS_HOME}/"
+      && cp -a -v "${DS_LAST_BACKUP}/"* "${DS_HOME}/"
     then
       echo "${progname}: INFO: Backup restored" 1>&2
       return 0
@@ -121,6 +108,106 @@ dsrestorebackup () {
     echo "${progname}: FATAL: There was no previous DS version backed up" 1>&2
     return 1
   fi
+}
+
+dshash () {
+  # Syntax: [-r] [ds-sources-dir:${DEV}/ds]
+
+  typeset progname="hashds"
+
+  # Simple option parsing must come first:
+  typeset loadcmd=:
+  [ "$1" = '-r' ] && loadcmd="echo DS loading... ; dsload" && shift
+
+  typeset dshome="${DS_HOME:-${HOME}/.ds}"
+  typeset dssrc="${1:-${DEV}/ds}"
+  typeset errors=false
+
+  # Requirements
+  if [ ! -f "${dssrc}/ds.sh" ] ; then
+    echo "${progname}: FATAL: No Daily Shells sources found in '${dssrc}'." 1>&2
+    return 1
+  fi
+  dsbackup_dir="$(dsbackup)"; dsbackup_res=$?
+  if [ "${dsbackup_res:-1}" -ne 0 ] || [ ! -d "${dsbackup_dir}" ] ; then
+    echo "${progname}: FATAL: error in dsbackup." 1>&2
+    return 1
+  fi
+
+  echo
+  echo "==> Daily Shells rehash started..."
+  rm -f -r "${dshome}" \
+    && : > "${DS_PLUGINS_INSTALLED_FILE}" \
+    && mkdir "${dshome}" \
+    && cp -a "${dssrc}"/* "${dshome}"/ \
+    || errors=true
+
+  if ! ${errors:-false} ; then
+    echo
+    echo "==> Daily Shells rehash complete"
+    sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds10path.sh"
+    dshashplugins.sh "${DEV}"
+    eval "$loadcmd"
+  else
+    echo "${progname}: ERROR: Daily Shells rehash failure" 1>&2
+    dsrestorebackup
+    return 0
+  fi
+}
+
+dsupgrade () {
+  typeset backup
+  typeset progname="dsupgrade"
+
+  if [ -z "${DS_HOME}" ] ; then
+    echo "${progname}: FATAL: No DS_HOME set." 1>&2
+    return 1
+  fi
+  if [ ! -d "${DS_HOME}" ] ; then
+    echo "${progname}: FATAL: No DS_HOME='${DS_HOME}' dir." 1>&2
+    return 1
+  fi
+
+  backup="$(dsbackup)"
+
+  if [ $? -ne 0 ] || [ -z "${backup}" ] || [ ! -f "${backup}/ds.sh" ]; then
+    echo "${progname}: FATAL: backup failed... sequence cancelled" 1>&2
+    return 1
+  elif (
+    rm -rf "${DS_HOME}" \
+    && : > "${DS_PLUGINS_INSTALLED_FILE}" \
+    && dsload "${DS_HOME}" \
+    && dshashplugins.sh
+  )
+  then
+    echo "${progname}: SUCCESS: upgrade complete - backup of previous version at '${backup}'"
+    dsload "${DS_HOME}"
+  else
+    echo "${progname}: FATAL: upgrade failed ... restoring '${backup}' ..." 1>&2
+    rm -f -r "${DS_HOME}" \
+      && cp -a -f "${backup}" "${DS_HOME}" \
+      && echo "${progname}: SUCCESS: restored '${backup}' into '${DS_HOME}'"
+    if [ $? -ne 0 ] ; then
+      echo "${progname}: FATAL: restore failed" 1>&2
+      return 1
+    fi
+  fi
+}
+
+# #############################################################################
+# Functions
+
+unalias d 2>/dev/null
+unset d 2>/dev/null
+d () {
+  if [ -e "$1" ] ; then cd "$1" ; shift ; fi
+  for dir in "$@" ; do
+    found=$(ls -1d *"${dir}"*/ | head -1)
+    if [ -z "$found" ] ; then found="$(find . -type d -name "*${dir}*" | head -1)" ; fi
+    if [ -n "$found" ] ; then echo "$found" ; cd "$found" ; fi
+  done
+  pwd; which exa >/dev/null 2>&1 && exa -ahil || ls -al
+  if [ -e ./.git ] ; then git branch -vv ; fi
 }
 
 dslistfunctions () {
@@ -194,45 +281,6 @@ dsload () {
     return 1
   else
     return 0
-  fi
-}
-
-dsupgrade () {
-  typeset backup
-  typeset progname="dsupgrade"
-
-  if [ -z "${DS_HOME}" ] ; then
-    echo "${progname}: FATAL: No DS_HOME set." 1>&2
-    return 1
-  fi
-  if [ ! -d "${DS_HOME}" ] ; then
-    echo "${progname}: FATAL: No DS_HOME='${DS_HOME}' dir." 1>&2
-    return 1
-  fi
-
-  backup="$(dsbackup)"
-
-  if [ $? -ne 0 ] || [ -z "${backup}" ] || [ ! -f "${backup}/ds.sh" ]; then
-    echo "${progname}: FATAL: backup failed... sequence cancelled" 1>&2
-    return 1
-  elif (
-    rm -rf "${DS_HOME}" \
-    && : > "${DS_PLUGINS_INSTALLED_FILE}" \
-    && dsload "${DS_HOME}" \
-    && dshashplugins.sh
-  )
-  then
-    echo "${progname}: SUCCESS: upgrade complete - backup of previous version at '${backup}'"
-    dsload "${DS_HOME}"
-  else
-    echo "${progname}: FATAL: upgrade failed ... restoring '${backup}' ..." 1>&2
-    rm -f -r "${DS_HOME}" \
-      && cp -a -f "${backup}" "${DS_HOME}" \
-      && echo "${progname}: SUCCESS: restored '${backup}' into '${DS_HOME}'"
-    if [ $? -ne 0 ] ; then
-      echo "${progname}: FATAL: restore failed" 1>&2
-      return 1
-    fi
   fi
 }
 
