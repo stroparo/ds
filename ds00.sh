@@ -84,6 +84,7 @@ dsbackup () {
   ls -d "${bakdir}" >/dev/null || return $?
 
   export DS_LAST_BACKUP=""
+  ls -1 -d "${dshome}"/* >/dev/null 2>&1 || return 0
   cp -a "${dshome}"/* "${bakdir}"/
   if [ $? -eq 0 ] ; then
     export DS_LAST_BACKUP="$(ls -1 -d "${bakdir}")"
