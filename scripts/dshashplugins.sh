@@ -51,7 +51,7 @@ _hash_ds_plugins_locally () {
         cp -a -v "${plugin_root}/${plugin_barename}"/*/ "$DS_HOME/" 1>&2 || failures=true
         # Uniquely append:
         if ! grep -q -w "${plugin_barename}" "${DS_PLUGINS_INSTALLED_FILE}" ; then
-          echo "${plugin_barename}" > "${DS_PLUGINS_INSTALLED_FILE}"
+          echo "${plugin_barename}" >> "${DS_PLUGINS_INSTALLED_FILE}"
         fi
         continue
       fi
