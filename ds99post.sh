@@ -34,6 +34,9 @@ ${DS_POST_CALLS:-:}
 EOF
 fi
 
+# TODO later incorporate ds-extras into ds and remove this:
+dsextrasinstall.sh
+
 # Display DS Information:
 if [ -n "${DS_VERBOSE}" ] ; then
   echo 1>&2
