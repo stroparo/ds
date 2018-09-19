@@ -1,20 +1,12 @@
 #!/usr/bin/env bash
 
-# DS - Daily Shells
+# Purpose: Rehash Daily Shells plugins
 
-# Purpose:
-# Rehash Daily Shells installation
-
-typeset DS_CURRENT_HOME="${DS_HOME:-$HOME/.ds}"
 typeset PROGNAME=dshashplugins.sh
 
-_set_global_defaults () {
-  if [ -z "$DEV" ] && [ -d "$HOME/workspace" ] ; then
-    export DEV="$HOME/workspace"
-  fi
-}
 
-_check_ds () {
+_load_ds () {
+  typeset DS_CURRENT_HOME="${DS_HOME:-$HOME/.ds}"
   if [ -z "${DS_VERSION}" ] \
     && ! . "${DS_CURRENT_HOME}/ds.sh" "${DS_CURRENT_HOME}" >/dev/null 2>&1
   then
@@ -26,42 +18,70 @@ _check_ds () {
     echo 1>&2
     exit 1
   fi
-
   if [ ! -d "$DS_HOME" ] ; then
     echo "${PROGNAME:+$PROGNAME: }FATAL: No DS_HOME='$DS_HOME' dir present." 1>&2
     exit 1
   fi
 }
+_load_ds
+
+
+_set_global_defaults () {
+  if [ -z "$DEV" ] && [ -d "$HOME/workspace" ] ; then
+    export DEV="$HOME/workspace"
+  fi
+}
+
+
+_hash_ds_plugins_locally () {
+  typeset failures=false
+  typeset plugin plugin_root
+
+  for plugin in `cat "${DS_PLUGINS_FILE}"` ; do
+    plugin_string="${plugin}"
+    plugin_basename="${plugin_string##*/}"
+    plugin_barename="${plugin_basename%.git}"
+
+    for plugin_root in "$@" ; do
+      if ls -1 -d "${plugin_root}/${plugin_barename}" >/dev/null 2>&1 ; then
+        cp -a "${plugin_root}/${plugin_barename}"/*.sh "$DS_HOME/" 1>&2 || failures=true
+        cp -a "${plugin_root}/${plugin_barename}"/*/ "$DS_HOME/" 1>&2 || failures=true
+        continue
+      fi
+    done
+  done
+
+  if ${failures:-false} ; then
+    echo "${PROGNAME:+$PROGNAME: }WARN: some copy jobs failed." 1>&2
+    return 1
+  fi
+}
+
 
 _hash_ds_plugins () {
 
   typeset failures=false
 
-  # Hash plugins:
-  if [ -z "$DS_PLUGINS" ] ; then
-    if [ -f ~/.dsplugins ] ; then
-      export DS_PLUGINS="`cat ~/.dsplugins`"
-    elif ls -1 -d "$DEV"/ds[a-z-]* >/dev/null 2>&1 ; then
-      export DS_PLUGINS="`ls -1 -d "$DEV"/ds[a-z-]*`"
-    fi
+  if [ "$#" -gt 0 ] ; then
+    _hash_ds_plugins_locally "$@"
+    return $?
   fi
-  for dsplugin in ${DS_PLUGINS} ; do
-    echo "${PROGNAME:+$PROGNAME: }INFO: installing plugin '${dsplugin}'..."
-    if [ -d "${dsplugin}" ] ; then
-      cp -a "${dsplugin}"/*.sh "$DS_HOME/" 1>&2 || failures=true
-      cp -a "${dsplugin}"/*/ "$DS_HOME/" 1>&2 || failures=true
-    else
-      dsplugin.sh "${dsplugin}" || failures=true
-    fi
-  done
+
+  dsplugin.sh -f "${DS_PLUGINS_FILE}" || failures=true
 
   if ${failures:-false} ; then
     echo "${PROGNAME:+$PROGNAME: }WARN: some copy jobs failed." 1>&2
+    return 1
   fi
-  echo "${PROGNAME:+$PROGNAME: }COMPLETE"
 }
 
-_set_global_defaults
-_check_ds
-_hash_ds_plugins
-exit 0
+
+_main () {
+  _set_global_defaults
+  _hash_ds_plugins "$@" || exit $?
+  echo "${PROGNAME:+$PROGNAME: }COMPLETE"
+  exit 0
+}
+
+
+_main "$@"

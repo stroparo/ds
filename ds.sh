@@ -12,6 +12,8 @@ fi
 export DS_HOME
 
 export DS_CONF="${DS_HOME}/conf"
+export DS_PLUGINS_FILE="${HOME}/.dsplugins"
+export DS_PLUGINS_INSTALLED_FILE="${HOME}/.dsplugins-installed"
 export DS_VERSION='v0.4.0 2018-01-05'
 
 # #############################################################################

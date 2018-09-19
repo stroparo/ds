@@ -12,17 +12,25 @@ PROGNAME="dsplugin.sh"
 # #############################################################################
 # Mandatory requirements
 
-ckds () {
-  if [ -z "${DS_VERSION}" ] && ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1
+_load_ds () {
+  typeset DS_CURRENT_HOME="${DS_HOME:-$HOME/.ds}"
+  if [ -z "${DS_VERSION}" ] \
+    && ! . "${DS_CURRENT_HOME}/ds.sh" "${DS_CURRENT_HOME}" >/dev/null 2>&1
   then
-    echo "No DS Daily Shells loaded. Fix it and call this again." 1>&2
-    echo "Tips:" 1>&2
-    echo "curl -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash" 1>&2
-    echo "wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh' | bash" 1>&2
-    return 1
+    echo 1>&2
+    echo "Daily Shells could not be loaded. Fix it and call this again." 1>&2
+    echo "Commands to install Daily Shells:" 1>&2
+    echo "sh -c \"\$(curl -LSfs 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')\"" 1>&2
+    echo "sh -c \"\$(wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')\"" 1>&2
+    echo 1>&2
+    exit 1
+  fi
+  if [ ! -d "$DS_HOME" ] ; then
+    echo "${PROGNAME:+$PROGNAME: }FATAL: No DS_HOME='$DS_HOME' dir present." 1>&2
+    exit 1
   fi
 }
-ckds || exit $?
+_load_ds
 
 ! which git >/dev/null && echo "${PROGNAME:+$PROGNAME: }FATAL: git not in path" 1>&2 && exit 1
 
@@ -51,7 +59,7 @@ DESCRIPTION
 
 # Options:
 
-export DOMAIN=github.com
+export DOMAIN="github.com"
 export FORCE=false
 export QUIET=false
 export USE_SSH=false
@@ -80,38 +88,44 @@ fi
 # #############################################################################
 # Functions
 
+
 _check_core () {
-  if ! touch "${HOME}/.dsplugins" ; then
-    echo "${PROGNAME:+$PROGNAME: }FATAL: Could not touch ~/.dsplugins file." 1>&2
+  if ! touch "${DS_PLUGINS_FILE}" ; then
+    echo "${PROGNAME:+$PROGNAME: }FATAL: Could not touch '${DS_PLUGINS_FILE}' file." 1>&2
+    exit 1
+  fi
+  if ! touch "${DS_PLUGINS_INSTALLED_FILE}" ; then
+    echo "${PROGNAME:+$PROGNAME: }FATAL: Could not touch '${DS_PLUGINS_INSTALLED_FILE}' file." 1>&2
     exit 1
   fi
 }
 
-main () {
+
+_install_plugins () {
 
   typeset domain user repo remainder # for repo URLs
   typeset protocol
   typeset repo_dir
   typeset repo_url
 
-  _check_core
-
   for plugin in "$@" ; do
 
-    protocol=$(echo "$plugin" | grep -o "^.*://")
+    protocol=$(echo "${plugin}" | grep -o "^.*://")
     protocol=${protocol%://}
     : ${protocol:=https}
-    original_plugin_string="${plugin}"
+    plugin_string="${plugin}"
+    plugin_basename="${plugin_string##*/}"
+    plugin_barename="${plugin_basename%.git}"
     plugin="${plugin#*://}"
 
-    [ -z "$plugin" ] && echo "${PROGNAME:+$PROGNAME: }WARN: empty arg ignored" && continue
+    [ -z "${plugin}" ] && echo "${PROGNAME:+$PROGNAME: }WARN: empty arg ignored" && continue
 
-    if ! grep -q "^${original_plugin_string}\$" "${HOME}/.dsplugins" || ${FORCE:-false} ; then
+    if ! grep -q "^${plugin_basename}\$" "${DS_PLUGINS_INSTALLED_FILE}" || ${FORCE:-false} ; then
       echo
-      echo "${PROGNAME:+$PROGNAME: }INFO: plugin '${plugin}' installation..."
+      echo "${PROGNAME:+$PROGNAME: }INFO: plugin '${plugin_barename}' (${plugin}) installation..."
     else
       echo
-      echo "${PROGNAME:+$PROGNAME: }SKIP: plugin '${plugin}' already installed."
+      echo "${PROGNAME:+$PROGNAME: }SKIP: plugin '${plugin_barename}' already installed."
       continue
     fi
 
@@ -154,7 +168,7 @@ EOF
     git clone --depth 1 "${repo_url}" \
       && rm -f -r "${repo_dir}/.git" \
       && cp -a "${repo_dir}"/* "${DS_HOME}/" \
-      && echo "${original_plugin_string}" >> "${HOME}/.dsplugins" \
+      && echo "${plugin_string}" >> "${DS_PLUGINS_INSTALLED_FILE}" \
       && rm -f -r "${repo_dir}" \
       && echo \
       && echo "${PROGNAME:+$PROGNAME: }INFO: Plugin at '${repo_url}' installed successfully" \
@@ -163,6 +177,7 @@ EOF
     if [ $? -ne 0 ] ; then
       echo "${PROGNAME:+$PROGNAME: }WARN: There was some error for '${plugin}'." 1>&2
       rm -f -r "${repo}"
+      ERRORS=true
     fi
 
     # Safety for next iteration:
@@ -172,14 +187,34 @@ EOF
 
 }
 
-# #############################################################################
-# Main
 
-cd "$WORKDIR"
-if [ "${PWD%/}" != "${WORKDIR%/}" ] ; then
-  echo "${PROGNAME:+$PROGNAME: }FATAL: Could not cd to '${WORKDIR%/}'." 1>&2
-  exit 1
-fi
+_arg_dispatcher () {
+  for arg in "$@" ; do
+    if [ -f "${arg}" ] ; then
+      for plugin_in_file in `cat "${arg}"` ; do
+        _install_plugins "${plugin_in_file}"
+      done
+    else
+      _install_plugins "${arg}"
+    fi
+  done
+}
 
-main "$@"
-exit "$?"
+
+_main () {
+  cd "$WORKDIR"
+  if [ "${PWD%/}" != "${WORKDIR%/}" ] ; then
+    echo "${PROGNAME:+$PROGNAME: }FATAL: Could not cd to '${WORKDIR%/}'." 1>&2
+    exit 1
+  fi
+
+  _check_core
+  _arg_dispatcher "$@"
+  if ${ERRORS:-false} ; then
+    exit 1
+  fi
+  exit 0
+}
+
+
+_main "$@"
