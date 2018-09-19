@@ -97,18 +97,19 @@ dsbackup () {
 
 dsrestorebackup () {
   typeset progname="dsrestorebackup"
+  DS_LAST_BACKUP="${DS_LAST_BACKUP:-$1}"
 
   if [ -z "${DS_LAST_BACKUP}" ] ; then
     echo "${progname}: SKIP: No last backup in the current session." 1>&2
     return 1
   fi
 
-  if [ -d "${DS_LAST_BACKUP}" ] ; then
+  if [ -d "${DS_BACKUPS_DIR}/${DS_LAST_BACKUP}" ] ; then
     echo "${progname}: INFO: Restoring Daily Shells backup..." 1>&2
     rm -f -r "${DS_HOME}";  mkdir "${DS_HOME}"
     if [ -d "${DS_HOME}" ] \
       && [ ! -f "${DS_HOME}/ds.sh" ] \
-      && cp -a -v "${DS_LAST_BACKUP}/*" "${DS_HOME}/"
+      && cp -a -v "${DS_BACKUPS_DIR}/${DS_LAST_BACKUP}/*" "${DS_HOME}/"
     then
       echo "${progname}: INFO: Backup restored" 1>&2
       return 0
@@ -216,7 +217,7 @@ dsupgrade () {
     return 1
   elif (
     rm -rf "${DS_HOME}" \
-    && > "${DS_PLUGINS_INSTALLED_FILE}" \
+    && : > "${DS_PLUGINS_INSTALLED_FILE}" \
     && dsload "${DS_HOME}" \
     && dshashplugins.sh
   )
