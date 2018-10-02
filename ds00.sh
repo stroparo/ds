@@ -113,7 +113,7 @@ dsrestorebackup () {
 dshash () {
   # Syntax: [-r] [ds-sources-dir:${DEV}/ds]
 
-  typeset progname="hashds"
+  typeset progname="dshash"
 
   # Simple option parsing must come first:
   typeset loadcmd=:
