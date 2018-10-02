@@ -117,7 +117,7 @@ dshash () {
 
   # Simple option parsing must come first:
   typeset loadcmd=:
-  [ "$1" = '-r' ] && loadcmd="echo DS loading... ; dsload" && shift
+  [ "$1" = '-r' ] && loadcmd="echo \"${progname}: INFO: DS loading...\" ; dsload" && shift
 
   typeset dshome="${DS_HOME:-${HOME}/.ds}"
   typeset dssrc="${1:-${DEV}/ds}"
