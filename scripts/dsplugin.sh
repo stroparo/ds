@@ -191,7 +191,16 @@ EOF
 }
 
 
+_list_installed () {
+  cat "${DS_HOME:-$HOME/.ds}/.dsplugins-installed"
+}
+
+
 _arg_dispatcher () {
+  case "$1" in
+    list) _list_installed; return ;;
+  esac
+
   for arg in "$@" ; do
     if [ -f "${arg}" ] ; then
       for plugin_in_file in `cat "${arg}"` ; do
