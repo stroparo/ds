@@ -13,11 +13,11 @@ dockercleanimages () {
 }
 
 dockercleanimagesnone () {
-  docker rmi $(docker images | grep "none" | awk '/ / { print $3 }')
+  docker rmi $(docker images -a | grep "none" | awk '/ / { print $3 }')
 }
 
 dockercleannetworks () {
-  docker network rm $(docker network ls | grep "bridge" | awk '/ / { print $1 }')
+  docker network rm $(docker network ls | awk '$3 == "bridge" && $2 != "bridge" { print $1 }')
 }
 
 dockercleanvolumes () {
