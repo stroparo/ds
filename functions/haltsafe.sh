@@ -4,12 +4,18 @@ haltsafe () {
   # Info: halts only if any {true,vera}crypt is unmounted correctly.
 
   typeset crypt_dismounted=true
-  typeset crypt_prog=veracrypt
+  typeset crypt_prog
 
-  if which $crypt_prog >/dev/null 2>&1 && \
-    $crypt_prog -t -l && \
-    ! $crypt_prog -d
-  then
+  if which truecrypt >/dev/null 2>&1 ; then
+    crypt_prog=truecrypt
+  elif which veracrypt >/dev/null 2>&1 ; then
+    crypt_prog=veracrypt
+  else
+    echo "haltsafe: FATAL: No crypt program found, aborting safe halt.."
+    return 1
+  fi
+
+  if ${crypt_prog:-truecrypt} -t -l && ! ${crypt_prog} -d ; then
     crypt_dismounted=false
   fi
 
