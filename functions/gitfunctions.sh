@@ -6,6 +6,7 @@
 # Git routines
 # #############################################################################
 
+
 clonegits () {
   # Info: Clone repos passed in the argument, one per line (quote it).
   # Syntax: {repositories-one-per-line}
@@ -29,6 +30,7 @@ clonegits () {
 ${1}
 EOF
 }
+
 
 clonemygits () {
   typeset devdir="${DEV:-$HOME/workspace}"
@@ -62,6 +64,7 @@ clonemygits () {
   fi
 }
 
+
 confgits () {
   for repo in "$@" ; do
     [ -d "$repo/.git" ] || continue
@@ -70,10 +73,12 @@ confgits () {
   done
 }
 
+
 gitenforcemyuser () {
   [ -n "$MYEMAIL" ] && git config --global --replace-all user.email "$MYEMAIL"
   [ -n "$MYSIGN" ] && git config --global --replace-all user.name "$MYSIGN"
 }
+
 
 gitremotepatternreplace () {
   # Usage: {sed-pattern} {replacement} [repo paths]
@@ -116,6 +121,7 @@ gitremotepatternreplace () {
     )
   done
 }
+
 
 gitset () {
   # Info: Configure git.
@@ -171,3 +177,18 @@ gitset () {
     shift 2
   done
 }
+
+
+gpa () {
+  # Info: Git push all
+  # Syn: [branch=master]
+
+  typeset branch="${1:-master}"
+  typeset remote
+
+  git checkout master
+  for remote in $(git remote) ; do
+    git push $remote master
+  done
+}
+
