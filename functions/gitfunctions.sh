@@ -188,6 +188,7 @@ gpa () {
 
   git checkout master
   for remote in $(git remote) ; do
+    echo "gpa: INFO: Pushing to '${remote}' remote.."
     git push $remote master
   done
 }
