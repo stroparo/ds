@@ -56,7 +56,11 @@ cb () {
 
     if ! type xclip > /dev/null 2>&1; then
 
-        $QUIET || echo -e "$_wrn_col""You must have the 'xclip' program installed." 1>&2
+        sudo ${INSTPROG:-apt} install -y xclip || sudo dnf install -y xclip
+
+        if ! type xclip > /dev/null 2>&1; then
+            $QUIET || echo -e "$_wrn_col""You must have the 'xclip' program installed." 1>&2
+        fi
 
     elif [[ "$USER" == "root" ]]; then
 
