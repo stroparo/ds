@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Script to save partitions using ocs, the program used by clonezilla linux distro.
+
+# Additional info:
+# 2nd arg is backup prefix override (default is 'ocs').
+
+if [ -z "$1" ] ; then
+  echo "Must pass partition to be saved (sd?[0-9])."
+  exit 1
+fi
+
+/usr/sbin/ocs-sr -q2 -j2 -rm-win-swap-hib -z1p -i 4096 -gm -sc -p true \
+    saveparts "${2:-ocs}"-"$(date '+%Y%m%d-%OH%OM')" "$1"
+echo $?
