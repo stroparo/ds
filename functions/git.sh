@@ -7,6 +7,13 @@
 # #############################################################################
 
 
+# Oneliners
+
+gcheckedout () { git branch -v "$@" | egrep '^(==|[*]|---)' ; }
+gdd () { git add -A "$@" ; git status -s ; }
+gddd () { git add -A "$@" ; git status -s ; git diff --cached ; }
+
+
 clonegits () {
   # Info: Clone repos passed in the argument, one per line (quote it).
   # Syntax: {repositories-one-per-line}
@@ -193,4 +200,3 @@ gpa () {
     git push $remote master
   done
 }
-
