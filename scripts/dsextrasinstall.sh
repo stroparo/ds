@@ -2,7 +2,7 @@
 
 dsextras_max_tries=3
 dsextras_trial_count=0
-while [ ! -e "${DS_HOME:-$HOME/.ds}"/functions/gitextras.sh ] ; do
+while [ ! -e "${DS_HOME:-$HOME/.ds}"/overlay.sh ] ; do
   echo "Daily Shells Extras installation trial $((dsextras_trial_count+1)) of ${dsextras_max_tries}..."
   dsplugin.sh -f "bitbucket.org/stroparo/ds-extras" \
     || dsplugin.sh -f "stroparo/ds-extras"
