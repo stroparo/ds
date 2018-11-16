@@ -3,7 +3,7 @@
 
 # Oneliners
 
-gci () { typeset msg="$1"; shift; git commit -m "$@" ; }
+gci () { typeset msg="$1"; shift; git commit -m "$msg" "$@" ; }
 gciarr () { typeset msg="$1"; shift; git commit -m "Rearrange $msg" "$@" ; }
 gcicom () { typeset msg="$1"; shift; git commit -m "Comment $msg" "$@" ; }
 gcifix () { typeset msg="$1"; shift; git commit -m "Fix $msg" "$@" ; }
