@@ -17,8 +17,6 @@ If -e venv option, then use pyenv to activate it (fail on pyenv abscence)
 
 pipinstall () {
   typeset venv
-  pip --version > /dev/null || return $?
-
   typeset oldind="${OPTIND}"
   OPTIND=1
   while getopts ':e:h' option ; do
@@ -30,10 +28,15 @@ pipinstall () {
           return 1
         fi
         ;;
-      h) echo "$USAGE"; exit;;
+      h)
+        echo "$USAGE"
+        exit
+        ;;
     esac
   done
   shift $((OPTIND-1)) ; OPTIND="${oldind}"
+
+  pip --version > /dev/null || return $?
 
   if [ -n "$venv" ] && ! pyenv activate "$venv" ; then
     echo "${PROGNAME:+$PROGNAME: }FATAL: Could not switch to '$venv' virtualenv." 1>&2
