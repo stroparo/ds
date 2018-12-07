@@ -62,6 +62,7 @@ dsversion () { echo "==> Daily Shells - ${DS_VERSION}" ; }
 # #############################################################################
 # Provisioning functions
 
+
 dsbackup () {
   typeset dshome="${1:-${DS_HOME:-${HOME}/.ds}}"
   typeset timestamp="$(date +%Y%m%d-%OH%OM%OS)"
@@ -81,6 +82,7 @@ dsbackup () {
     return 1
   fi
 }
+
 
 dsrestorebackup () {
   typeset progname="dsrestorebackup"
@@ -109,6 +111,7 @@ dsrestorebackup () {
     return 1
   fi
 }
+
 
 dshash () {
   # Syntax: [-r] [ds-sources-dir:${DEV}/ds]
@@ -155,6 +158,7 @@ dshash () {
   fi
 }
 
+
 dsupgrade () {
   typeset backup
   typeset progname="dsupgrade"
@@ -194,9 +198,12 @@ dsupgrade () {
   fi
 }
 
+
 # #############################################################################
 # Functions
 
+
+# Function d - Dir navigation
 unalias d 2>/dev/null
 unset d 2>/dev/null
 d () {
@@ -209,6 +216,7 @@ d () {
   pwd; which exa >/dev/null 2>&1 && exa -ahil || ls -al
   if [ -e ./.git ] ; then git branch -vv ; fi
 }
+
 
 dslistfunctions () {
 
@@ -230,6 +238,7 @@ dslistfunctions () {
   done | sort
 }
 
+
 _dsgetscriptsdirs () {
   typeset ignore_expr="${DS_HOME}/(conf|functions|templates)"
   ls -1 -d "${DS_HOME}"/*/ \
@@ -242,6 +251,12 @@ dslistscripts () {
   done
 }
 
+
+# Handy dshash wrappers
+dsh () { dshash -r ; }
+dshfull () { (v ; rpull ; dshash) ; dsload ; }
+
+
 dshelp () {
   echo "DS - Daily Shells Library - Help
 
@@ -253,10 +268,12 @@ dsversion - display the version of this Daily Shells instance
 " 1>&2
 }
 
+
 dsinfo () {
   dsversion 1>&2
   echo "DS_HOME='${DS_HOME}'" 1>&2
 }
+
 
 dsload () {
   typeset progname="dsload"
@@ -283,6 +300,7 @@ dsload () {
     return 0
   fi
 }
+
 
 sourcefiles () {
   # Info: Each arg is a glob; source all glob expanded paths.
