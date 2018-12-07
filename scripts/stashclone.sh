@@ -54,7 +54,7 @@ stashclone () {
       repo_name="$(basename "${repo_name%.git}")"
       repo_host_proto="${repo_host%%://*}"
       repo_url="${stash_user:+${stash_user}@}${repo_host##*://}"
-      repo_url="${repo_host_proto:-https}://${repo_url}/${project_owner}/${repo_name}.git"
+      repo_url="${repo_host_proto:-https}://${repo_url}/stash/scm/${project_owner}/${repo_name}.git"
     fi
 
     echo ${BASH_VERSION:+-e} "\n==> Repo '$repo_name'..."
