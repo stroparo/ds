@@ -10,14 +10,13 @@ stashclone () {
   #  stashclone -u stashuser repohost {owner project/user/group} [repo1 [repo2 [repo3 ...]]]
 
   # Mandatory:
-  typeset repo_host project_user repo_name
-  typeset repo_proto=https
+  typeset repo_host project_owner repo_name
 
   # For options:
   typeset stash_user working_repo_dir
 
   # Derived:
-  typeset repo_url_full repo_url_prefix
+  typeset repo_url
   typeset repo_basename
 
   # Options:
@@ -36,7 +35,7 @@ stashclone () {
   fi
 
   repo_host="$1"; shift
-  project_user="$1"; shift
+  project_owner="$1"; shift
 
   if [ -n "$working_repo_dir" ] && [ $# -gt 2 ] ; then
     echo "${PROGNAME:+$PROGNAME: }FATAL: Cannot set a repo dir having more than one repo to be cloned." 1>&2
@@ -44,24 +43,21 @@ stashclone () {
   fi
 
   for repo_name in "$@" ; do
-
-    repo_name="$(basename "${repo_name%.git}")"
-
-    echo ${BASH_VERSION:+-e} "\n==> Repo '$repo_name'..."
-
-    if [[ $repo_host = http*://* ]]; then
-      if [[ $repo_host = http:* ]]; then
-        repo_proto='http'
+    # If the repo_name is a URL use that and ignore other args such as host, otherwise assemble the URL:
+    if [[ $repo_name = http*// ]] || [[ $repo_name = ssh*// ]] ; then
+      repo_url="${repo_name}"
+      if ! [[ $repo_name = *@* ]] ; then
+        repo_url="$(echo "${repo_url}" | sed -e "s#^[^:]*://#&${stash_user}@#")"
       fi
-      repo_host=${repo_host##*://}
+    else
+      repo_name="$(basename "${repo_name%.git}")"
+      repo_url="${stash_user:+${stash_user}@}${repo_host}"
+      repo_url="https://${repo_url}/${project_owner}/${repo_name}.git"
     fi
 
-    repo_url_prefix="${repo_proto}://${stash_user:+${stash_user}@}${repo_host}"
-    repo_url_prefix="${repo_url_prefix}/stash/scm"
-    repo_url_full="${repo_url_prefix}/${project_user}/${repo_name}.git"
-
-    echo "    URL: '${repo_url_full}'"
-    git clone "${repo_url_full}"
+    echo ${BASH_VERSION:+-e} "\n==> Repo '$repo_name'..."
+    echo "    URL: '${repo_url}'"
+    git clone "${repo_url}"
   done
 
   if [ -n "$working_repo_dir" ] && [ $# -gt 2 ] ; then
