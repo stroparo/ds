@@ -11,6 +11,7 @@ stashclone () {
 
   # Mandatory:
   typeset repo_host project_owner repo_name
+  typeset repo_host_proto="https"
 
   # For options:
   typeset stash_user working_repo_dir
@@ -45,16 +46,15 @@ stashclone () {
   for repo_name in "$@" ; do
     # If the repo_name is a URL use that and ignore other args such as host, otherwise assemble the URL:
     if [[ $repo_name = http*// ]] || [[ $repo_name = ssh*// ]] ; then
-      echo ::IF
       repo_url="${repo_name}"
       if ! [[ $repo_name = *@* ]] ; then
         repo_url="$(echo "${repo_url}" | sed -e "s#^[^:]*://#&${stash_user}@#")"
       fi
     else
-      echo ::ELSE
       repo_name="$(basename "${repo_name%.git}")"
-      repo_url="${stash_user:+${stash_user}@}${repo_host}"
-      repo_url="https://${repo_url}/${project_owner}/${repo_name}.git"
+      repo_host_proto="${repo_host%%://*}"
+      repo_url="${stash_user:+${stash_user}@}${repo_host##*://}"
+      repo_url="${repo_host_proto:-https}://${repo_url}/${project_owner}/${repo_name}.git"
     fi
 
     echo ${BASH_VERSION:+-e} "\n==> Repo '$repo_name'..."
