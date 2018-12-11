@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
 # Daily Shells Library
 
@@ -32,6 +32,7 @@ INSTALL_DIR="$(eval echo "\"${INSTALL_DIR}\"")"
 BACKUP_FILENAME="${INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
 
 # Setup the downloader program (curl/wget)
+export DLOPTEXTRA
 if which curl >/dev/null 2>&1 ; then
   export DLPROG=curl
   export DLOPT='-LSfs'
@@ -68,8 +69,8 @@ if [ -e ./ds.sh ] && [ "${PWD}" != "${INSTALL_DIR}" ] ; then
   echo "INFO: Daily Shells setup dir used was '${PWD}'"
 else
   echo "Daily Shells setup: downloading and installing..." 1>&2
-  ("$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "${DS_PKG_URL}" \
-    || "$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "${DS_PKG_URL_ALT}") \
+  ("$DLPROG" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${INSTALL_DIR}.zip" "${DS_PKG_URL}" \
+    || "$DLPROG" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${INSTALL_DIR}.zip" "${DS_PKG_URL_ALT}") \
     && unzip "${INSTALL_DIR}.zip" -d "$TEMP_DIR"
 
   # Old: mv "${TEMP_DIR}/ds-master" "${INSTALL_DIR}"
