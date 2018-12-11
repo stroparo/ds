@@ -32,7 +32,7 @@ if which curl >/dev/null 2>&1 ; then
   export DLOPT='-LSfs'
   export DLOUT='-o'
   if ${IGNORE_SSL:-false} ; then
-    export DLOPT="-k $DLOPT"
+    export DLOPT="-k ${DLOPT}"
   fi
 elif which wget >/dev/null 2>&1 ; then
   export DLPROG=wget
@@ -288,11 +288,11 @@ dsload () {
     return $?
   fi
 
-  export DS_HOME="$dshome"
+  export DS_HOME="${dshome}"
   echo
   echo "${progname}: INFO: Installing DS into '${DS_HOME}' ..." 1>&2
   unset DS_LOADED
-  bash -c "$($DLPROG $DLOPT $DLOUT - "$DS_SETUP_URL")" dummy "${DS_HOME}"
+  bash -c "$(${DLPROG} ${DLOPT} ${DLOUT} - "${DS_SETUP_URL}")" dummy "${DS_HOME}"
   if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" 1>&2 || [ -z "${DS_LOADED}" ] ; then
     echo "${progname}: FATAL: Could not load DS - Daily Shells." 1>&2
     return 1

@@ -44,7 +44,7 @@ if which curl >/dev/null 2>&1 ; then
   export DLOPT='-LSfs'
   export DLOUT='-o'
   if ${IGNORE_SSL:-false} ; then
-    export DLOPT="-k $DLOPT"
+    export DLOPT="-k ${DLOPT}"
   fi
 elif which wget >/dev/null 2>&1 ; then
   export DLPROG=wget
@@ -107,7 +107,11 @@ fi
 #   guarantees there are no status files from previous
 #   installations:
 eval $(grep DS_PLUGINS_INSTALLED_FILE= "${INSTALL_DIR}/ds.sh")
-[ -f "${DS_PLUGINS_INSTALLED_FILE}" ] && rm -f "${DS_PLUGINS_INSTALLED_FILE}"
+if [ -f "${DS_PLUGINS_INSTALLED_FILE}" ] ; then
+  echo "Removing old '${DS_PLUGINS_INSTALLED_FILE}'..."
+  ls -l "${DS_PLUGINS_INSTALLED_FILE}"
+  rm -f -v "${DS_PLUGINS_INSTALLED_FILE}"
+fi
 
 # #############################################################################
 # Load and shell profile setup
