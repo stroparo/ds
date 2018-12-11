@@ -94,6 +94,18 @@ if [ ${INST_RESULT} -ne 0 ] ; then
   exit ${INST_RESULT}
 fi
 
+# #############################################################################
+# Cleanup installed plugins list file
+
+# At this point this fresh installation succeeded, so this
+#   guarantees there are no status files from previous
+#   installations:
+eval $(grep DS_PLUGINS_INSTALLED_FILE= "${INSTALL_DIR}/ds.sh")
+[ -f "${DS_PLUGINS_INSTALLED_FILE}" ] && rm -f "${DS_PLUGINS_INSTALLED_FILE}"
+
+# #############################################################################
+# Load and shell profile setup
+
 . "${INSTALL_DIR}/ds.sh" "${INSTALL_DIR}" >/dev/null 2>&1
 
 if [ -n "${DS_LOADED}" ] ; then
@@ -101,7 +113,7 @@ if [ -n "${DS_LOADED}" ] ; then
   appendunique -n "${DS_LOAD_CODE}" "${HOME}/.bashrc" "${HOME}/.zshrc"
   echo "INFO: DS installed." 1>&2
 else
-  echo "FATAL: could not load DS." 1>&2
+  echo "FATAL: DS installed but could not load it." 1>&2
   exit 99
 fi
 

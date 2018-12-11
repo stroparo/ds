@@ -192,7 +192,7 @@ EOF
 
 
 _list_installed () {
-  cat "${DS_HOME:-$HOME/.ds}/.dsplugins-installed"
+  cat "${DS_PLUGINS_INSTALLED_FILE}"
 }
 
 
