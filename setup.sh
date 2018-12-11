@@ -114,9 +114,9 @@ if [ -f "${DS_PLUGINS_INSTALLED_FILE}" ] ; then
 fi
 
 # #############################################################################
-# Load and shell profile setup
+echo "INFO: Loading and setting shell profiles up..."
 
-. "${INSTALL_DIR}/ds.sh" "${INSTALL_DIR}" >/dev/null 2>&1
+. "${INSTALL_DIR}/ds.sh" "${INSTALL_DIR}"
 
 if [ -n "${DS_LOADED}" ] ; then
   touch "${HOME}/.bashrc" "${HOME}/.zshrc"
