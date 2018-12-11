@@ -31,7 +31,7 @@ if which curl >/dev/null 2>&1 ; then
   export DLPROG=curl
   export DLOPT='-LSfs'
   export DLOUT='-o'
-  if ${FORCE:-false} ; then
+  if ${IGNORE_SSL:-false} ; then
     export DLOPT="-k $DLOPT"
   fi
 elif which wget >/dev/null 2>&1 ; then

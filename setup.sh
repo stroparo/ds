@@ -17,8 +17,14 @@ TEMP_DIR=$HOME
 OPTIND=1
 while getopts ':fh' option ; do
   case "${option}" in
-    f) FORCE=true;;
-    h) echo "$USAGE"; exit;;
+    f)
+      FORCE=true
+      IGNORE_SSL=true
+      ;;
+    h)
+      echo "${USAGE}"
+      exit
+      ;;
   esac
 done
 shift "$((OPTIND-1))"
@@ -37,7 +43,7 @@ if which curl >/dev/null 2>&1 ; then
   export DLPROG=curl
   export DLOPT='-LSfs'
   export DLOUT='-o'
-  if ${FORCE:-false} ; then
+  if ${IGNORE_SSL:-false} ; then
     export DLOPT="-k $DLOPT"
   fi
 elif which wget >/dev/null 2>&1 ; then
