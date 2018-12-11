@@ -26,10 +26,10 @@ shift "$((OPTIND-1))"
 # #############################################################################
 # Dynamic globals
 
-INSTALL_DIR=$(echo "${1:-${HOME}/.ds}" | tr -s /)
-BACKUP_FILENAME="${INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
-
+INSTALL_DIR="$(echo "${1:-\${HOME}/.ds}" | tr -s /)"
 DS_LOAD_CODE="[ -r \"${INSTALL_DIR}/ds.sh\" ] && source \"${INSTALL_DIR}/ds.sh\" \"${INSTALL_DIR}\" 1>&2"
+INSTALL_DIR="$(eval echo "\"${INSTALL_DIR}\"")"
+BACKUP_FILENAME="${INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
 
 # Setup the downloader program (curl/wget)
 if which curl >/dev/null 2>&1 ; then
@@ -60,44 +60,44 @@ fi
 # #############################################################################
 # Install
 
-if [ -e ./ds.sh ] && [ "$PWD" != "$INSTALL_DIR" ] ; then
+if [ -e ./ds.sh ] && [ "${PWD}" != "${INSTALL_DIR}" ] ; then
   echo "Daily Shells setup from local dir '${PWD}'..." 1>&2
   mkdir "${INSTALL_DIR}" \
-    && cp -f -R -v "$PWD"/* "$INSTALL_DIR"/
+    && cp -f -R -v "${PWD}"/* "${INSTALL_DIR}"/
   INST_RESULT=$?
-  echo "INFO: Daily Shells setup dir used was '$PWD'"
+  echo "INFO: Daily Shells setup dir used was '${PWD}'"
 else
   echo "Daily Shells setup: downloading and installing..." 1>&2
-  ("$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "$DS_PKG_URL" \
-    || "$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "$DS_PKG_URL_ALT") \
+  ("$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "${DS_PKG_URL}" \
+    || "$DLPROG" ${DLOPT} ${DLOUT} "${INSTALL_DIR}.zip" "${DS_PKG_URL_ALT}") \
     && unzip "${INSTALL_DIR}.zip" -d "$TEMP_DIR"
 
-  # Old: mv "$TEMP_DIR/ds-master" "${INSTALL_DIR}"
+  # Old: mv "${TEMP_DIR}/ds-master" "${INSTALL_DIR}"
   DL_RESULT=$?
   if [ $DL_RESULT -eq 0 ] ; then
     zip_dir=$(unzip -l "${INSTALL_DIR}.zip" | head -5 | tail -1 | awk '{print $NF;}')
-    echo "Zip dir: '$zip_dir'" 1>&2
+    echo "Zip dir: '${zip_dir}'" 1>&2
     mv -f -v "$TEMP_DIR"/"${zip_dir}" "${INSTALL_DIR}" 1>&2
     INST_RESULT=$?
   else
-    INST_RESULT=$DL_RESULT
+    INST_RESULT=${DL_RESULT}
   fi
 fi
 
 # #############################################################################
 # Verification
 
-if [ $INST_RESULT -ne 0 ] ; then
+if [ ${INST_RESULT} -ne 0 ] ; then
   echo "FATAL: installation error." 1>&2
-  rm -f -r "$INSTALL_DIR"
-  exit $INST_RESULT
+  rm -f -r "${INSTALL_DIR}"
+  exit ${INST_RESULT}
 fi
 
 . "${INSTALL_DIR}/ds.sh" "${INSTALL_DIR}" >/dev/null 2>&1
 
 if [ -n "${DS_LOADED}" ] ; then
-  touch "$HOME/.bashrc" "$HOME/.zshrc"
-  appendunique -n "$DS_LOAD_CODE" "$HOME/.bashrc" "$HOME/.zshrc"
+  touch "${HOME}/.bashrc" "${HOME}/.zshrc"
+  appendunique -n "${DS_LOAD_CODE}" "${HOME}/.bashrc" "${HOME}/.zshrc"
   echo "INFO: DS installed." 1>&2
 else
   echo "FATAL: could not load DS." 1>&2
