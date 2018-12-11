@@ -26,7 +26,7 @@ shift "$((OPTIND-1))"
 # #############################################################################
 # Dynamic globals
 
-INSTALL_DIR="$(echo "${1:-\${HOME}/.ds}" | tr -s /)"
+INSTALL_DIR="$(echo "${1:-\${HOME\}/.ds}" | tr -s /)"
 DS_LOAD_CODE="[ -r \"${INSTALL_DIR}/ds.sh\" ] && source \"${INSTALL_DIR}/ds.sh\" \"${INSTALL_DIR}\" 1>&2"
 INSTALL_DIR="$(eval echo "\"${INSTALL_DIR}\"")"
 BACKUP_FILENAME="${INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
