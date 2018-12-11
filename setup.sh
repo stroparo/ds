@@ -107,9 +107,9 @@ fi
 #   guarantees there are no status files from previous
 #   installations:
 eval $(grep DS_PLUGINS_INSTALLED_FILE= "${INSTALL_DIR}/ds.sh")
+echo "INFO: Plugins installed file: '${DS_PLUGINS_INSTALLED_FILE}'"
+ls -l "${DS_PLUGINS_INSTALLED_FILE}" 2>/dev/null
 if [ -f "${DS_PLUGINS_INSTALLED_FILE}" ] ; then
-  echo "Removing old '${DS_PLUGINS_INSTALLED_FILE}'..."
-  ls -l "${DS_PLUGINS_INSTALLED_FILE}"
   rm -f -v "${DS_PLUGINS_INSTALLED_FILE}"
 fi
 
