@@ -24,7 +24,7 @@ runru () {
     ignore_ssl_option='-k'
   fi
 
-  mv ~/.runr ~/.runr.$(date '+%Y%m%d-%OH%OM%OS') || return $?
+  mv -v ~/.runr ~/.runr.$(date '+%Y%m%d-%OH%OM%OS') || return $?
 
   bash -c "$(curl ${ignore_ssl_option} -LSf "https://bitbucket.org/stroparo/runr/raw/master/entry.sh" \
     || curl ${ignore_ssl_option} -LSf "https://raw.githubusercontent.com/stroparo/runr/master/entry.sh")" \
