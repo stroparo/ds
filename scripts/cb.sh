@@ -26,6 +26,9 @@ SYNOPSIS
 DESCRIPTION
     ${PNAME} will copy the arguments to the clipboard, but if there is no terminal
     attached it will get its data from stdin (pipe).
+
+    If no xclip is available but /dev/clipboard is, then will cat stdin into it
+    as a failsafe.
 "
 
 # #############################################################################
@@ -54,7 +57,7 @@ cb () {
     typeset _trn_col='\e[0;33m'
     typeset input
 
-    if ! type xclip > /dev/null 2>&1; then
+    if ! type xclip > /dev/null 2>&1 && [ ! -e /dev/clipboard ] ; then
 
         sudo ${INSTPROG:-apt} install -y xclip || sudo dnf install -y xclip
 
@@ -68,6 +71,11 @@ cb () {
         $QUIET || echo -e "$_wrn_col""Must be regular user (not root) to copy a file to the clipboard.$_col_end" 1>&2
 
     else
+        if ! type xclip >/dev/null 2>&1 && [ -e /dev/clipboard ]; then
+            cat >/dev/clipboard
+            return
+        fi
+
         # If no tty, data should be available on stdin
         if ! [[ "$( tty )" == /dev/* ]]; then
             input="$(< /dev/stdin)"
