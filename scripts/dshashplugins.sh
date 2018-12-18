@@ -2,7 +2,7 @@
 
 # Purpose: Rehash Daily Shells plugins
 
-typeset PROGNAME=dshashplugins.sh
+typeset PROGNAME="dshashplugins.sh"
 
 
 _load_ds () {

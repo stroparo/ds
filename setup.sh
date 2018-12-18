@@ -2,6 +2,8 @@
 
 # Daily Shells Library
 
+PROGNAME="setup.sh"
+
 # #############################################################################
 # Fixed globals
 
@@ -51,7 +53,7 @@ elif which wget >/dev/null 2>&1 ; then
   export DLOPT=''
   export DLOUT='-O'
 else
-  echo "FATAL: curl and wget missing" 1>&2
+  echo "${PROGNAME} (ds): FATAL: curl and wget missing" 1>&2
   exit 1
 fi
 
@@ -60,7 +62,7 @@ fi
 
 # Skip this setup altogether if installation path already occupied:
 if [ -d "$DS_INSTALL_DIR" ] ; then
-  echo "SKIP: '${DS_INSTALL_DIR}' dir already exists" 1>&2
+  echo "${PROGNAME} (ds): SKIP: '${DS_INSTALL_DIR}' dir already exists" 1>&2
   exit
 fi
 
@@ -72,7 +74,7 @@ if [ -e ./ds.sh ] && [ "${PWD}" != "${DS_INSTALL_DIR}" ] ; then
   mkdir "${DS_INSTALL_DIR}" \
     && cp -f -R -v "${PWD}"/* "${DS_INSTALL_DIR}"/
   INST_RESULT=$?
-  echo "INFO: Daily Shells setup dir used was '${PWD}'"
+  echo "${PROGNAME} (ds): INFO: Daily Shells setup dir used was '${PWD}'"
 else
   echo "Daily Shells setup: downloading and installing..." 1>&2
   ("$DLPROG" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${DS_INSTALL_DIR}.zip" "${DS_PKG_URL}" \
@@ -95,7 +97,7 @@ fi
 # Verification
 
 if [ ${INST_RESULT} -ne 0 ] ; then
-  echo "FATAL: installation error." 1>&2
+  echo "${PROGNAME} (ds): FATAL: installation error." 1>&2
   rm -f -r "${DS_INSTALL_DIR}"
   exit ${INST_RESULT}
 fi
@@ -107,23 +109,27 @@ fi
 #   guarantees there are no status files from previous
 #   installations:
 eval $(grep DS_PLUGINS_INSTALLED_FILE= "${DS_INSTALL_DIR}/ds.sh")
-echo "INFO: Plugins installed file: '${DS_PLUGINS_INSTALLED_FILE}'"
+echo "${PROGNAME} (ds): INFO: Plugins installed file: '${DS_PLUGINS_INSTALLED_FILE}'"
 ls -l "${DS_PLUGINS_INSTALLED_FILE}" 2>/dev/null
 if [ -f "${DS_PLUGINS_INSTALLED_FILE}" ] ; then
   rm -f -v "${DS_PLUGINS_INSTALLED_FILE}"
 fi
 
 # #############################################################################
-echo "INFO: Loading and setting shell profiles up..."
+echo "${PROGNAME} (ds): INFO: Loading Daily Shells and setting shell profiles up..."
 
 . "${DS_INSTALL_DIR}/ds.sh" "${DS_INSTALL_DIR}"
 
 if [ -n "${DS_LOADED}" ] ; then
   touch "${HOME}/.bashrc" "${HOME}/.zshrc"
   appendunique -n "${DS_LOAD_CODE}" "${HOME}/.bashrc" "${HOME}/.zshrc"
-  echo "INFO: DS installed." 1>&2
+
+  if [ -f "${DS_PLUGINS_FILE:-${HOME}/.dsplugins}" ] ; then
+    dshashplugins.sh
+  fi
+  echo "${PROGNAME} (ds): INFO: DS installed." 1>&2
 else
-  echo "FATAL: DS installed but could not load it." 1>&2
+  echo "${PROGNAME} (ds): FATAL: DS installed but could not load it." 1>&2
   exit 99
 fi
 
