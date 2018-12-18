@@ -38,20 +38,27 @@ pipinstall () {
 
   pip --version > /dev/null || return $?
 
-  if [ -n "$venv" ] && ! pyenv activate "$venv" ; then
-    echo "${PROGNAME:+$PROGNAME: }FATAL: Could not switch to '$venv' virtualenv." 1>&2
-    return 1
+  if [ -n "${venv}" ] ; then
+    : ${WORKON_HOME:=${HOME}/.ve} ; export WORKON_HOME
+    : ${PROJECT_HOME:=${HOME}/workspace} ; export PROJECT_HOME
+    export PATH="${HOME}/.pyenv/bin:$PATH"
+    eval "$(pyenv init -)"
+
+    if ! pyenv activate "${venv}" ; then
+      echo "${PROGNAME:+$PROGNAME: }FATAL: Could not switch to the '${venv}' virtualenv." 1>&2
+      return 1
+    fi
   fi
 
   for pkg in "$@" ; do
-    if [ -f "$pkg" ] ; then
-      for readpkg in $(cat "$pkg") ; do
+    if [ -f "${pkg}" ] ; then
+      for readpkg in $(cat "${pkg}") ; do
         echo ${BASH_VERSION:+-e} "\n==> pip install '$readpkg'..."
         pip install "$readpkg"
       done
     else
-      echo ${BASH_VERSION:+-e} "\n==> pip install '$pkg'..."
-      pip install "$pkg"
+      echo ${BASH_VERSION:+-e} "\n==> pip install '${pkg}'..."
+      pip install "${pkg}"
     fi
   done
 }
