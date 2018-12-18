@@ -279,20 +279,21 @@ dsload () {
   typeset progname="dsload"
 
   # Info: loads ds. If it does not exist, download and install to the default path.
-  # Syn: [dshome=~/.ds]
+  # Syn: [ds_home=~/.ds]
 
-  typeset dshome="${1:-${DS_HOME:-${HOME}/.ds}}"
+  typeset ds_install_dir="$(echo "${1:-${DS_HOME:-\${HOME\}/.ds}}" | tr -s /)"
+  typeset ds_home="$(eval echo "\"${ds_install_dir}\"")"
 
-  if [ -f "${dshome}/ds.sh" ] ; then
-    . "${dshome}/ds.sh" "$ds_home"
+  if [ -f "${ds_home}/ds.sh" ] ; then
+    . "${ds_home}/ds.sh" "$ds_home"
     return $?
   fi
 
-  export DS_HOME="${dshome}"
+  export DS_HOME="${ds_home}"
   echo
-  echo "${progname}: INFO: Installing DS into '${DS_HOME}' ..." 1>&2
+  echo "${progname}: INFO: Installing DS into '${ds_install_dir}' ('${DS_HOME}') ..." 1>&2
   unset DS_LOADED
-  bash -c "$(${DLPROG} ${DLOPT} ${DLOUT} - "${DS_SETUP_URL}")" dummy "${DS_HOME}"
+  bash -c "$(${DLPROG} ${DLOPT} ${DLOUT} - "${DS_SETUP_URL}")" setup.sh "${ds_install_dir}"
   if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" 1>&2 || [ -z "${DS_LOADED}" ] ; then
     echo "${progname}: FATAL: Could not load DS - Daily Shells." 1>&2
     return 1
