@@ -32,10 +32,10 @@ shift "$((OPTIND-1))"
 # #############################################################################
 # Dynamic globals
 
-INSTALL_DIR="$(echo "${1:-\${HOME\}/.ds}" | tr -s /)"
-DS_LOAD_CODE="[ -r \"${INSTALL_DIR}/ds.sh\" ] && source \"${INSTALL_DIR}/ds.sh\" \"${INSTALL_DIR}\" 1>&2"
-INSTALL_DIR="$(eval echo "\"${INSTALL_DIR}\"")"
-BACKUP_FILENAME="${INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
+DS_INSTALL_DIR="$(echo "${1:-\${HOME\}/.ds}" | tr -s /)"
+DS_LOAD_CODE="[ -r \"${DS_INSTALL_DIR}/ds.sh\" ] && source \"${DS_INSTALL_DIR}/ds.sh\" \"${DS_INSTALL_DIR}\" 1>&2"
+DS_INSTALL_DIR="$(eval echo "\"${DS_INSTALL_DIR}\"")"
+BACKUP_FILENAME="${DS_INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
 
 # Setup the downloader program (curl/wget)
 export DLOPTEXTRA
@@ -59,32 +59,32 @@ fi
 # Checks
 
 # Skip this setup altogether if installation path already occupied:
-if [ -d "$INSTALL_DIR" ] ; then
-  echo "SKIP: '${INSTALL_DIR}' dir already exists" 1>&2
+if [ -d "$DS_INSTALL_DIR" ] ; then
+  echo "SKIP: '${DS_INSTALL_DIR}' dir already exists" 1>&2
   exit
 fi
 
 # #############################################################################
 # Install
 
-if [ -e ./ds.sh ] && [ "${PWD}" != "${INSTALL_DIR}" ] ; then
+if [ -e ./ds.sh ] && [ "${PWD}" != "${DS_INSTALL_DIR}" ] ; then
   echo "Daily Shells setup from local dir '${PWD}'..." 1>&2
-  mkdir "${INSTALL_DIR}" \
-    && cp -f -R -v "${PWD}"/* "${INSTALL_DIR}"/
+  mkdir "${DS_INSTALL_DIR}" \
+    && cp -f -R -v "${PWD}"/* "${DS_INSTALL_DIR}"/
   INST_RESULT=$?
   echo "INFO: Daily Shells setup dir used was '${PWD}'"
 else
   echo "Daily Shells setup: downloading and installing..." 1>&2
-  ("$DLPROG" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${INSTALL_DIR}.zip" "${DS_PKG_URL}" \
-    || "$DLPROG" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${INSTALL_DIR}.zip" "${DS_PKG_URL_ALT}") \
-    && unzip "${INSTALL_DIR}.zip" -d "$TEMP_DIR"
+  ("$DLPROG" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${DS_INSTALL_DIR}.zip" "${DS_PKG_URL}" \
+    || "$DLPROG" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${DS_INSTALL_DIR}.zip" "${DS_PKG_URL_ALT}") \
+    && unzip "${DS_INSTALL_DIR}.zip" -d "$TEMP_DIR"
 
-  # Old: mv "${TEMP_DIR}/ds-master" "${INSTALL_DIR}"
+  # Old: mv "${TEMP_DIR}/ds-master" "${DS_INSTALL_DIR}"
   DL_RESULT=$?
   if [ $DL_RESULT -eq 0 ] ; then
-    zip_dir=$(unzip -l "${INSTALL_DIR}.zip" | head -5 | tail -1 | awk '{print $NF;}')
+    zip_dir=$(unzip -l "${DS_INSTALL_DIR}.zip" | head -5 | tail -1 | awk '{print $NF;}')
     echo "Zip dir: '${zip_dir}'" 1>&2
-    mv -f -v "$TEMP_DIR"/"${zip_dir}" "${INSTALL_DIR}" 1>&2
+    mv -f -v "$TEMP_DIR"/"${zip_dir}" "${DS_INSTALL_DIR}" 1>&2
     INST_RESULT=$?
   else
     INST_RESULT=${DL_RESULT}
@@ -96,7 +96,7 @@ fi
 
 if [ ${INST_RESULT} -ne 0 ] ; then
   echo "FATAL: installation error." 1>&2
-  rm -f -r "${INSTALL_DIR}"
+  rm -f -r "${DS_INSTALL_DIR}"
   exit ${INST_RESULT}
 fi
 
@@ -106,7 +106,7 @@ fi
 # At this point this fresh installation succeeded, so this
 #   guarantees there are no status files from previous
 #   installations:
-eval $(grep DS_PLUGINS_INSTALLED_FILE= "${INSTALL_DIR}/ds.sh")
+eval $(grep DS_PLUGINS_INSTALLED_FILE= "${DS_INSTALL_DIR}/ds.sh")
 echo "INFO: Plugins installed file: '${DS_PLUGINS_INSTALLED_FILE}'"
 ls -l "${DS_PLUGINS_INSTALLED_FILE}" 2>/dev/null
 if [ -f "${DS_PLUGINS_INSTALLED_FILE}" ] ; then
@@ -116,7 +116,7 @@ fi
 # #############################################################################
 echo "INFO: Loading and setting shell profiles up..."
 
-. "${INSTALL_DIR}/ds.sh" "${INSTALL_DIR}"
+. "${DS_INSTALL_DIR}/ds.sh" "${DS_INSTALL_DIR}"
 
 if [ -n "${DS_LOADED}" ] ; then
   touch "${HOME}/.bashrc" "${HOME}/.zshrc"
