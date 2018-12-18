@@ -27,8 +27,19 @@ _load_ds
 
 
 _set_global_defaults () {
-  if [ -z "$DEV" ] && [ -d "$HOME/workspace" ] ; then
-    export DEV="$HOME/workspace"
+  if [ -z "${DEV}" ] && [ -d "${HOME}/workspace" ] ; then
+    export DEV="${HOME}/workspace"
+  fi
+}
+
+
+_skip_if_no_plugins_file () {
+  # Although Daily Shells enforces the existence of this file this is
+  # just to inform in case this ever occurs eg the plugins file had
+  # not been created because of some permission issue etc.
+  if [ ! -f "${DS_PLUGINS_FILE}" ] ; then
+    echo "${PROGNAME:+$PROGNAME: }SKIP: No plugins file at '${DS_PLUGINS_FILE}'." 1>&2
+    exit
   fi
 }
 
@@ -72,6 +83,9 @@ _hash_ds_plugins () {
   if [ "$#" -gt 0 ] ; then
     _hash_ds_plugins_locally "$@"
     return $?
+  elif [ -d "${DEV:-${HOME}/workspace}/ds" ] ; then
+    _hash_ds_plugins_locally "${DEV:-${HOME}/workspace}"
+    return $?
   fi
 
   echo
@@ -88,6 +102,7 @@ _hash_ds_plugins () {
 
 _main () {
   _set_global_defaults
+  _skip_if_no_plugins_file
   _hash_ds_plugins "$@" || exit $?
   echo "${PROGNAME:+$PROGNAME: }COMPLETE"
   exit 0

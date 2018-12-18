@@ -34,9 +34,16 @@ shift "$((OPTIND-1))"
 # #############################################################################
 # Dynamic globals
 
+# Default INSTALL_DIR to not evaluate some variable if passed
+# in the directory, so it goes in the "load code" variable
+# which will be appended to the shell profiles as is:
 DS_INSTALL_DIR="$(echo "${1:-\${HOME\}/.ds}" | tr -s /)"
 DS_LOAD_CODE="[ -r \"${DS_INSTALL_DIR}/ds.sh\" ] && source \"${DS_INSTALL_DIR}/ds.sh\" \"${DS_INSTALL_DIR}\" 1>&2"
+
+# After having that "load code" (for shell profiles),
+# finally eval the installation dir to proceed:
 DS_INSTALL_DIR="$(eval echo "\"${DS_INSTALL_DIR}\"")"
+
 BACKUP_FILENAME="${DS_INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
 
 # Setup the downloader program (curl/wget)
@@ -116,20 +123,36 @@ if [ -f "${DS_PLUGINS_INSTALLED_FILE}" ] ; then
 fi
 
 # #############################################################################
-echo "${PROGNAME} (ds): INFO: Loading Daily Shells and setting shell profiles up..."
+echo "${PROGNAME} (ds): INFO: Loading Daily Shells..."
 
 . "${DS_INSTALL_DIR}/ds.sh" "${DS_INSTALL_DIR}"
 
 if [ -n "${DS_LOADED}" ] ; then
+  echo "${PROGNAME} (ds): INFO: Setting shell profiles up..."
   touch "${HOME}/.bashrc" "${HOME}/.zshrc"
-  appendunique -n "${DS_LOAD_CODE}" "${HOME}/.bashrc" "${HOME}/.zshrc"
-
-  if [ -f "${DS_PLUGINS_FILE:-${HOME}/.dsplugins}" ] ; then
-    dshashplugins.sh
+  # About greps below,
+  #   omitting the path in the pattern (/ds.sh) is on purpose since
+  #   DS could have been installed with a non evaluated variable
+  #   in the profiles earlier, and a reinstallation client code
+  #   calling this might have passed in an actual path, which
+  #   would cause appendunique to not be unique anymore thus
+  #   putting in another ie duplicate DS loading code:
+  if ! grep "/ds.sh" "${HOME}/.bashrc" ; then
+    appendunique -n "${DS_LOAD_CODE}" "${HOME}/.bashrc"
   fi
+  if ! grep "/ds.sh" "${HOME}/.zshrc" ; then
+    appendunique -n "${DS_LOAD_CODE}" "${HOME}/.zshrc"
+  fi
+
+  echo "${PROGNAME} (ds): INFO: Hashing plugins..."
+  dshashplugins.sh
+
   echo "${PROGNAME} (ds): INFO: DS installed." 1>&2
+
+  exit 0
 else
   echo "${PROGNAME} (ds): FATAL: DS installed but could not load it." 1>&2
+
   exit 99
 fi
 

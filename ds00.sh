@@ -149,7 +149,7 @@ dshash () {
     echo
     echo "==> Daily Shells rehash complete"
     sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds10path.sh"
-    dshashplugins.sh "${DEV}"
+    dshashplugins.sh
     eval "$loadcmd"
   else
     echo "${progname}: ERROR: Daily Shells rehash failure" 1>&2
@@ -179,9 +179,7 @@ dsupgrade () {
     return 1
   elif (
     rm -rf "${DS_HOME}" \
-    && : > "${DS_PLUGINS_INSTALLED_FILE}" \
-    && dsload "${DS_HOME}" \
-    && dshashplugins.sh
+    && dsload "${DS_HOME}"
   )
   then
     echo "${progname}: SUCCESS: upgrade complete - backup of previous version at '${backup}'"
