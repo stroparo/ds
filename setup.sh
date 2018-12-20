@@ -40,8 +40,8 @@ shift "$((OPTIND-1))"
 DS_INSTALL_DIR="$(echo "${1:-\${HOME\}/.ds}" | tr -s /)"
 DS_LOAD_CODE="[ -r \"${DS_INSTALL_DIR}/ds.sh\" ] && source \"${DS_INSTALL_DIR}/ds.sh\" \"${DS_INSTALL_DIR}\" 1>&2"
 
-# After having that "load code" (for shell profiles),
-# finally eval the installation dir to proceed:
+# After having that "load code" for shell profiles,
+#   finally eval the installation dir to proceed:
 DS_INSTALL_DIR="$(eval echo "\"${DS_INSTALL_DIR}\"")"
 
 BACKUP_FILENAME="${DS_INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
