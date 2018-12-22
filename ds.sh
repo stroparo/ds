@@ -22,7 +22,7 @@ export DS_VERSION='v0.4.0 2018-01-05'
 
 touch "${DS_PLUGINS_FILE}"
 touch "${DS_PLUGINS_INSTALLED_FILE}"
-. "${DS_HOME}/ds00.sh" || return 10
+. "${DS_HOME}/ds00.sh" || return 100
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds0[1-9]*sh"
 
 # #############################################################################
