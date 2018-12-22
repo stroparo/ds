@@ -16,9 +16,11 @@ fi
 
 pathmunge -a -i -v 'EEPATH' -x "${DS_HOME}"
 
-if [[ $DS_VERBOSE = vv ]] ; then
-  chmodscripts -a -v $(_dsgetscriptsdirs)
-else
-  chmodscripts -a $(_dsgetscriptsdirs)
+if ${DS_CHMODSCRIPTS:-true} ; then
+  if [[ $DS_VERBOSE = vv ]] ; then
+    CHMODSCRIPTS_OPTIONS="-v"
+  fi
+  chmodscripts -a ${CHMODSCRIPTS_OPTIONS} $(_dsgetscriptsdirs)
 fi
+
 true

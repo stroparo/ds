@@ -29,10 +29,17 @@ sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds0[1-9]*sh"
 # Functions
 
 if [[ $DS_VERBOSE = vv ]] ; then
-  sourcefiles -t -v "${DS_HOME}/functions/*sh"
-else
-  sourcefiles -t "${DS_HOME}/functions/*sh"
+  SOURCE_FUNCTIONS_OPTIONS="-v"
 fi
+
+if [ -n "${DS_SOURCES_FUNCTIONS}" ] ; then
+  for functions_file in $(echo ${DS_SOURCES_FUNCTIONS}) ; do
+    sourcefiles ${SOURCE_FUNCTIONS_OPTIONS} "${DS_HOME}/functions/${functions_file%.sh}.sh"
+  done
+else
+  sourcefiles -t ${SOURCE_FUNCTIONS_OPTIONS} "${DS_HOME}/functions/*sh"
+fi
+
 
 # #############################################################################
 # DS additional core sources
@@ -43,7 +50,14 @@ sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds[A-Za-z]*sh"
 # #############################################################################
 # Environments
 
-sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/env*sh"
+if [ -n "${DS_SOURCES_ENVIRONMENTS}" ] ; then
+  for env in $(echo ${DS_SOURCES_ENVIRONMENTS}) ; do
+    env="${env#env}"
+    sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/env${env%.sh}.sh"
+  done
+else
+  sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/env*sh"
+fi
 
 # #############################################################################
 # Miscellaneous
