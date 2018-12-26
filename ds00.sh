@@ -207,6 +207,7 @@ unset d 2>/dev/null
 d () {
   if [ -e "$1" ] ; then cd "$1" ; shift ; fi
   for dir in "$@" ; do
+    if [ -e "$dir" ] ; then cd "$dir" ; continue ; fi
     found=$(ls -1d *"${dir}"*/ | head -1)
     if [ -z "$found" ] ; then found="$(find . -type d -name "*${dir}*" | head -1)" ; fi
     if [ -n "$found" ] ; then echo "$found" ; cd "$found" ; fi
