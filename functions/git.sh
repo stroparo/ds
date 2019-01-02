@@ -88,9 +88,9 @@ gitenforcemyuser () {
 
 
 gitremotepatternreplace () {
-  # Usage: {sed-pattern} {replacement} [repo paths]
+  # Usage: [-r {remotename:=origin}] {sed-pattern} {replacement} [repo paths]
 
-  typeset branch_name=origin
+  typeset remote_name=origin
   typeset post_replace_sync=false
 
   typeset pattern
@@ -99,9 +99,9 @@ gitremotepatternreplace () {
   # Options:
   typeset oldind="${OPTIND}"
   OPTIND=1
-  while getopts ':b:s' option ; do
+  while getopts ':r:s' option ; do
     case "${option}" in
-      b) branch_name="${OPTARG}";;
+      r) remote_name="${OPTARG}";;
       s) post_replace_sync=true;;
     esac
   done
@@ -115,16 +115,17 @@ gitremotepatternreplace () {
     echo "==> Repo: '${repo}'"
     (
       cd "${repo}"
-      if git remote -v | grep -q "^ *${branch_name}" ; then
-        old_remote_value="$(git remote -v | grep "^ *${branch_name}" | head -1 | awk '{print $2;}')"
+      if git remote -v | grep -q "^ *${remote_name}" ; then
+        old_remote_value="$(git remote -v | grep "^ *${remote_name}" | head -1 | awk '{print $2;}')"
         new_remote_value="$(echo "${old_remote_value}" | sed -e "s#${pattern}#${replace}#")"
-        echo "Old '$branch_name' remote: ${old_remote_value}"
-        echo "New '$branch_name' remote: ${new_remote_value}"
-        git remote remove "${branch_name}"
-        git remote add "${branch_name}" "${new_remote_value}"
+        echo "Old '$remote_name' remote: ${old_remote_value}"
+        echo "New '$remote_name' remote: ${new_remote_value}"
+        git remote remove "${remote_name}"
+        git remote add "${remote_name}" "${new_remote_value}"
         if "${post_replace_sync:-false}" ; then
-          git pull "${branch_name}"
-          git push "${branch_name}" HEAD
+          git checkout "${remote_name}"
+          git pull "${remote_name}"
+          git push "${remote_name}" HEAD
         fi
       fi
     )
