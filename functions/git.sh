@@ -112,18 +112,20 @@ gitremotepatternreplace () {
   shift 2
 
   for repo in "$@" ; do
-    echo "==> Repo: '$repo'"
+    echo "==> Repo: '${repo}'"
     (
-      cd $repo
-      old_remote_value="$(git remote -v | grep $branch_name | head -1 | awk '{print $2;}')"
-      new_remote_value="$(echo "$old_remote_value" | sed -e "s#${pattern}#${replace}#")"
-      echo "Old '$branch_name' branch: $old_remote_value"
-      echo "New '$branch_name' branch: $new_remote_value"
-      git remote remove $branch_name
-      git remote add $branch_name "$new_remote_value"
-      if "${post_replace_sync:-false}" ; then
-        git pull $branch_name
-        git push $branch_name HEAD
+      cd "${repo}"
+      if git remote -v | grep -q "^ *${branch_name}" ; then
+        old_remote_value="$(git remote -v | grep "^ *${branch_name}" | head -1 | awk '{print $2;}')"
+        new_remote_value="$(echo "${old_remote_value}" | sed -e "s#${pattern}#${replace}#")"
+        echo "Old '$branch_name' remote: ${old_remote_value}"
+        echo "New '$branch_name' remote: ${new_remote_value}"
+        git remote remove "${branch_name}"
+        git remote add "${branch_name}" "${new_remote_value}"
+        if "${post_replace_sync:-false}" ; then
+          git pull "${branch_name}"
+          git push "${branch_name}" HEAD
+        fi
       fi
     )
   done
