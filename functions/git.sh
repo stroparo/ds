@@ -114,22 +114,24 @@ gitremotepatternreplace () {
   shift 2
 
   for repo in "$@" ; do
-    echo "==> Repo: '${repo}'"
     (
       cd "${repo}"
       if git remote -v | grep -q "^ *${remote_name}" ; then
         old_remote_value="$(git remote -v | grep "^ *${remote_name}" | head -1 | awk '{print $2;}')"
         new_remote_value="$(echo "${old_remote_value}" | sed -e "s#${pattern}#${replace}#")"
-        echo "Old '$remote_name' remote: ${old_remote_value}"
-        echo "New '$remote_name' remote: ${new_remote_value}"
-        git remote remove "${remote_name}"
-        git remote add "${remote_name}" "${new_remote_value}"
-        # if "${post_replace_sync:-false}" ; then
-        #   TODO test current branch behavior..
-        #   if [ -n "${branch_name}" ] ; then git checkout "${branch_name}" fi
-        #   git pull "${remote_name}"
-        #   git push "${remote_name}" HEAD
-        # fi
+        if [ "${old_remote_value}" != "${new_remote_value}" ] ; then
+          echo "==> Repo: '${repo}'"
+          echo "Old '$remote_name' remote: ${old_remote_value}"
+          echo "New '$remote_name' remote: ${new_remote_value}"
+          git remote remove "${remote_name}"
+          git remote add "${remote_name}" "${new_remote_value}"
+          # if "${post_replace_sync:-false}" ; then
+          #   TODO test current branch behavior..
+          #   if [ -n "${branch_name}" ] ; then git checkout "${branch_name}" fi
+          #   git pull "${remote_name}"
+          #   git push "${remote_name}" HEAD
+          # fi
+        fi
       fi
     )
   done
