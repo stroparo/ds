@@ -26,5 +26,5 @@ rss     ()  { gitr.sh -f${GITR_VERBOSE_OPTION} -- status -s "$@" ; }
 
 # Compound commands
 rpushcurrent () { rpush origin HEAD ; rpushmirror HEAD ; rss ; }
-rpushmatching () { rpush origin : ; rpushmirror origin : ; rss ; }
+rpushmatching () { rpush origin : ; rpushmirror : ; rss ; }
 rsyncmaster () { rco master && rpull origin master && rpush origin master && rpushmirror master ; rss ; }
