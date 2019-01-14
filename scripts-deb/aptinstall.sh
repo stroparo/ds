@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# Daily Shells Extras extensions
-# More instructions and licensing at:
-# https://github.com/stroparo/ds-extras
-
 # Install APT packages
 
 # #############################################################################

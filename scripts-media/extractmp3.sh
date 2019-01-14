@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-# Daily Shells Extras extensions
-# More instructions and licensing at:
-# https://github.com/stroparo/ds-extras
-
-getmp3 () {
+extractmp3 () {
     # Info:  Extracts argument file's audio to {argument}.mp3 via avconv utility.
 
     typeset removal
@@ -32,4 +28,4 @@ getmp3 () {
     done
 }
 
-getmp3 "$@"
+extractmp3 "$@"

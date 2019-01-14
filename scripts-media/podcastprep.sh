@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# Daily Shells Extras extensions
-# More instructions and licensing at:
-# https://github.com/stroparo/ds-extras
-
 podcastprep () {
     # Dep: mp3splt (http://mp3splt.sourceforge.net/)
     # Info: put each mp3 in the current dir into its own directory and split it

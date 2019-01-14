@@ -98,10 +98,6 @@ It expects ```user/repo``` as the argument and it will use ___github.com___ as t
 ### Examples
 
 ```bash
-dsplugin stroparo/ds-extras
-```
-
-```bash
 dsplugin stroparo/ds-stroparo
 ```
 
