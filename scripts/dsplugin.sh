@@ -198,7 +198,7 @@ _list_installed () {
 
 _arg_dispatcher () {
   case "$1" in
-    list) _list_installed; return ;;
+    list*) _list_installed; return ;;
   esac
 
   for arg in "$@" ; do
