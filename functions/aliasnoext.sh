@@ -29,7 +29,7 @@ aliasnoext () {
                     scriptbasename="${script##*/}"
                     aliasname="${scriptbasename%%.*}"
 
-                    if [ "${aliasname}" != "${scriptbasename}" ] ; then
+                    if [ "${aliasname}" != "${scriptbasename}" ] && ! type "${aliasname}" >/dev/null 2>&1; then
                         eval unalias "${aliasname}" 2>/dev/null
                         eval alias "${aliasname}=${script}"
                         $verbose && eval type "${aliasname}"
