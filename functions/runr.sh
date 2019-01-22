@@ -1,31 +1,5 @@
-runr () {
-  typeset ignore_ssl_option
-  typeset script_content
+unalias runr >/dev/null 2>&1
+runr () { runr.sh "$@" ; }
 
-  if ${IGNORE_SSL:-false} ; then
-    ignore_ssl_option='-k'
-  fi
-
-  if [ -f ~/.runr/entry.sh ] ; then
-    script_content="$(cat ~/.runr/entry.sh)"
-  else
-    script_content="$(bash -c "$(curl ${ignore_ssl_option} -LSf "https://bitbucket.org/stroparo/runr/raw/master/entry.sh" \
-                      || curl ${ignore_ssl_option} -LSf "https://raw.githubusercontent.com/stroparo/runr/master/entry.sh")")"
-  fi
-  bash -c "${script_content}" entry.sh "$@"
-}
-
-runru () {
-
-  typeset ignore_ssl_option
-
-  if ${IGNORE_SSL:-false} ; then
-    ignore_ssl_option='-k'
-  fi
-
-  mv -v ~/.runr ~/.runr.$(date '+%Y%m%d-%OH%OM%OS') || return $?
-
-  bash -c "$(curl ${ignore_ssl_option} -LSf "https://bitbucket.org/stroparo/runr/raw/master/entry.sh" \
-    || curl ${ignore_ssl_option} -LSf "https://raw.githubusercontent.com/stroparo/runr/master/entry.sh")" \
-    entry.sh "$@"
-}
+unalias runru >/dev/null 2>&1
+runru () { runru.sh "$@" ; }
