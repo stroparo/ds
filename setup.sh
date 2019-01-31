@@ -116,8 +116,8 @@ fi
 #   guarantees there are no status files from previous
 #   installations:
 eval $(grep DS_PLUGINS_INSTALLED_FILE= "${DS_INSTALL_DIR}/ds.sh")
-echo "${PROGNAME} (ds): INFO: Plugins installed file: '${DS_PLUGINS_INSTALLED_FILE}'"
-ls -l "${DS_PLUGINS_INSTALLED_FILE}" 2>/dev/null
+echo "${PROGNAME} (ds): INFO: Plugins installed file:"
+ls -l "${DS_PLUGINS_INSTALLED_FILE}"
 if [ -f "${DS_PLUGINS_INSTALLED_FILE}" ] ; then
   rm -f -v "${DS_PLUGINS_INSTALLED_FILE}"
 fi
@@ -137,10 +137,10 @@ if [ -n "${DS_LOADED}" ] ; then
   #   calling this might have passed in an actual path, which
   #   would cause appendunique to not be unique anymore thus
   #   putting in another ie duplicate DS loading code:
-  if ! grep "/ds.sh" "${HOME}/.bashrc" ; then
+  if ! grep -q "/ds.sh" "${HOME}/.bashrc" ; then
     appendunique -n "${DS_LOAD_CODE}" "${HOME}/.bashrc"
   fi
-  if ! grep "/ds.sh" "${HOME}/.zshrc" ; then
+  if ! grep -q "/ds.sh" "${HOME}/.zshrc" ; then
     appendunique -n "${DS_LOAD_CODE}" "${HOME}/.zshrc"
   fi
 
