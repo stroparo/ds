@@ -81,6 +81,17 @@ confgits () {
 }
 
 
+gc1 () {
+  git diff
+  git status -s
+  if userconfirm "Commit and push?" ; then
+    git add -A
+    git commit -m "$1"
+    git push
+  fi
+}
+
+
 gitenforcemyuser () {
   [ -n "$MYEMAIL" ] && git config --global --replace-all user.email "$MYEMAIL"
   [ -n "$MYSIGN" ] && git config --global --replace-all user.name "$MYSIGN"
