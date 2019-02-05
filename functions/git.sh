@@ -217,10 +217,13 @@ gpa () {
   typeset branch="${1:-HEAD}"
   typeset remote
 
+  echo
+  echo "gpa: INFO: Checking out the '${branch}' branch..."
   git checkout "${branch}"
+
   for remote in $(git remote) ; do
     echo
-    echo "==> Remote '${remote}'.."
+    echo "gpa: INFO: Pushing to remote '${remote}'s branch '${branch}'..."
     git push "${remote}" "${branch}"
   done
 }
