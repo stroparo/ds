@@ -212,15 +212,15 @@ gitset () {
 
 gpa () {
   # Info: Git push all
-  # Syn: [branch=master]
+  # Syn: [branch=HEAD]
 
-  typeset branch="${1:-master}"
+  typeset branch="${1:-HEAD}"
   typeset remote
 
-  git checkout master
+  git checkout "${branch}"
   for remote in $(git remote) ; do
     echo
     echo "==> Remote '${remote}'.."
-    git push $remote master
+    git push "${remote}" "${branch}"
   done
 }
