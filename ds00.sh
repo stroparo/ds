@@ -217,6 +217,13 @@ d () {
 }
 
 
+cdenforce () {
+  mkdir -p "$1"
+  cd "$1"
+  [[ $PWD = */${1} ]]
+}
+
+
 dslistfunctions () {
 
   typeset filename item items itemslength

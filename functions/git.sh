@@ -82,12 +82,17 @@ confgits () {
 
 
 gc1 () {
-  git diff
+  echo
+  echo "Status:"
   git status -s
+  echo
+  echo "Diff:"
+  git diff
+  echo
   if userconfirm "Commit and push?" ; then
     git add -A
     git commit -m "$1"
-    git push
+    gpa HEAD
   fi
 }
 
