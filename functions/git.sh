@@ -85,13 +85,16 @@ gc1 () {
   echo
   echo "Status:"
   git status -s
+
   echo
   echo "Diff:"
   git diff
+
   echo
   if userconfirm "Commit and push?" ; then
     git add -A
     git commit -m "$1"
+
     gpa HEAD
   fi
 }
@@ -211,7 +214,7 @@ gitset () {
 
 
 gpa () {
-  # Info: Git push all
+  # Info: Git push to all branches the given branch (defaults to HEAD)
   # Syn: [branch=HEAD]
 
   typeset branch="${1:-HEAD}"
