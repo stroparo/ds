@@ -1,6 +1,6 @@
 # DS - Daily Shells Library
 
-getnow () {
+setnow () {
     # Info: Setup NOW* environment variables based on the system's date.
     export NOW_HMS="$(date '+%OH%OM%OS')"
     export NOW_ISO="$(date '+%Y-%m-%d')"

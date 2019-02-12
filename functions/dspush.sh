@@ -1,6 +1,6 @@
 # DS - Daily Shells Library
 
-pushds () {
+dspush () {
     # Info:
     #   Push ds scripts and source files to envs pointed to by arguments, packed into
     #   an archive whose filename starts with DS directory's basename eg 'ds.tar.gz'.

@@ -1,4 +1,4 @@
-# DS - Daily Shells Library
+#!/usr/bin/env bash
 
 dfmb () {
     # Info: Display free disk space in MB.
@@ -13,3 +13,5 @@ dfmb () {
 
     echo "${freespace}"
 }
+
+dfmb "$@"

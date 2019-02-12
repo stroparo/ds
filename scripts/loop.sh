@@ -1,4 +1,4 @@
-# DS - Daily Shells Library
+#!/usr/bin/env bash
 
 loop () {
     # Info: Pass a command to be executed every secs seconds.
@@ -27,3 +27,5 @@ loop () {
         || break
     done
 }
+
+loop "$@"

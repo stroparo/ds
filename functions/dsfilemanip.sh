@@ -81,7 +81,7 @@ archive () {
 }
 
 # Function childrentgz - archives all srcdir children into destdir/children.tar.gz,
-#  via paralleljobs function.
+#  via paralleljobs.sh script.
 # Deps: dudesc, dufile, paralleljobs.
 # Remark: abort if destdir already exists.
 # Syntax: [-c gziplevel] [-p maxprocesses] [-u] [-w] srcdir destdir
@@ -146,7 +146,7 @@ childrentgz () {
 
     echo "INFO: Started." 1>&2
     echo "INFO: Initial delay may ocurr whilst sorting file list by size (desc).." 1>&2
-    paralleljobs -l "${destdir}" ${maxprocs:+-p ${maxprocs}} "${paracmd}" <<EOF
+    paralleljobs.sh -l "${destdir}" ${maxprocs:+-p ${maxprocs}} "${paracmd}" <<EOF
 $(ls -1 -d * | dudesc | dufile)
 EOF
     cd - >/dev/null 2>&1
@@ -157,7 +157,7 @@ EOF
 }
 
 # Function childrentgunz - restores all srcdir/*gz children into destdir,
-#  via paralleljobs function.
+#  via paralleljobs.sh script.
 # Deps: dudesc, dufile, paralleljobs.
 # Remark: abort if destdir already exists.
 # Syntax: [-p maxprocesses] srcdir destdir
@@ -205,7 +205,7 @@ childrentgunz () {
 
     echo "INFO: Started." 1>&2
     echo "INFO: Initial delay may ocurr whilst sorting file list by size (desc).." 1>&2
-    paralleljobs -l "${destdir}" ${maxprocs:+-p ${maxprocs}} "${paracmd}" <<EOF
+    paralleljobs.sh -l "${destdir}" ${maxprocs:+-p ${maxprocs}} "${paracmd}" <<EOF
 $(ls -1 "${srcdir}"/*.tgz "${srcdir}"/*.tar.gz 2>/dev/null | dudesc | dufile)
 EOF
     cd - >/dev/null 2>&1
@@ -440,13 +440,13 @@ xzp () {
     fi
 
     # Main action (compress | decompress):
-    paralleljobs -p "${maxprocs}" -z xz "${cmd}" <<EOF
+    paralleljobs.sh -p "${maxprocs}" -z xz "${cmd}" <<EOF
 ${files}
 EOF
 
     # Copy complement files only if a target was specified:
     if [ -n "${target}" ] ; then
-        paralleljobs -p "${maxprocs}" "${copycmd}" <<EOF
+        paralleljobs.sh -p "${maxprocs}" "${copycmd}" <<EOF
 ${files2copy}
 EOF
     fi
@@ -456,7 +456,7 @@ EOF
 #        if [ -d "$d" ] ; then
 #            cd "${d}"
 #            # cat <<EOF
-#            paralleljobs -p "${maxprocs}" -z xz "${cmd}" <<EOF
+#            paralleljobs.sh -p "${maxprocs}" -z xz "${cmd}" <<EOF
 #$(find . -name '*.xz' -type f)
 #EOF
 #            cd - >/dev/null 2>&1
