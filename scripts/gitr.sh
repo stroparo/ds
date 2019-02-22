@@ -98,9 +98,9 @@ cd {}/..
 export HEADERMSG="\$(echo "${PROGRAM:-git}" "${GITCMD}" $@ "# At '\${PWD}'")"
 export CMDOUT="\$(eval "${PROGRAM:-git}" "${GITCMD}" $@ 2>&1)"
 
-if (([ "${GITCMD}" != 'status' ] && [ -z "\$CMDOUT" ]) || \
-    ([ "${GITCMD}" = 'pull' ] && [ echo "\$CMDOUT" | grep -i 'Already up.to.date' ]) || \
-    ([ "${GITCMD}" = 'push' ] && [ echo "\$CMDOUT" | grep -i 'Everything up.to.date' ]))
+if ([ "${GITCMD}" != 'status' ] && [ -z "\$CMDOUT" ]) || \
+    ([ "${GITCMD}" = 'pull' ] && (echo "\$CMDOUT" | grep -i 'Already up.to.date')) || \
+    ([ "${GITCMD}" = 'push' ] && (echo "\$CMDOUT" | grep -i 'Everything up.to.date'))
 then
     hasoutput=false
 else
