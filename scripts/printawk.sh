@@ -1,6 +1,8 @@
+#!/usr/bin/env bash
+
 # DS - Daily Shells Library
 
-printawk () {
+_printawk () {
     typeset fieldsep
     typeset outsep
     typeset pattern
@@ -29,4 +31,4 @@ Syntax: printawk -F fieldsep -O outsep -p pattern {1st field} [2nd field [3rd ..
         "${pattern}${pattern:+ }{print ${printargs};}"
 }
 
-alias paw=printawk
+_printawk "$@"
