@@ -32,12 +32,12 @@ Rmk #2:
 
 export FULL=false
 export PROGRAM='git'
-export VERBOSE=false
 
-# Parallel run
+export VERBOSE=false
+: ${GITR_VERBOSE_OPTION:=false} ; export GITR_VERBOSE_OPTION ; ${GITR_VERBOSE_OPTION} && export VERBOSE=true
+
 export PARALLEL=false
 : ${GITR_PARALLEL:=false} ; export GITR_PARALLEL ; ${GITR_PARALLEL} && export PARALLEL=true
-
 
 OPTIND=1
 while getopts ':c:fhpv' opt ; do
