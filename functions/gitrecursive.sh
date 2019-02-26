@@ -2,27 +2,20 @@
 
 # Wrappers for gitr script from the Daily Shells library (stroparo/ds)
 
-# Linux vs non-Linux options for gitr.sh:
-if (uname -a | grep -i -q linux) ; then
-  export GITR_PARALLEL=true
-else
-  export GITR_VERBOSE_OPTION=v
-fi
-
 # Branch
 rbranch () { gitr.sh -fv -- branch -avv | egrep -- "^(==|---)|${1}" ; }
 rcheckedout () { gitr.sh -fv -- branch "$@" | egrep -- "^(==|---)|^[*]" ; }
 
-radd    ()  { GITR_PARALLEL=false gitr.sh -f  -- add -A "$@" ; gitr.sh -fv status -s ; }
-rci     ()  { GITR_PARALLEL=false gitr.sh -fv -- commit -m "'$@'" ; }
-rco     ()  { GITR_PARALLEL=false gitr.sh -fv -- checkout "$@" ; }
-rdca    ()  { GITR_PARALLEL=false gitr.sh -f  -- diff --cached "$@" ; }
-rfetch  ()  { gitr.sh -f${GITR_VERBOSE_OPTION} -- fetch "$@" ; }
-rfetchallprune () { gitr.sh -f${GITR_VERBOSE_OPTION} -- fetch --all -p "$@" ; }
-rpull   ()  { gitr.sh -f${GITR_VERBOSE_OPTION} -- pull "$@" ; }
-rpush   ()  { gitr.sh -f${GITR_VERBOSE_OPTION} -- push "$@" ; }
+radd    ()  { (export GITR_PARALLEL=false ; gitr.sh -f  -- add -A "$@" ; gitr.sh -fv status -s) ; }
+rci     ()  { (export GITR_PARALLEL=false ; gitr.sh -fv -- commit -m "'$@'") ; }
+rco     ()  { (export GITR_PARALLEL=false ; gitr.sh -fv -- checkout "$@") ; }
+rdca    ()  { (export GITR_PARALLEL=false ; gitr.sh -f  -- diff --cached "$@") ; }
+rfetch  ()  { gitr.sh -fv -- fetch "$@" ; }
+rfetchallprune () { gitr.sh -fv -- fetch --all -p "$@" ; }
+rpull   ()  { gitr.sh -fv -- pull "$@" ; }
+rpush   ()  { gitr.sh -fv -- push "$@" ; }
 rpushmirror () { gitr.sh -fv push mirror ${1:-master} | egrep -v "fatal:|make sure|repository exists|^$" ; }
-rss     ()  { gitr.sh -f${GITR_VERBOSE_OPTION} -- status -s "$@" ; }
+rss     ()  { gitr.sh -f -- status -s "$@" ; }
 
 # Compound commands
 rpushcurrent () { rpush origin HEAD ; rpushmirror HEAD ; rss ; }
