@@ -22,4 +22,5 @@ rpushmatching () { rpush origin : ; rpushmirror : ; rss ; }
 
 # Shortcuts
 rpul () { rpull ; }
+rpum () { rpushmatching ; }
 rpus () { rpush ; }
