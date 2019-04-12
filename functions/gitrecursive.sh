@@ -1,6 +1,5 @@
-# Daily Shells Stroparo extensions
-
 # Wrappers for gitr script from the Daily Shells library (stroparo/ds)
+# #############################################################################
 
 # Branch
 rbranch () { gitr.sh -fv -- branch -avv | egrep -- "^(==|---)|${1}" ; }
@@ -20,3 +19,7 @@ rss     ()  { gitr.sh -f -- status -s "$@" ; }
 # Compound commands
 rpushcurrent () { rpush origin HEAD ; rpushmirror HEAD ; rss ; }
 rpushmatching () { rpush origin : ; rpushmirror : ; rss ; }
+
+# Shortcuts
+rpul () { rpull ; }
+rpus () { rpush ; }

@@ -1,17 +1,10 @@
-# DS - Daily Shells Library
-# License:
-#    See README.md document in projects page at
-#    https://github.com/stroparo/ds
-
 # Git routines
 # #############################################################################
 
-
 # Oneliners
-
 gcheckedout () { git branch -v "$@" | egrep '^(==|[*]|---)' ; }
 gdd () { git add -A "$@" ; git status -s ; }
-gddd () { git add -A "$@" ; git status -s ; git diff --cached ; }
+gddd () { git add -A "$@" ; git status -s ; git diff --cached ; } ; ddd () { gddd ; }
 
 
 clonegits () {
