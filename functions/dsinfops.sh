@@ -8,9 +8,7 @@ psuser () { ps -ef | grep "^${USER}" ; }
 
 psnoshells () {
   ps -ef \
-    | grep -v bash \
-    | grep -v zsh \
-    | grep -v sshd \
-    | egrep -i "$1" \
+    | egrep -v 'bash|zsh|sshd' \
+    | egrep -i "${1}" \
     | egrep -v "grep.*(${1})"
 }
