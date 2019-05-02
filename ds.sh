@@ -46,6 +46,7 @@ fi
 
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds[1-8][0-9]*sh"
 sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds[A-Za-z]*sh"
+sourcefiles -v "${DS_HOME}/sshagent.sh"
 
 # #############################################################################
 # Environments
@@ -58,11 +59,6 @@ if [ -n "${DS_SOURCES_ENVIRONMENTS}" ] ; then
 else
   sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/env*sh"
 fi
-
-# #############################################################################
-# Miscellaneous
-
-sourcefiles -v "${DS_HOME}/sshagent.sh"
 
 # #############################################################################
 # Post DS loading calls
