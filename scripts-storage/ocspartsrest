@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-partimage="$1"
-partfrom="$2"
-partto="$3"
-
-/usr/sbin/ocs-sr -e1 auto -e2 -c -t -r -j2 -k -p choose -f "$partfrom" \
-    restoreparts "$partimage" "$partto"
-echo $?
