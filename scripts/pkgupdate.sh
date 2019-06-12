@@ -24,6 +24,12 @@ export RPMPROG=yum; which dnf >/dev/null 2>&1 && export RPMPROG=dnf
 export RPMGROUP="yum groupinstall"; which dnf >/dev/null 2>&1 && export RPMGROUP="dnf group install"
 export INSTPROG="$APTPROG"; which "$RPMPROG" >/dev/null 2>&1 && export INSTPROG="$RPMPROG"
 
+# Check Linux:
+if !(uname -a | grep -i -q linux) ; then
+  echo "${PROGNAME:+$PROGNAME: }SKIP: Only Linux is supported." 1>&2
+  exit
+fi
+
 # Check if system update is needed:
 updated_more_than_a_day_ago=false
 updated_on="$(cat ~/.ds_pkgupdate_date 2>/dev/null)"
@@ -33,10 +39,11 @@ if [ "$(date '+%Y%m%d')" -gt "${updated_on}" ] ; then
 fi
 
 if ! ${FORCE} && ! ${updated_more_than_a_day_ago} ; then
-  echo "${PROGNAME:+$PROGNAME: }SKIP: Updated more than a day ago." 1>&2
+  echo "${PROGNAME:+$PROGNAME: }SKIP: Updated no more than a day ago." 1>&2
   exit
 fi
 
+update_result=1
 if egrep -i -q -r 'debian|ubuntu' /etc/*release ; then
   sudo ${INSTPROG} update && sudo ${INSTPROG} upgrade -y
   update_result=$?
@@ -45,7 +52,7 @@ elif egrep -i -q -r 'centos|fedora|oracle|red *hat' /etc/*release ; then
   update_result=$?
 fi
 
-if [ ${update_result} -ne 0 ] ; then
+if [ ${update_result:-1} -ne 0 ] ; then
   echo "${PROGNAME:+$PROGNAME: }FATAL: There was an error updating the system packages." 1>&2
   exit ${update_result}
 fi
