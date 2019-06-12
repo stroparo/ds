@@ -116,11 +116,8 @@ fi
 #   guarantees there are no status files from previous
 #   installations:
 eval $(grep DS_PLUGINS_INSTALLED_FILE= "${DS_INSTALL_DIR}/ds.sh")
-echo "${PROGNAME} (ds): INFO: Plugins installed file:"
-ls -l "${DS_PLUGINS_INSTALLED_FILE}"
-if [ -f "${DS_PLUGINS_INSTALLED_FILE}" ] ; then
-  rm -f -v "${DS_PLUGINS_INSTALLED_FILE}"
-fi
+echo "${PROGNAME} (ds): INFO: Plugins installed file: '${DS_PLUGINS_INSTALLED_FILE}'"
+rm -f -v "${DS_PLUGINS_INSTALLED_FILE}" 2>/dev/null
 
 # #############################################################################
 echo "${PROGNAME} (ds): INFO: Loading Daily Shells..."
