@@ -94,7 +94,7 @@ dsrestorebackup () {
   fi
 
   if [ -d "${DS_LAST_BACKUP}" ] ; then
-    echo "${progname}: INFO: Restoring Daily Shells backup..." 1>&2
+    echo "${progname}: INFO: Restoring Daily Shells backup at '${DS_LAST_BACKUP}'..." 1>&2
     rm -f -r "${DS_HOME}";  mkdir "${DS_HOME}"
     if [ -d "${DS_HOME}" ] \
       && [ ! -f "${DS_HOME}/ds.sh" ] \
@@ -114,6 +114,7 @@ dsrestorebackup () {
 
 
 dshash () {
+  # Purpose: rehashing of ds and plugins from local source codebases.
   # Syntax: [-r] [ds-sources-dir:${DEV}/ds]
 
   typeset progname="dshash"
@@ -131,8 +132,7 @@ dshash () {
     echo "${progname}: FATAL: No Daily Shells sources found in '${dssrc}'." 1>&2
     return 1
   fi
-  dsbackup_dir="$(dsbackup)"; dsbackup_res=$?
-  if [ "${dsbackup_res:-1}" -ne 0 ] || [ ! -d "${dsbackup_dir}" ] ; then
+  if ! dsbackup ; then
     echo "${progname}: FATAL: error in dsbackup." 1>&2
     return 1
   fi
@@ -152,15 +152,14 @@ dshash () {
     dshashplugins.sh
     eval "$loadcmd"
   else
-    echo "${progname}: ERROR: Daily Shells rehash failure" 1>&2
+    echo "${progname}: ERROR: Daily Shells rehashing failed." 1>&2
     dsrestorebackup
-    return 0
   fi
 }
 
 
 dsupgrade () {
-  typeset backup
+
   typeset progname="dsupgrade"
 
   if [ -z "${DS_HOME}" ] ; then
@@ -172,27 +171,20 @@ dsupgrade () {
     return 1
   fi
 
-  backup="$(dsbackup)"
-
-  if [ $? -ne 0 ] || [ -z "${backup}" ] || [ ! -f "${backup}/ds.sh" ]; then
-    echo "${progname}: FATAL: backup failed... sequence cancelled" 1>&2
+  if ! dsbackup ; then
+    echo "${progname}: FATAL: error in dsbackup." 1>&2
     return 1
   elif (
     rm -rf "${DS_HOME}" \
     && dsload "${DS_HOME}"
   )
   then
-    echo "${progname}: SUCCESS: upgrade complete - backup of previous version at '${backup}'"
+    echo "${progname}: SUCCESS: upgrade complete."
+    echo "${progname}: INFO: backup at '${DS_LAST_BACKUP}'."
     dsload "${DS_HOME}"
   else
-    echo "${progname}: FATAL: upgrade failed ... restoring '${backup}' ..." 1>&2
-    rm -f -r "${DS_HOME}" \
-      && cp -a -f "${backup}" "${DS_HOME}" \
-      && echo "${progname}: SUCCESS: restored '${backup}' into '${DS_HOME}'"
-    if [ $? -ne 0 ] ; then
-      echo "${progname}: FATAL: restore failed" 1>&2
-      return 1
-    fi
+    echo "${progname}: FATAL: upgrade failed." 1>&2
+    dsrestorebackup
   fi
 }
 
