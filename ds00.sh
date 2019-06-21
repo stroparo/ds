@@ -57,6 +57,7 @@ alias t='d "${TEMP_DIRECTORY}"'
 # #############################################################################
 # Oneliners
 
+dsh () { dshash -r ; }
 dsversion () { echo "==> Daily Shells - ${DS_VERSION}" ; }
 
 # #############################################################################
@@ -116,6 +117,7 @@ dsrestorebackup () {
 dshash () {
   # Purpose: rehashing of ds and plugins from local source codebases.
   # Syntax: [-r] [ds-sources-dir:${DEV}/ds]
+  #   -r will reload daily shells in the current shell session
 
   typeset progname="dshash"
 
@@ -248,11 +250,6 @@ dslistscripts () {
     findscripts.sh "$dir"
   done
 }
-
-
-# Handy dshash wrappers
-dsh () { dshash -r ; }
-dshfull () { (v ; rpull ; dshash) ; dsload ; }
 
 
 dshelp () {
