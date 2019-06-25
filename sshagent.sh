@@ -12,8 +12,7 @@ _ssh_agent_start () {
     chmod 600 "$SSH_ENV"
     . "$SSH_ENV" > /dev/null
 
-    ssh-add
-
+    ssh-add "$@"
 }
 
 _ssh_agent_test () {
@@ -30,7 +29,7 @@ _ssh_agent_test () {
 
             # $SSH_AUTH_SOCK broken so we start a new proper agent:
             if [ $? -eq 2 ];then
-                _ssh_agent_start
+                _ssh_agent_start "$@"
             fi
         elif [ -n "${_ssh_agent_verbose}" ] ; then
             # Redirect to stderr in case this echoes while loading an environment:
@@ -57,15 +56,15 @@ _ssh_agent () {
         . "$SSH_ENV" > /dev/null
 
         if ps -ef | grep "$SSH_AGENT_PID" | grep -v grep | grep -q ssh-agent ; then
-            _ssh_agent_test
+            _ssh_agent_test "$@"
         else
-            _ssh_agent_start
+            _ssh_agent_start "$@"
         fi
     else
-        _ssh_agent_start
+        _ssh_agent_start "$@"
     fi
 
 }
 
-_ssh_agent -v
+_ssh_agent -v "$@"
 
