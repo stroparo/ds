@@ -52,6 +52,10 @@ _ssh_agent () {
     done
     shift $((OPTIND-1)); OPTIND=1
 
+    while (echo "$1" | grep -i -q 'sshagent.sh') ; do
+    	shift
+    done
+
     if [ -f "$SSH_ENV" ] && [ -r "$SSH_ENV" ]; then
         . "$SSH_ENV" > /dev/null
 
