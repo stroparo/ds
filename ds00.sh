@@ -10,9 +10,10 @@ DS_SETUP_URL_ALT="https://raw.githubusercontent.com/stroparo/ds/master/setup.sh"
 # Globals - Mounts prefix root dir filename for Linux and Windows:
 
 if (uname -a | grep -i -q linux) ; then
-  MOUNTS_PREFIX="/media/$USER"
+  MOUNTS_PREFIX="/mnt"
+  MOUNTS_PREFIX_EXTERNAL="/media/$USER"
   if egrep -i -q -r 'centos|fedora|oracle|red *hat' /etc/*release ; then
-    MOUNTS_PREFIX="/var/media/$USER"
+    MOUNTS_PREFIX_EXTERNAL="/var/media/$USER"
   fi
 elif (uname -a | egrep -i -q "cygwin|mingw|msys|win32|windows") ; then
   if [ -d '/c/Windows' ] ; then
