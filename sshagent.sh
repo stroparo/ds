@@ -25,7 +25,7 @@ _ssh_agent_test () {
     else
 
         if ssh-add -l | grep -q "The agent has no identities" ; then
-            ssh-add
+            ssh-add "$@"
 
             # $SSH_AUTH_SOCK broken so we start a new proper agent:
             if [ $? -eq 2 ];then
