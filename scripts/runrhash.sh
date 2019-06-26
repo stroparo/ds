@@ -4,7 +4,7 @@ PROGNAME="runrhash.sh"
 
 # Dotfiles deployment/rehashing functions and run recipes if any
 
-_runrhash_helper () {
+_main () {
   if [ -d ~/.runr ] && ! mv -v ~/.runr ~/.runr.$(date '+%Y%m%d-%OH%OM%OS') ; then
     echo "${PROGNAME:+$PROGNAME: }FATAL: Could not backup '${HOME}/.runr'." 1>&2
     return 1
@@ -22,4 +22,4 @@ _runrhash_helper () {
   fi
 }
 
-_runrhash_helper "$@"
+_main "$@"

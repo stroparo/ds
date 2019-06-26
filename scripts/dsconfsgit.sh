@@ -2,7 +2,7 @@
 
 PROGNAME="dsconfsgit.sh"
 
-# Daily Shells configuration scripts - Git
+# Daily Shells configuration scripts for Git
 
 echo
 echo "${PROGNAME:+$PROGNAME: }INFO: Applying Daily Shells Git configurations..." 1>&2
@@ -13,5 +13,7 @@ if . "${DS_HOME}/functions/git.sh" ; then
 fi
 
 for git_script in "${DS_HOME:-$HOME/.ds}"/*/*conf-git.sh ; do
-  bash "${git_script}"
+  if [ -f "${git_script}" ] ; then
+    bash "${git_script}"
+  fi
 done
