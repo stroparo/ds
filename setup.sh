@@ -50,7 +50,7 @@ BACKUP_FILENAME="${DS_INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
 export DLOPTEXTRA
 if which curl >/dev/null 2>&1 ; then
   export DLPROG=curl
-  export DLOPT='-LSfs'
+  export DLOPT='--tlsv1.3 -LSfs'
   export DLOUT='-o'
   if ${IGNORE_SSL:-false} ; then
     export DLOPT="-k ${DLOPT}"
