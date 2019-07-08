@@ -47,10 +47,14 @@ DS_INSTALL_DIR="$(eval echo "\"${DS_INSTALL_DIR}\"")"
 BACKUP_FILENAME="${DS_INSTALL_DIR}-$(date '+%y%m%d-%OH%OM%OS')"
 
 # Setup the downloader program (curl/wget)
+_no_download_program () {
+  echo "${PROGNAME} (ds): FATAL: curl and wget missing" 1>&2
+  exit 1
+}
 export DLOPTEXTRA
 if which curl >/dev/null 2>&1 ; then
   export DLPROG=curl
-  export DLOPT='--tlsv1.3 -LSfs'
+  export DLOPT='-LSfs'
   export DLOUT='-o'
   if ${IGNORE_SSL:-false} ; then
     export DLOPT="-k ${DLOPT}"
@@ -60,8 +64,7 @@ elif which wget >/dev/null 2>&1 ; then
   export DLOPT=''
   export DLOUT='-O'
 else
-  echo "${PROGNAME} (ds): FATAL: curl and wget missing" 1>&2
-  exit 1
+  export DLPROG=_no_download_program
 fi
 
 # #############################################################################
@@ -84,8 +87,8 @@ if [ -e ./ds.sh ] && [ "${PWD}" != "${DS_INSTALL_DIR}" ] ; then
   echo "${PROGNAME} (ds): INFO: Daily Shells setup dir used was '${PWD}'"
 else
   echo "Daily Shells setup: downloading and installing..." 1>&2
-  ("$DLPROG" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${DS_INSTALL_DIR}.zip" "${DS_PKG_URL}" \
-    || "$DLPROG" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${DS_INSTALL_DIR}.zip" "${DS_PKG_URL_ALT}") \
+  ("${DLPROG}" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${DS_INSTALL_DIR}.zip" "${DS_PKG_URL}" \
+    || "${DLPROG}" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${DS_INSTALL_DIR}.zip" "${DS_PKG_URL_ALT}") \
     && unzip "${DS_INSTALL_DIR}.zip" -d "$TEMP_DIR"
 
   # Old: mv "${TEMP_DIR}/ds-master" "${DS_INSTALL_DIR}"

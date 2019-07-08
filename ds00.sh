@@ -28,9 +28,15 @@ fi
 # #############################################################################
 # Globals - the downloader program (curl/wget)
 
+# Setup the downloader program (curl/wget)
+_no_download_program () {
+  echo "${PROGNAME} (ds): FATAL: curl and wget missing" 1>&2
+  exit 1
+}
+export DLOPTEXTRA
 if which curl >/dev/null 2>&1 ; then
   export DLPROG=curl
-  export DLOPT='--tlsv1.3 -LSfs'
+  export DLOPT='-LSfs'
   export DLOUT='-o'
   if ${IGNORE_SSL:-false} ; then
     export DLOPT="-k ${DLOPT}"
@@ -40,8 +46,7 @@ elif which wget >/dev/null 2>&1 ; then
   export DLOPT=''
   export DLOUT='-O'
 else
-  echo "FATAL: curl and wget missing" 1>&2
-  exit 1
+  export DLPROG=_no_download_program
 fi
 
 # #############################################################################
@@ -289,7 +294,7 @@ dsload () {
   echo
   echo "${progname}: INFO: Installing DS into '${ds_install_dir}' ('${DS_HOME}') ..." 1>&2
   unset DS_LOADED
-  bash -c "$(${DLPROG} ${DLOPT} ${DLOUT} - "${DS_SETUP_URL}")" setup.sh "${ds_install_dir}"
+  bash -c "$(${DLPROG} ${DLOPT} ${DLOPTEXTRA} ${DLOUT} - "${DS_SETUP_URL}")" setup.sh "${ds_install_dir}"
   if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" 1>&2 || [ -z "${DS_LOADED}" ] ; then
     echo "${progname}: FATAL: Could not load DS - Daily Shells." 1>&2
     return 1

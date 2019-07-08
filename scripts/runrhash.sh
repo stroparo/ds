@@ -22,8 +22,8 @@ _main () {
       && [[ $PWD = *.runr ]] \
       && bash -c "$(cat ./entry.sh)" entry.sh "$@"
   else
-    bash -c "$(curl ${ignore_ssl_option} --tlsv1.3 -LSf "https://bitbucket.org/stroparo/runr/raw/master/entry.sh" \
-      || curl ${ignore_ssl_option} --tlsv1.3 -LSf "https://raw.githubusercontent.com/stroparo/runr/master/entry.sh")" \
+    bash -c "$(curl ${ignore_ssl_option} ${DLOPTEXTRA} -LSf "https://bitbucket.org/stroparo/runr/raw/master/entry.sh" \
+      || curl ${ignore_ssl_option} ${DLOPTEXTRA} -LSf "https://raw.githubusercontent.com/stroparo/runr/master/entry.sh")" \
       entry.sh "$@"
   fi
 }
