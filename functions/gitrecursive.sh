@@ -20,13 +20,25 @@ rss     ()  { gitr.sh -f -- status -s "$@" ; }
 rpushcurrent () { rpush origin HEAD ; rpushmirror HEAD ; rss ; }
 rpushmatching () { rpush origin : ; rpushmirror : ; rss ; }
 
+
+# DEV/workspace pulling:
+vpull () {
+  # Recursively pull in the devel workspace:
+  cd "${DEV:-${HOME}/workspace}"
+  if (pwd | fgrep -q "${DEV:-${HOME}/workspace}") ; then
+    . "${DS_HOME:-${HOME}/.ds}/functions/gitrecursive.sh"
+    rpull
+  fi
+}
+
+
 # Shortcuts
 rfap () { rfetchallprune ; }
 rpul () { rpull ; }
 rpum () { rpushmatching ; }
 rpus () { rpush ; }
 vfap () { v ; rfetchallprune ; }
-vpul () { v ; rpull ; }
+vpul () { vpull ; }
 vpum () { v ; rpushmatching ; }
 vpus () { v ; rpush ; }
 vss  () { v ; rss ; }
