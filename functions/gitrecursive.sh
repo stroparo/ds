@@ -21,6 +21,12 @@ rpushcurrent () { rpush origin HEAD ; rpushmirror HEAD ; rss ; }
 rpushmatching () { rpush origin : ; rpushmirror : ; rss ; }
 
 # Shortcuts
+rfap () { rfetchallprune ; }
 rpul () { rpull ; }
 rpum () { rpushmatching ; }
 rpus () { rpush ; }
+vfap () { v ; rfetchallprune ; }
+vpul () { v ; rpull ; }
+vpum () { v ; rpushmatching ; }
+vpus () { v ; rpush ; }
+vss  () { v ; rss ; }
