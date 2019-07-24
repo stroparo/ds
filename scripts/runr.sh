@@ -11,7 +11,9 @@ _runr () {
     ignore_ssl_option='-k'
   fi
 
-  if [ -f ~/.runr/entry.sh ] ; then
+  if ${DS_DEBUG:-false} && [ -f "$DEV/runr/entry.sh" ] ; then
+    script_content="$(cat "$DEV/runr/entry.sh")"
+  elif [ -f ~/.runr/entry.sh ] ; then
     script_content="$(cat ~/.runr/entry.sh)"
   else
     script_content="$(bash -c "$(curl ${ignore_ssl_option} ${DLOPTEXTRA} -LSf "https://bitbucket.org/stroparo/runr/raw/master/entry.sh" \
