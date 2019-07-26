@@ -31,7 +31,7 @@ fi
 # Setup the downloader program (curl/wget)
 _no_download_program () {
   echo "${PROGNAME} (ds): FATAL: curl and wget missing" 1>&2
-  exit 1
+  return 1
 }
 export DLOPTEXTRA
 if which curl >/dev/null 2>&1 ; then
