@@ -9,9 +9,16 @@ License: To be defined; meanwhile it is licensed solely according to the author'
 
 The _DS - Daily Shells Library_ is a collection of useful shell routines in the form of functions and scripts. Several subjects are covered relating but not limited to file manipulation, tech ops, text processing ...
 
+Advantages:
+
+* Automatic chmod +x (mark as executable) all scripts under its root at $DS_HOME
+* Alias all *.sh scripts to aliases without the extension
+* Standardized places for things e.g. all *.sh files in the functions/ dir are sourced during dsload
+* Easy plugin installation & maintenance mechanism
+
 Currently the ___Bash___ and ___Zsh___ shells are supported.
 
-Some features of this project replicate GNU tools features and those were intentional as to have this possibilities in a non-GNU environment. (Perhaps you are on IBM AIX where policies or sysadmins do not allow for the GNU toolbox for AIX etc.)
+Some features of this project replicate GNU tools features and those were intentional as to have this possibilities in a non-GNU environment. (Perhaps you are on IBM AIX where policies or sysadmins do not allow for the GNU toolbox for AIX to be installed etc.)
 
 Help
 ----
