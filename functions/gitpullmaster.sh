@@ -1,12 +1,13 @@
 gitpullmaster () {
   echo
   for repo in "$@" ; do
-    if [ -d "$repo" ] ; then
+    repo=${repo%/.git}
+    if [ -d "${repo}" ] ; then
       (
-        cd "$repo"
-        if [ ! -d "$repo/.git" ] ; then continue ; fi
+        cd "${repo}"
+        if [ ! -d "${repo}/.git" ] ; then continue ; fi
         echo
-        echo "==> $(basename "$repo")"
+        echo "==> $(basename "${repo}")"
         pwd
         echo
         git pull origin master
