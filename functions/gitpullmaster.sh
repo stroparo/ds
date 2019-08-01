@@ -7,8 +7,7 @@ gitpullmaster () {
         cd "${repo}"
         if [ ! -d "${repo}/.git" ] ; then continue ; fi
         echo
-        echo "==> $(basename "${repo}")"
-        pwd
+        echo "==> $(basename "${repo}") ($(pwd))"
         echo
         git pull origin master
         git branch -vv
