@@ -1,4 +1,10 @@
 gitpullmaster () {
+
+  typeset header_msg
+  if [ "$1" = '-h' ] && [ -n "$2" ] ; then
+    header_msg="$2" ; shift 2
+  fi
+
   echo
   for repo in "$@" ; do
     repo=${repo%/.git}
