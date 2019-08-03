@@ -2,7 +2,14 @@ gitpullmaster () {
 
   typeset header_msg
   if [ "$1" = '-h' ] && [ -n "$2" ] ; then
-    header_msg="$2" ; shift 2
+    header_msg="$2"
+    shift 2
+
+    echo
+    echo
+    echo "vvv"
+    echo "vvv"
+    echo ">>> ${header_msg}"
   fi
 
   echo
