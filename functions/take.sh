@@ -1,6 +1,9 @@
 type take >/dev/null 2>&1 && return
 
 take () {
-  mkdir "$1" || return "$?"
-  cd "$1"
+  typeset takendir="$1"
+  if [ ! -d "$takendir" ] ; then
+    mkdir "$1" || return "$?"
+  fi
+  cd "$takendir"
 }
