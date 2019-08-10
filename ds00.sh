@@ -1,6 +1,13 @@
 # DS - Daily Shells Library
 
 # #############################################################################
+# Aliases & other handy stuff
+
+# Synchronization:
+zsdotfiles () { dsconfdotfiles.sh ; }
+zsgit () { dsconfgit.sh ; }
+
+# #############################################################################
 # Globals
 
 DS_SETUP_URL="https://bitbucket.org/stroparo/ds/raw/master/setup.sh"
@@ -50,24 +57,12 @@ else
 fi
 
 # #############################################################################
-# Aliases
+# Core functions
 
-alias cdbak='d "${DS_ENV_BAK}"'
-alias cde='d "${DS_ENV}"'
-alias cdl='cd "${DS_ENV_LOG}" && (ls -AFlrt | tail -n 64)'
-alias cdll='cd "${DS_ENV_LOG}" && ls -AFlrt'
-alias cdlgt='cd "${DS_ENV_LOG}" && (ls -AFlrt | grep "$(date +"%b %d")")'
-alias cdlt='cd "${DS_ENV_LOG}" && cd "$(ls -1d */|sort|tail -n 1)" && ls -AFlrt'
-alias t='d "${TEMP_DIRECTORY}"'
 
-# #############################################################################
 # Oneliners
-
 dsh () { dshash -r ; }
 dsversion () { echo "==> Daily Shells - ${DS_VERSION}" ; }
-
-# #############################################################################
-# Provisioning functions
 
 
 dsbackup () {
@@ -261,6 +256,7 @@ dslistscripts () {
 dshelp () {
   echo "DS - Daily Shells Library - Help
 
+d - handy dir navigation function
 dshelp - display this help messsage
 dsinfo - display environment information
 dslistfunctions - list daily shells' functions
