@@ -6,7 +6,7 @@ echo
 echo "${PROGNAME:+$PROGNAME: }INFO: Applying Daily Shells config recipes for Git..." 1>&2
 echo
 
-if . "${DS_HOME}/functions/git.sh" ; then
+if . "${DS_HOME:-$HOME/.ds}/functions/git.sh" ; then
   gitenforcemyuser
 fi
 
