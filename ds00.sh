@@ -4,8 +4,8 @@
 # Aliases & other handy stuff
 
 # Synchronization:
-zsdotfiles () { dsconfdotfiles.sh ; }
-zsgit () { dsconfgit.sh ; }
+zsdsdotfiles () { dsconfdotfiles.sh ; }
+zsdsgit () { dsconfgit.sh ; }
 
 # #############################################################################
 # Globals
