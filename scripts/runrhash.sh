@@ -2,6 +2,8 @@
 
 PROGNAME="runrhash.sh"
 
+: ${DEV:=$HOME/workspace}
+
 # Purpose:
 # Rehash runr repository from the workspace and
 # seize the moment to also run any recipes in
