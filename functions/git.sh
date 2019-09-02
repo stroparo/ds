@@ -100,11 +100,11 @@ gitenforcemyuser () {
 
 
 gitremotepatternreplace () {
-  # Usage: [-s [-b {branch-to-sync}]] [-r {remote_name:=origin}] {sed-pattern} {replacement} [repo paths]
+  # Usage: [-s [-b {branch-to-sync}]] [-r {remote_name:=origin}] {sed-pattern} {replacement} {repo paths}
 
-  typeset branch_name
+  typeset post_sync_branch
   typeset remote_name=origin
-  typeset post_replace_sync=false
+  typeset post_sync=false
 
   typeset pattern
   typeset replace
@@ -114,9 +114,9 @@ gitremotepatternreplace () {
   OPTIND=1
   while getopts ':b:r:s' option ; do
     case "${option}" in
-      b) branch_name="${OPTARG}";;
+      b) post_sync_branch="${OPTARG}";;
       r) remote_name="${OPTARG}";;
-      s) post_replace_sync=true;;
+      s) post_sync=true;;
     esac
   done
   shift $((OPTIND-1)) ; OPTIND="${oldind}"
@@ -137,9 +137,9 @@ gitremotepatternreplace () {
           echo "New '$remote_name' remote: ${new_remote_value}"
           git remote remove "${remote_name}"
           git remote add "${remote_name}" "${new_remote_value}"
-          # if "${post_replace_sync:-false}" ; then
+          # if "${post_sync:-false}" ; then
           #   TODO test current branch behavior..
-          #   if [ -n "${branch_name}" ] ; then git checkout "${branch_name}" fi
+          #   if [ -n "${post_sync_branch}" ] ; then git checkout "${post_sync_branch}" fi
           #   git pull "${remote_name}"
           #   git push "${remote_name}" HEAD
           # fi
