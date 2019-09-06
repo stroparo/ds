@@ -72,6 +72,11 @@ dos2unix () {
     # Info: Remove CR Windows end-of-line (0x0d) from file.
     # Syntax: [file1 [file2...]]
 
+    if [[ $(which dos2unix) = */bin/* ]] ; then
+        command dos2unix "$@"
+        return
+    fi
+
     for i in "$@" ; do
         echo "Deleting CR chars from '${i}' (temp '${i}.u').."
         tr -d '\r' < "${i}" > "${i}.u"
