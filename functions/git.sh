@@ -99,6 +99,37 @@ gitenforcemyuser () {
 }
 
 
+gitreinit () {
+  typeset remote_url="$1"
+
+  if [ -n "$(find . -mindepth 2 -type d -name .git)" ] ; then
+    echo "greinit: SKIP: Git (sub?)repos found in current tree, which is not supported."
+    return
+  fi
+  if git status -s ; then
+    if [ -d ./.git ] ; then
+      rm -f -r ./.git
+      if [ -d ./.git ] ; then
+        echo "greinit: FATAL: Could not remove ./.git so cannot continue." 1>&2
+        return 1
+      fi
+    else
+      echo "greinit: SKIP: Inside a repo but not at the root."
+      return
+    fi
+  fi
+
+  git init \
+    && git add -A . \
+    && git commit -m 'First'
+
+  if [ -n "${remote_url}" ] ; then
+    git remote add origin "${remote_url}"
+    git push -u origin master
+  fi
+}
+
+
 gitremotepatternreplace () {
   # Usage: [-s [-b {branch-to-sync}]] [-r {remote_name:=origin}] {sed-pattern} {replacement} {repo paths}
 
