@@ -208,7 +208,10 @@ d () {
     if [ -n "$found" ] ; then echo "$found" ; cd "$found" ; fi
   done
   pwd; which exa >/dev/null 2>&1 && exa -ahil || ls -al
-  if [ -e ./.git ] ; then git branch -vv ; fi
+  if [ -e ./.git ] ; then
+    echo ; git branch -vv
+    echo ; git status -s
+  fi
 }
 
 
