@@ -158,7 +158,7 @@ gitremotepatternreplace () {
 
   for repo in "$@" ; do
     (
-      cd "${repo}"
+      cd "${repo%/.git}"
       if git remote -v | grep -q "^ *${remote_name}" ; then
         old_remote_value="$(git remote -v | grep "^ *${remote_name}" | head -1 | awk '{print $2;}')"
         new_remote_value="$(echo "${old_remote_value}" | sed -e "s#${pattern}#${replace}#")"
