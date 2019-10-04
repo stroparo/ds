@@ -45,12 +45,28 @@ ckeolwin () {
     # Info: Check whether any file has windows end-of-line.
     # Syntax: [file-or-dir1 [file-or-dir2...]]
 
-    typeset enforcecwd="${1:-.}" ; shift
+    typeset enforcecwd
     typeset files
+    typeset findname
+    typeset wccrlf
+    typeset wclf
+
+    # Options:
+    typeset oldind="${OPTIND}"
+    OPTIND=1
+    while getopts ':n:' option ; do
+      case "${option}" in
+        n) findname="${OPTARG}";;
+      esac
+    done
+    shift $((OPTIND-1)) ; OPTIND="${oldind}"
+
+    enforcecwd="${1:-.}"
+    shift
 
     for i in "${enforcecwd}" "$@"; do
         if [ -d "$i" ] ; then
-            files=$(find "$i" -type f)
+            files="$(find "$i" -type f ${findname:+-name "*${findname}*"})"
         else
             files="${i}"
         fi
@@ -58,9 +74,12 @@ ckeolwin () {
         while read file ; do
             #if (tail -n 1 "$i"; echo '##EOF##') | grep -q '.##EOF##$' ; then
 
-            if [ $(head -1 "${file}" | tr '\r' '\n' | wc -l | awk '{print $1;}') -eq 2 ]
-            then
-                echo "${file}"
+            echo "==> '${file}'"
+
+            wccrlf="$(tr '\r' '\n' < "${file}" | wc -l | awk '{print $1;}')"
+            wclf="$(wc -l "${file}" | awk '{print $1;}')"
+            if [ "${wccrlf:-0}" -gt "${wclf:-0}" ] ; then
+                echo "    has at least one CRLF sequence ie is Windows type"
             fi
         done <<EOF
 ${files}
