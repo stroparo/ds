@@ -93,6 +93,16 @@ gc1 () {
 }
 
 
+gitbranchtrackall () {
+  # Did not use git branch -r because of this:
+  # https://stackoverflow.com/questions/379081/track-all-remote-git-branches-as-local-branches
+  
+  for i in `git branch -a | grep remotes/ | grep -v HEAD | grep -v master` ; do
+    git branch --track "${i#remotes/origin/}" "$i"
+  done
+}
+
+
 gitenforcemyuser () {
   [ -n "$MYEMAIL" ] && git config --global --replace-all user.email "$MYEMAIL"
   [ -n "$MYSIGN" ] && git config --global --replace-all user.name "$MYSIGN"
@@ -183,8 +193,8 @@ gitremotepatternreplace () {
 
 gitset () {
   # Info: Configure git.
-  # Syn: [-e email] [-n name] [-f file] [-r]
-  # Example: gitset "john@doe.com" "John Doe" 'core.autocrlf false' 'push.default simple'
+  # Syn: [-e email] [-n name] [-f file] [-r] 'key1 value1'[ key2 value2[ ...]]
+  # Example: gitset -e "john@doe.com" -n "John Doe" 'core.autocrlf false' 'push.default simple'
 
   typeset email name replace where
   typeset verbose=false
@@ -238,7 +248,7 @@ gitset () {
 
 
 gpa () {
-  # Info: Git push to all branches the given branch (defaults to HEAD)
+  # Info: Git push the given branch to all remotes (branch defaults to HEAD)
   # Syn: [branch=HEAD]
 
   typeset branch="${1:-HEAD}"
@@ -254,3 +264,4 @@ gpa () {
     git push "${remote}" "${branch}"
   done
 }
+
