@@ -1,6 +1,7 @@
 # Daily Shells Stroparo
 
 gci () { typeset msg="$1"; shift; git commit -m "$msg" "$@" ; }
+gciadd () { typeset msg="$1"; shift; git commit -m "Add $msg" "$@" ; }
 gciarr () { typeset msg="$1"; shift; git commit -m "Rearrange $msg" "$@" ; }
 gcicom () { typeset msg="$1"; shift; git commit -m "Comment $msg" "$@" ; }
 gcifix () { typeset msg="$1"; shift; git commit -m "Fix $msg" "$@" ; }
@@ -9,7 +10,7 @@ gcimv () { typeset msg="$1"; shift; git commit -m "Move $msg" "$@" ; }
 gcirf () { typeset msg="$1"; shift; git commit -m "Refactor $msg" "$@" ; }
 gcirn () { typeset msg="$1"; shift; git commit -m "Rename $msg" "$@" ; }
 gcirm  () { typeset msg="$1"; shift; git commit -m "Remove $msg" "$@" ; }
-gcitodo () { typeset msg="$1"; shift; git commit -m "TODO add $msg" "$@" ; }
+gcitodo () { typeset msg="$1"; shift; git commit -m "TODO $msg" "$@" ; }
 gciup () { typeset msg="$1"; shift; git commit -m "Update $msg" "$@" ; }
 gciwp () { typeset msg="$1"; shift; git commit -m "Work in progress $msg" "$@" ; }
 
