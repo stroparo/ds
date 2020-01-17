@@ -18,7 +18,7 @@ rss     ()  { gitr.sh -f -- status -s "$@" ; }
 
 # Compound commands
 rpushcurrent () { rpush origin HEAD ; rpushmirror HEAD ; rss ; }
-rpushmatching () { rpush origin : ; rpushmirror : ; rss ; }
+rpushmatching () { rpush origin ':' ; rpushmirror ':' ; rss ; }
 
 
 # DEV/workspace pulling:
