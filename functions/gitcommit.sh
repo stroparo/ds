@@ -43,10 +43,10 @@ g1 () {
   echo
   if userconfirm "Commit and push?" ; then
 
-    while [ -z "$message" ]; then
+    while [ -z "$message" ]; do
       echo "Enter commit message:"
       read message
-    fi
+    done
 
     git add -A
     git commit -m "$message"
