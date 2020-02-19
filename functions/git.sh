@@ -74,35 +74,6 @@ confgits () {
 }
 
 
-g1 () {
-
-  typeset message="$1"
-
-  echo
-  echo "Status:"
-  git status -s
-
-  echo
-  echo "Diff:"
-  git diff
-
-  echo
-  if userconfirm "Commit and push?" ; then
-
-    while [ -z "$message" ]; then
-      echo "Enter commit message:"
-      read message
-    fi
-
-    git add -A
-    git commit -m "$message"
-
-    gpa HEAD
-    gpa HEAD
-  fi
-}
-
-
 gitbranchtrackall () {
   # Did not use git branch -r because of this:
   # https://stackoverflow.com/questions/379081/track-all-remote-git-branches-as-local-branches
@@ -253,25 +224,6 @@ gitset () {
     $verbose && echo "\$?=$?"
     $verbose && echo '---'
     shift 2
-  done
-}
-
-
-gpa () {
-  # Info: Git push the given branch to all remotes (branch defaults to HEAD)
-  # Syn: [branch=HEAD]
-
-  typeset branch="${1:-HEAD}"
-  typeset remote
-
-  echo
-  echo "gpa: INFO: Checking out the '${branch}' branch..."
-  git checkout "${branch}"
-
-  for remote in $(git remote) ; do
-    echo
-    echo "gpa: INFO: Pushing to remote '${remote}'s branch '${branch}'..."
-    git push "${remote}" "${branch}"
   done
 }
 

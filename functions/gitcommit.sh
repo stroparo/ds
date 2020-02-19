@@ -14,41 +14,64 @@ gcitodo () { typeset msg="$1"; shift; git commit -m "TODO $msg" "$@" ; }
 gciup () { typeset msg="$1"; shift; git commit -m "Update $msg" "$@" ; }
 gciwp () { typeset msg="$1"; shift; git commit -m "Work in progress $msg" "$@" ; }
 
-gca () { gci "$@" --amend ; }
-gcaarr () { gciarr "$@" --amend ; }
-gcacom () { gcicom "$@" --amend ; }
-gcafix () { gcifix "$@" --amend ; }
-gcafmt () { gcifmt "$@" --amend ; }
-gcamv () { gcimv "$@" --amend ; }
-gcarf () { gcirf "$@" --amend ; }
-gcarn () { gcirn "$@" --amend ; }
-gcarm  () { gcirm "$@" --amend ; }
-gcatodo () { gcitodo "$@" --amend ; }
-gcaup () { gciup "$@" --amend ; }
-gcawp () { gciwp "$@" --amend ; }
+gpi () { gci "$@" ; git push origin HEAD ; git push origin HEAD ; }
+gpiarr () { gciarr "$@" ; git push origin HEAD ; git push origin HEAD ; }
+gpicom () { gcicom "$@" ; git push origin HEAD ; git push origin HEAD ; }
+gpifix () { gcifix "$@" ; git push origin HEAD ; git push origin HEAD ; }
+gpifmt () { gcifmt "$@" ; git push origin HEAD ; git push origin HEAD ; }
+gpimv () { gcimv "$@" ; git push origin HEAD ; git push origin HEAD ; }
+gpirf () { gcirf "$@" ; git push origin HEAD ; git push origin HEAD ; }
+gpirn () { gcirn "$@" ; git push origin HEAD ; git push origin HEAD ; }
+gpirm  () { gcirm "$@" ; git push origin HEAD ; git push origin HEAD ; }
+gpitodo () { gcitodo "$@" ; git push origin HEAD ; git push origin HEAD ; }
+gpiup () { gciup "$@" ; git push origin HEAD ; git push origin HEAD ; }
+gpiwp () { gciwp "$@" ; git push origin HEAD ; git push origin HEAD ; }
 
-gpa () { gci "$@" --amend ; git push -f origin HEAD ; }
-gpaarr () { gciarr "$@" --amend ; git push -f origin HEAD ; }
-gpacom () { gcicom "$@" --amend ; git push -f origin HEAD ; }
-gpafix () { gcifix "$@" --amend ; git push -f origin HEAD ; }
-gpafmt () { gcifmt "$@" --amend ; git push -f origin HEAD ; }
-gpamv () { gcimv "$@" --amend ; git push -f origin HEAD ; }
-gparf () { gcirf "$@" --amend ; git push -f origin HEAD ; }
-gparn () { gcirn "$@" --amend ; git push -f origin HEAD ; }
-gparm  () { gcirm "$@" --amend ; git push -f origin HEAD ; }
-gpatodo () { gcitodo "$@" --amend ; git push -f origin HEAD ; }
-gpaup () { gciup "$@" --amend ; git push -f origin HEAD ; }
-gpawp () { gciwp "$@" --amend ; git push -f origin HEAD ; }
 
-gpi () { gci "$@" ; git push origin HEAD ; }
-gpiarr () { gciarr "$@" ; git push origin HEAD ; }
-gpicom () { gcicom "$@" ; git push origin HEAD ; }
-gpifix () { gcifix "$@" ; git push origin HEAD ; }
-gpifmt () { gcifmt "$@" ; git push origin HEAD ; }
-gpimv () { gcimv "$@" ; git push origin HEAD ; }
-gpirf () { gcirf "$@" ; git push origin HEAD ; }
-gpirn () { gcirn "$@" ; git push origin HEAD ; }
-gpirm  () { gcirm "$@" ; git push origin HEAD ; }
-gpitodo () { gcitodo "$@" ; git push origin HEAD ; }
-gpiup () { gciup "$@" ; git push origin HEAD ; }
-gpiwp () { gciwp "$@" ; git push origin HEAD ; }
+g1 () {
+
+  typeset message="$1"
+
+  echo
+  echo "Status:"
+  git status -s
+
+  echo
+  echo "Diff:"
+  git diff
+
+  echo
+  if userconfirm "Commit and push?" ; then
+
+    while [ -z "$message" ]; then
+      echo "Enter commit message:"
+      read message
+    fi
+
+    git add -A
+    git commit -m "$message"
+
+    gpa HEAD
+    gpa HEAD
+  fi
+}
+
+
+gpa () {
+  # Info: Git push the given branch to all remotes (branch defaults to HEAD)
+  # Syn: [branch=HEAD]
+
+  typeset branch="${1:-HEAD}"
+  typeset remote
+
+  echo
+  echo "gpa: INFO: Checking out the '${branch}' branch..."
+  git checkout "${branch}"
+
+  for remote in $(git remote) ; do
+    echo
+    echo "gpa: INFO: Pushing to remote '${remote}'s branch '${branch}'..."
+    git push "${remote}" "${branch}"
+  done
+}
+
