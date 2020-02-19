@@ -74,7 +74,10 @@ confgits () {
 }
 
 
-gc1 () {
+g1 () {
+
+  typeset message="$1"
+
   echo
   echo "Status:"
   git status -s
@@ -85,9 +88,16 @@ gc1 () {
 
   echo
   if userconfirm "Commit and push?" ; then
-    git add -A
-    git commit -m "$1"
 
+    while [ -z "$message" ]; then
+      echo "Enter commit message:"
+      read message
+    fi
+
+    git add -A
+    git commit -m "$message"
+
+    gpa HEAD
     gpa HEAD
   fi
 }
@@ -96,7 +106,7 @@ gc1 () {
 gitbranchtrackall () {
   # Did not use git branch -r because of this:
   # https://stackoverflow.com/questions/379081/track-all-remote-git-branches-as-local-branches
-  
+
   for i in `git branch -a | grep remotes/ | grep -v HEAD | grep -v master` ; do
     git branch --track "${i#remotes/origin/}" "$i"
   done
