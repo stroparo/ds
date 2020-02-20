@@ -30,7 +30,7 @@ gpiwp () { gciwp "$@" ; git push origin HEAD ; git push origin HEAD ; }
 
 g1 () {
 
-  typeset message="$1"
+  typeset message="$1" ; shift
 
   echo
   echo "Status:"
@@ -48,7 +48,7 @@ g1 () {
       read message
     done
 
-    git add -A
+    git add -A "$@"
     git commit -m "$message"
 
     gpa HEAD
