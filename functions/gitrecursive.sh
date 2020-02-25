@@ -34,10 +34,12 @@ vpull () {
 
 # Shortcuts
 rfap () { rfetchallprune ; }
+rpuc () { rpushcurrent ; }
 rpul () { rpull ; }
 rpum () { rpushmatching ; }
 rpus () { rpush ; }
 vfap () { v ; rfetchallprune ; }
+vpuc () { v ; rpushcurrent ; }
 vpul () { vpull ; }
 vpum () { v ; rpushmatching ; }
 vpus () { v ; rpush ; }
