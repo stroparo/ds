@@ -1,13 +1,6 @@
 # DS - Daily Shells Library
 
 # #############################################################################
-# Aliases & other handy stuff
-
-# Synchronization:
-zsdsdotfiles () { dsconfdotfiles.sh ; }
-zsdsgit () { dsconfgit.sh ; }
-
-# #############################################################################
 # Globals
 
 DS_SETUP_URL="https://bitbucket.org/stroparo/ds/raw/master/setup.sh"
