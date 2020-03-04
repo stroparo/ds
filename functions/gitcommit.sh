@@ -14,18 +14,18 @@ gcitodo () { typeset msg="$1"; shift; git commit -m "TODO $msg" "$@" ; }
 gciup () { typeset msg="$1"; shift; git commit -m "Update $msg" "$@" ; }
 gciwp () { typeset msg="$1"; shift; git commit -m "Work in progress $msg" "$@" ; }
 
-gpi () { gci "$@" ; git push origin HEAD ; git push origin HEAD ; }
-gpiarr () { gciarr "$@" ; git push origin HEAD ; git push origin HEAD ; }
-gpicom () { gcicom "$@" ; git push origin HEAD ; git push origin HEAD ; }
-gpifix () { gcifix "$@" ; git push origin HEAD ; git push origin HEAD ; }
-gpifmt () { gcifmt "$@" ; git push origin HEAD ; git push origin HEAD ; }
-gpimv () { gcimv "$@" ; git push origin HEAD ; git push origin HEAD ; }
-gpirf () { gcirf "$@" ; git push origin HEAD ; git push origin HEAD ; }
-gpirn () { gcirn "$@" ; git push origin HEAD ; git push origin HEAD ; }
-gpirm  () { gcirm "$@" ; git push origin HEAD ; git push origin HEAD ; }
-gpitodo () { gcitodo "$@" ; git push origin HEAD ; git push origin HEAD ; }
-gpiup () { gciup "$@" ; git push origin HEAD ; git push origin HEAD ; }
-gpiwp () { gciwp "$@" ; git push origin HEAD ; git push origin HEAD ; }
+gpi () { gci "$@" ; gpa ; }
+gpiarr () { gciarr "$@" ; gpa ; }
+gpicom () { gcicom "$@" ; gpa ; }
+gpifix () { gcifix "$@" ; gpa ; }
+gpifmt () { gcifmt "$@" ; gpa ; }
+gpimv () { gcimv "$@" ; gpa ; }
+gpirf () { gcirf "$@" ; gpa ; }
+gpirn () { gcirn "$@" ; gpa ; }
+gpirm  () { gcirm "$@" ; gpa ; }
+gpitodo () { gcitodo "$@" ; gpa ; }
+gpiup () { gciup "$@" ; gpa ; }
+gpiwp () { gciwp "$@" ; gpa ; }
 
 
 g1 () {
