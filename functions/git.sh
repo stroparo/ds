@@ -90,6 +90,50 @@ gitenforcemyuser () {
 }
 
 
+gitpull () {
+
+  typeset branch=master
+  typeset remote=origin
+  typeset PROGNAME="gitpull()"
+
+  # Options:
+  typeset oldind="${OPTIND}"
+  OPTIND=1
+  while getopts ':b:r:' option ; do
+    case "${option}" in
+      b) branch="${OPTARG:-master}";;
+      r) remote="${OPTARG:-master}";;
+    esac
+  done
+  shift $((OPTIND-1)) ; OPTIND="${oldind}"
+
+  for repo in "$@" ; do
+    echo "${PROGNAME:+$PROGNAME: }INFO: ==> Pulling '${repo}' branch '${branch}' from remote '${remote}'..."
+    (
+      cd $repo
+
+      branch_previously_out="$(git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')"
+      echo ${BASH_VERSION:+-e} "... current branch: ${branch_previously_out}"
+
+      git checkout "${branch}" \
+        && (git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/') \
+        && git branch --set-upstream-to="${remote}/${branch}" "${branch}" \
+        && git pull "${remote}" "${branch}"
+
+      git checkout "${branch_previously_out}"
+      branch_restored="$(git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')"
+      echo "${PROGNAME:+$PROGNAME: }INFO: ... checked back out branch: ${branch_restored}"
+
+      if [ $branch_restored != $branch_previously_out ] ; then
+        echo "${PROGNAME:+$PROGNAME: }WARN: Could not checkout previous active branch '$branch_previously_out'." 1>&2
+      fi
+    )
+    echo '---'
+    echo
+  done
+}
+
+
 gitreinit () {
   typeset remote_url="$1"
 
