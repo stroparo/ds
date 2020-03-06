@@ -111,31 +111,35 @@ gitpull () {
 
   : ${header_msg:=git repositories starting with '$1'}
 
+  echo
+  echo
   echo "${PROGNAME:+$PROGNAME: }INFO: ==> ${header_msg}" 1>&2
 
   for repo in "$@" ; do
     repo=${repo%/.git}
 
+    echo
+    echo
     echo "${PROGNAME:+$PROGNAME: }INFO: ||"
     echo "${PROGNAME:+$PROGNAME: }INFO: ==> Pulling '${repo}' branch '${branch}' from remote '${remote}'..."
     (
       cd $repo
 
       branch_previously_out="$(git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')"
-      echo ${BASH_VERSION:+-e} "... current branch: ${branch_previously_out}"
+      echo "${PROGNAME:+$PROGNAME: }INFO: ... current branch: ${branch_previously_out}"
 
       git checkout "${branch}" \
         && (git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/') \
         && git branch --set-upstream-to="${remote}/${branch}" "${branch}" \
         && git pull "${remote}" "${branch}"
-      echo "${PROGNAME:+$PROGNAME: }INFO: git status at '${PWD}':"
+      echo "${PROGNAME:+$PROGNAME: }INFO: ... git status at '${PWD}':"
       git status -s
 
       git checkout "${branch_previously_out}"
       branch_restored="$(git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')"
       echo "${PROGNAME:+$PROGNAME: }INFO: ... checked out previous branch '${branch_restored}'"
       if [ $branch_restored != $branch_previously_out ] ; then
-        echo "${PROGNAME:+$PROGNAME: }WARN: Could not checkout previous active branch '$branch_previously_out'." 1>&2
+        echo "${PROGNAME:+$PROGNAME: }WARN: ... fail checking out previous branch '$branch_previously_out'." 1>&2
       fi
     )
     echo '---'
