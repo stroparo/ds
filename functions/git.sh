@@ -5,6 +5,8 @@
 gcheckedout () { git branch -v "$@" | egrep '^(==|[*]|---)' ; }
 gdd () { git add -A "$@" ; git status -s ; }
 gddd () { git add -A "$@" ; git status -s ; git diff --cached ; } ; ddd () { gddd ; }
+gitbranchactive () { echo "$(git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')" ; }
+isgitbranch () { typeset branch="$1" ; [ "${branch}" = $(gitbranchactive) ] ; }
 
 
 clonegits () {
@@ -113,7 +115,9 @@ gitpull () {
 
   echo
   echo
+  echo '###############################################################################'
   echo "${PROGNAME:+$PROGNAME: }INFO: ==> ${header_msg}" 1>&2
+  echo '###############################################################################'
 
   for repo in "$@" ; do
     repo=${repo%/.git}
@@ -125,21 +129,31 @@ gitpull () {
     (
       cd $repo
 
-      branch_previously_out="$(git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')"
+      branch_previously_out="$(gitbranchactive)"
       echo "${PROGNAME:+$PROGNAME: }INFO: ... current branch: ${branch_previously_out}"
 
-      git checkout "${branch}" \
-        && (git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/') \
-        && git branch --set-upstream-to="${remote}/${branch}" "${branch}" \
-        && git pull "${remote}" "${branch}"
-      echo "${PROGNAME:+$PROGNAME: }INFO: ... git status at '${PWD}':"
-      git status -s
+      if [ "${branch_previously_out}" != "${branch}" ] ; then
+        git checkout "${branch}" >/dev/null 2>&1
+        if ! isgitbranch "${branch}" ; then
+          echo "${PROGNAME:+$PROGNAME: }WARN: ... failed checking out '${branch}'"
+          echo '---'
+          continue
+        fi
+      fi
 
-      git checkout "${branch_previously_out}"
-      branch_restored="$(git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')"
-      echo "${PROGNAME:+$PROGNAME: }INFO: ... checked out previous branch '${branch_restored}'"
-      if [ $branch_restored != $branch_previously_out ] ; then
-        echo "${PROGNAME:+$PROGNAME: }WARN: ... fail checking out previous branch '$branch_previously_out'." 1>&2
+      # git branch --set-upstream-to="${remote}/${branch}" "${branch}"
+      if git pull "${remote}" "${branch}" ; then
+        echo "${PROGNAME:+$PROGNAME: }INFO: ... git status at '${PWD}':"
+        git status -s
+      fi
+
+      if [ "${branch_previously_out}" != "${branch}" ] ; then
+        git checkout "${branch_previously_out}" >/dev/null 2>&1
+        if isgitbranch "${branch_previously_out}" ; then
+          echo "${PROGNAME:+$PROGNAME: }INFO: ... checked out previous branch '${branch_previously_out}'"
+        else
+          echo "${PROGNAME:+$PROGNAME: }WARN: ... failed checking out previous branch '${branch_previously_out}'." 1>&2
+        fi
       fi
     )
     echo '---'
@@ -151,25 +165,25 @@ gitreinit () {
   typeset remote_url="$1"
 
   if [ -n "$(find . -mindepth 2 -type d -name .git)" ] ; then
-    echo "greinit: SKIP: Git (sub?)repos found in current tree, which is not supported."
+    echo "gitreinit: SKIP: Git (sub?)repos found in current tree, which is not supported."
     return
   fi
   if git status -s ; then
     if [ -d ./.git ] ; then
       rm -f -r ./.git
       if [ -d ./.git ] ; then
-        echo "greinit: FATAL: Could not remove ./.git so cannot continue." 1>&2
+        echo "gitreinit: FATAL: Could not remove ./.git so cannot continue." 1>&2
         return 1
       fi
     else
-      echo "greinit: SKIP: Inside a repo but not at the root."
+      echo "gitreinit: SKIP: Inside a repo but not at the root."
       return
     fi
   fi
 
   git init \
     && git add -A . \
-    && git commit -m 'First'
+    && git commit -m 'First commit'
 
   if [ -n "${remote_url}" ] ; then
     git remote add origin "${remote_url}"
