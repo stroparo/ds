@@ -237,15 +237,10 @@ dslistfunctions () {
 
 
 _dsgetscriptsdirs () {
-  typeset ignore_expr="${DS_HOME}/(conf|functions|templates)"
-  ls -1 -d "${DS_HOME}"/*/ \
-    | grep -E -v "${ignore_expr}" \
-    | sed -e 's#//*$##'
+  ls -1 -d "${DS_HOME}/recipes" "${DS_HOME}/scripts"* 2>/dev/null
 }
 dslistscripts () {
-  for dir in $(_dsgetscriptsdirs) ; do
-    findscripts.sh "$dir"
-  done
+  findscripts.sh $(_dsgetscriptsdirs)
 }
 
 
