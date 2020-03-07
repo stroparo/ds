@@ -37,7 +37,8 @@ export VERBOSE=false
 : ${GITR_VERBOSE_OPTION:=false} ; export GITR_VERBOSE_OPTION ; ${GITR_VERBOSE_OPTION} && export VERBOSE=true
 
 export PARALLEL=false
-: ${GITR_PARALLEL:=false} ; export GITR_PARALLEL ; ${GITR_PARALLEL} && export PARALLEL=true
+: ${GITR_PARALLEL:=false} ; export GITR_PARALLEL
+if ${GITR_PARALLEL} ; then export PARALLEL=true; fi
 
 OPTIND=1
 while getopts ':c:fhpv' opt ; do
