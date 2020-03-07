@@ -9,9 +9,7 @@ ignore_expr="$DS_HOME/(conf|functions|templates)"
 pathmunge -x "${DS_HOME}"
 
 if ls -d "$DS_HOME"/*/ >/dev/null 2>&1 ; then
-  for dir in $(_dsgetscriptsdirs) ; do
-    pathmunge -x "$dir"
-  done
+  pathmunge -x $(_dsgetscriptsdirs)
 fi
 
 pathmunge -a -i -v 'EEPATH' -x "${DS_HOME}"

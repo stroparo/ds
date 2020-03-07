@@ -22,14 +22,7 @@ chmodscripts () {
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
-    for dir in "$@" ; do
-        if _all_dirs_w "${dir}" ; then
-            files=$(findscripts.sh "${dir}")
-            if [ -n "$files" ] ; then
-                chmod ${verbose} "${mode}" $(echo ${files})
-            fi
-        fi
-    done
+    chmod ${verbose} "${mode}" $(echo $(findscripts.sh "$@"))
 
     if ${addpaths}; then pathmunge -x "$@" ; fi
     if ${addaliases}; then aliasnoext "$@" ; fi
