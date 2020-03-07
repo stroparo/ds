@@ -147,6 +147,9 @@ if [ -n "${DS_LOADED}" ] ; then
   echo "${PROGNAME} (ds): INFO: Hashing plugins..."
   dshashplugins.sh
 
+  echo "${PROGNAME} (ds): INFO: Hashing script modes..."
+  chmodscriptsds
+
   echo "${PROGNAME} (ds): INFO: DS installed." 1>&2
 
   exit 0

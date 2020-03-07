@@ -113,7 +113,7 @@ dshash () {
   # Syntax: [-r] [ds-sources-dir:${DEV}/ds]
   #   -r will reload daily shells in the current shell session
 
-  typeset progname="dshash"
+  typeset progname="dshash()"
 
   # Simple option parsing must come first:
   typeset loadcmd=:
@@ -144,8 +144,15 @@ dshash () {
   if ! ${errors:-false} ; then
     echo
     echo "==> Daily Shells rehash complete"
+
+    echo "${progname}: INFO: Hashing plugins..."
     sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds10path.sh"
     dshashplugins.sh
+    sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds10path.sh"
+
+    echo "${progname}: INFO: Hashing script modes..."
+    chmodscriptsds
+
     eval "$loadcmd"
   else
     echo "${progname}: ERROR: Daily Shells rehashing failed." 1>&2
