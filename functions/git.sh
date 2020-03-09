@@ -196,7 +196,7 @@ gitremotepatternreplace () {
   typeset usage="[-b {branches-to-track-comma-separated}] [-r {remote_name:=origin}] {sed-pattern} {replacement} {repo paths}"
 
   typeset branches_to_track="master"
-  typeset remote_name=origin
+  typeset remote_name="origin"
 
   typeset pattern
   typeset replace
@@ -220,11 +220,13 @@ gitremotepatternreplace () {
 
   for repo in "$@" ; do
     (
-      cd "${repo%/.git}"
+      repo="${repo%/.git}"
+      cd "${repo}"
       if git remote -v | grep -q "^ *${remote_name}" ; then
         old_remote_value="$(git remote -v | grep "^ *${remote_name}" | head -1 | awk '{print $2;}')"
         new_remote_value="$(echo "${old_remote_value}" | sed -e "s#${pattern}#${replace}#")"
         if [ "${old_remote_value}" != "${new_remote_value}" ] ; then
+          echo
           echo "==> Repo: '${repo}'"
           echo "Old '$remote_name' remote: ${old_remote_value}"
           echo "New '$remote_name' remote: ${new_remote_value}"
@@ -232,7 +234,7 @@ gitremotepatternreplace () {
           git remote add "${remote_name}" "${new_remote_value}"
 
           for branch_to_track in $(echo "${branches_to_track}" | sed -e 's/,/ /g'); do
-            gittrackremotebranches -r "${remote_name}" "${repo}"
+            gittrackremotebranches -r "${remote_name}" "${PWD}" "${branch_to_track}"
           done
         fi
       fi
@@ -246,7 +248,7 @@ gitset () {
   # Syn: [-e email] [-n name] [-f file] [-r] 'key1 value1'[ key2 value2[ ...]]
   # Example: gitset -e "john@doe.com" -n "John Doe" 'core.autocrlf false' 'push.default simple'
 
-  typeset email name replace where
+  typeset email name replace gitconfigfile
   typeset verbose=false
 
   typeset oldind="${OPTIND}"
@@ -254,7 +256,7 @@ gitset () {
   while getopts ':e:f:n:rv' opt ; do
     case "${opt}" in
     e) email="${OPTARG}" ;;
-    f) where="${OPTARG}" ;;
+    f) gitconfigfile="${OPTARG}" ;;
     n) name="${OPTARG}" ;;
     r) replace="--replace-all";;
     v) verbose=true;;
@@ -262,34 +264,34 @@ gitset () {
   done
   shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
-  if [ -n "$where" ]; then
-    if [ ! -w "${where}" ] ; then
+  if [ -n "$gitconfigfile" ]; then
+    if [ ! -w "${gitconfigfile}" ] ; then
       echo "FATAL: Must pass writeable file to -f option." 1>&2
       return 1
     else
-      where="-f${where}"
+      gitconfigfile="-f${gitconfigfile}"
     fi
   else
-    where='--global'
+    gitconfigfile='--global'
   fi
 
   if [ -n "$email" ] ; then
-    $verbose && echo "==>" git config $replace $where "user.email" "$email" 1>&2
-    git config $replace $where user.email "$email"
+    $verbose && echo "==>" git config $replace $gitconfigfile "user.email" "$email" 1>&2
+    git config $replace $gitconfigfile user.email "$email"
     $verbose && echo "\$?=$?"
     $verbose && echo '---'
   fi
 
   if [ -n "$name" ]  ; then
-    $verbose && echo "==>" git config $replace $where "user.name" "$name" 1>&2
-    git config $replace $where user.name "$name"
+    $verbose && echo "==>" git config $replace $gitconfigfile "user.name" "$name" 1>&2
+    git config $replace $gitconfigfile user.name "$name"
     $verbose && echo "\$?=$?"
     $verbose && echo '---'
   fi
 
   while [ $# -ge 2 ] ; do
-    $verbose && echo "==>" git config $replace $where "$1" "$2" 1>&2
-    git config $replace $where "$1" "$2"
+    $verbose && echo "==>" git config $replace $gitconfigfile "$1" "$2" 1>&2
+    git config $replace $gitconfigfile "$1" "$2"
     $verbose && echo "\$?=$?"
     $verbose && echo '---'
     shift 2
@@ -316,7 +318,7 @@ gittrackremotebranches () {
   shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
   if [ $# -lt 2 ] ; then
-    echo "${PROGNAME:+$PROGNAME: }FATAL: missed valid usage: ${usage}" 1>&2
+    echo "${progname:+$progname: }FATAL: missed valid usage: ${usage}" 1>&2
   fi
 
   if [ -d "${1%/.git}/.git" ] ; then
@@ -335,8 +337,8 @@ gittrackremotebranches () {
     cd "${repo_path}"
 
     for branch_to_track in "$@" ; do
+      git fetch --all --prune
       git branch --set-upstream-to="${remote_name}/${branch_to_track}" "${branch_to_track}"
     done
   )
 }
-
