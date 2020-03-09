@@ -193,11 +193,10 @@ gitreinit () {
 
 
 gitremotepatternreplace () {
-  # Usage: [-s [-b {branch-to-sync}]] [-r {remote_name:=origin}] {sed-pattern} {replacement} {repo paths}
+  typeset usage="[-b {branches-to-track-comma-separated}] [-r {remote_name:=origin}] {sed-pattern} {replacement} {repo paths}"
 
-  typeset post_sync_branch
+  typeset branches_to_track="master"
   typeset remote_name=origin
-  typeset post_sync=false
 
   typeset pattern
   typeset replace
@@ -205,9 +204,10 @@ gitremotepatternreplace () {
   # Options:
   typeset oldind="${OPTIND}"
   OPTIND=1
-  while getopts ':b:r:s' option ; do
+  while getopts ':b:hr:s' option ; do
     case "${option}" in
-      b) post_sync_branch="${OPTARG}";;
+      b) branches_to_track="${OPTARG:-master}";;
+      h) echo "$usage" ; return;;
       r) remote_name="${OPTARG}";;
       s) post_sync=true;;
     esac
@@ -230,12 +230,10 @@ gitremotepatternreplace () {
           echo "New '$remote_name' remote: ${new_remote_value}"
           git remote remove "${remote_name}"
           git remote add "${remote_name}" "${new_remote_value}"
-          # if "${post_sync:-false}" ; then
-          #   TODO test current branch behavior..
-          #   if [ -n "${post_sync_branch}" ] ; then git checkout "${post_sync_branch}" fi
-          #   git pull "${remote_name}"
-          #   git push "${remote_name}" HEAD
-          # fi
+
+          for branch_to_track in $(echo "${branches_to_track}" | sed -e 's/,/ /g'); do
+            gittrackremotebranches -r "${remote_name}" "${repo}"
+          done
         fi
       fi
     )
@@ -296,5 +294,49 @@ gitset () {
     $verbose && echo '---'
     shift 2
   done
+}
+
+
+gittrackremotebranches () {
+  typeset progname='gittrackremotebranches()'
+  typeset usage="[-r {remote_name:=origin}] {repo_path} {branch1[ branch2[ ...]]}"
+
+  typeset remote_name=origin
+  typeset repo_path="${PWD%/.git}"
+
+  # Options:
+  typeset oldind="${OPTIND}"
+  OPTIND=1
+  while getopts ':hr:' option ; do
+    case "${option}" in
+      h) echo "$usage" ; return;;
+      r) remote_name="${OPTARG}";;
+    esac
+  done
+  shift $((OPTIND-1)) ; OPTIND="${oldind}"
+
+  if [ $# -lt 2 ] ; then
+    echo "${PROGNAME:+$PROGNAME: }FATAL: missed valid usage: ${usage}" 1>&2
+  fi
+
+  if [ -d "${1%/.git}/.git" ] ; then
+    repo_path="${1%/.git}"
+  else
+    echo "${progname:+$progname: }WARN: No repository directory in first arg, falling back to default '${repo_path}'." 1>&2
+  fi
+  shift
+
+  if [ ! -d "${repo_path}/.git" ] ; then
+    echo "${progname:+$progname: }FATAL: No repository in directory '${repo_path}'." 1>&2
+    return 1
+  fi
+
+  (
+    cd "${repo_path}"
+
+    for branch_to_track in "$@" ; do
+      git branch --set-upstream-to="${remote_name}/${branch_to_track}" "${branch_to_track}"
+    done
+  )
 }
 
