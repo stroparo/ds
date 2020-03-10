@@ -6,7 +6,7 @@ gcheckedout () { git branch -v "$@" | egrep '^(==|[*]|---)' ; }
 gdd () { git add -A "$@" ; git status -s ; }
 gddd () { git add -A "$@" ; git status -s ; git diff --cached ; } ; ddd () { gddd ; }
 gitbranchactive () { echo "$(git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')" ; }
-isgitbranch () { typeset branch="$1" ; [ "${branch}" = $(gitbranchactive) ] ; }
+isgitbranch () { typeset branch="$1" ; [ "${branch}" = "$(gitbranchactive)" ] ; }
 
 
 clonegits () {
