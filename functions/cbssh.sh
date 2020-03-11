@@ -1,13 +1,12 @@
-# DS - Daily Shells Library
-
 cbssh () {
+    # Info: Copies ~/.ssh/id_rsa.pub contents to the clipboard via the Daily Shells 'cb' script
 
-    # Info: Copies ~/.ssh/id_rsa.pub contents to the clipboard via the DS cb script
+    typeset sshpubkey="${1:-${HOME}/.ssh/id_rsa.pub}"
 
-    if [ ! -e "${HOME}/.ssh/id_rsa.pub" ] ; then
-      echo "${PROGNAME:+$PROGNAME: }SKIP: '${HOME}/.ssh/id_rsa.pub' does not exist." 1>&2
+    if [ ! -e "${sshpubkey}" ] ; then
+      echo "${PROGNAME:+$PROGNAME: }SKIP: '${sshpubkey}' does not exist." 1>&2
       return
     fi
 
-    cb.sh < "${HOME}/.ssh/id_rsa.pub" || return $?
+    cb.sh < "${sshpubkey}" || return $?
 }
