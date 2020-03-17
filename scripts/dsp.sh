@@ -103,7 +103,7 @@ dsp () {
 
     cmd="${@} ; res=\$? ; echo \$(date '+%Y%m%d-%OH%OM%OS') ; echo \${res}"
     : ${CMDZERO:=${1%% *}}
-    setlogdir "${LOGDIR}" || return 10
+    mcdir "${LOGDIR}" || return 10
 
     # Enforce number type:
     [[ ${MAXPROCS} = [1-9]* ]] || MAXPROCS=4
