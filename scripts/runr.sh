@@ -11,24 +11,26 @@ _get_entry_online () {
 
 _runr () {
   typeset ignore_ssl_option
-  typeset script_content
+  typeset runr_entry_code
 
   if ${IGNORE_SSL:-false} ; then
     ignore_ssl_option='-k'
   fi
 
-  if ${DS_DEBUG:-false} ; then
-    if [ -f "$DEV/runr/entry.sh" ] ; then
-      script_content="$(cat "$DEV/runr/entry.sh")"
-    else
-      script_content="$(_get_entry_online)"
-    fi
-  elif [ -f ~/.runr/entry.sh ] ; then
-    script_content="$(cat ~/.runr/entry.sh)"
+  if ${DS_DEBUG:-false} && [ -f "$DEV/runr/entry.sh" ] ; then
+    runr_entry_code="$(cat "$DEV/runr/entry.sh")"
+  elif [ -f "${HOME}/.runr/entry.sh" ] ; then
+    runr_entry_code="$(cat "${HOME}/.runr/entry.sh")"
   else
-    script_content="$(_get_entry_online)"
+    runr_entry_code="$(_get_entry_online)"
   fi
-  bash -c "${script_content}" entry.sh "$@"
+
+  if [ -n "${runr_entry_code}" ] ; then
+    bash -c "${runr_entry_code}" entry.sh "$@"
+  else
+    echo "${PROGNAME:+$PROGNAME: }FATAL: No runr entry script code could be retrieved." 1>&2
+    return 1
+  fi
 }
 
 
