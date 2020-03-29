@@ -201,15 +201,18 @@ gitremotepatternreplace () {
   typeset pattern
   typeset replace
 
+  typeset tracksetup=false
+
   # Options:
   typeset oldind="${OPTIND}"
   OPTIND=1
-  while getopts ':b:hr:s' option ; do
+  while getopts ':b:hr:st' option ; do
     case "${option}" in
       b) branches_to_track="${OPTARG:-master}";;
       h) echo "$usage" ; return;;
       r) remote_name="${OPTARG}";;
       s) post_sync=true;;
+      t) tracksetup=true;;
     esac
   done
   shift $((OPTIND-1)) ; OPTIND="${oldind}"
@@ -222,17 +225,21 @@ gitremotepatternreplace () {
     (
       repo="${repo%/.git}"
       cd "${repo}"
-      if git remote -v | grep -q "^ *${remote_name}" ; then
-        old_remote_value="$(git remote -v | grep "^ *${remote_name}" | head -1 | awk '{print $2;}')"
-        new_remote_value="$(echo "${old_remote_value}" | sed -e "s#${pattern}#${replace}#")"
-        if [ "${old_remote_value}" != "${new_remote_value}" ] ; then
-          echo
-          echo "==> Repo: '${repo}'"
-          echo "Old '$remote_name' remote: ${old_remote_value}"
-          echo "New '$remote_name' remote: ${new_remote_value}"
-          git remote remove "${remote_name}"
-          git remote add "${remote_name}" "${new_remote_value}"
+      if ! (git remote -v | grep -q "^ *${remote_name}") ; then
+        continue
+      fi
 
+      old_remote_value="$(git remote -v | grep "^ *${remote_name}" | head -1 | awk '{print $2;}')"
+      new_remote_value="$(echo "${old_remote_value}" | sed -e "s#${pattern}#${replace}#")"
+      if [ "${old_remote_value}" != "${new_remote_value}" ] ; then
+        echo
+        echo "==> Repo: '${repo}'"
+        echo "Old '$remote_name' remote: ${old_remote_value}"
+        echo "New '$remote_name' remote: ${new_remote_value}"
+        git remote remove "${remote_name}"
+        git remote add "${remote_name}" "${new_remote_value}"
+
+        if ${tracksetup} ; then
           for branch_to_track in $(echo "${branches_to_track}" | sed -e 's/,/ /g'); do
             gittrackremotebranches -r "${remote_name}" "${PWD}" "${branch_to_track}"
           done
