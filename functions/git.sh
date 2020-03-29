@@ -231,19 +231,22 @@ gitremotepatternreplace () {
 
       old_remote_value="$(git remote -v | grep "^ *${remote_name}" | head -1 | awk '{print $2;}')"
       new_remote_value="$(echo "${old_remote_value}" | sed -e "s#${pattern}#${replace}#")"
-      if [ "${old_remote_value}" != "${new_remote_value}" ] ; then
+      if ${tracksetup} || [ "${old_remote_value}" != "${new_remote_value}" ] ; then
         echo
         echo "==> Repo: '${repo}'"
+      fi
+
+      if [ "${old_remote_value}" != "${new_remote_value}" ] ; then
         echo "Old '$remote_name' remote: ${old_remote_value}"
         echo "New '$remote_name' remote: ${new_remote_value}"
         git remote remove "${remote_name}"
         git remote add "${remote_name}" "${new_remote_value}"
+      fi
 
-        if ${tracksetup} ; then
-          for branch_to_track in $(echo "${branches_to_track}" | sed -e 's/,/ /g'); do
-            gittrackremotebranches -r "${remote_name}" "${PWD}" "${branch_to_track}"
-          done
-        fi
+      if ${tracksetup} ; then
+        for branch_to_track in $(echo "${branches_to_track}" | sed -e 's/,/ /g'); do
+          gittrackremotebranches -r "${remote_name}" "${PWD}" "${branch_to_track}"
+        done
       fi
     )
   done
