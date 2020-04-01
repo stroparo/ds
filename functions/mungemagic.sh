@@ -12,7 +12,7 @@ mungemagic () {
     mungeroot="$(cd "${mungeroot}"; echo "$PWD")"
 
     if [ -n "${optafter}" ] ; then
-      pathmunge ${optafter} -x $(ls -1d "$mungeroot"/*/ | egrep -v -w 'bin|lib'))
+      pathmunge ${optafter} -x $(ls -1d "$mungeroot"/*/ | egrep -v -w 'bin|lib')
     fi
 
     pathmunge ${optafter} -x $(echo $(find "$mungeroot" -type d -maxdepth 2 -name bin))
