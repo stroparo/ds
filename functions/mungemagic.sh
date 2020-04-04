@@ -7,7 +7,7 @@ mungemagic () {
   if [ "$1" = "-a" ] ; then optafter="-a" ; shift ; fi
 
   for mungeroot in "$@" ; do
-    if [ ! -d "$mungeroot" ] ; then continue
+    if [ ! -d "$mungeroot" ] ; then continue ; fi
 
     # Make mungeroot path canonical:
     mungeroot="$(cd "${mungeroot}"; echo "$PWD")"
