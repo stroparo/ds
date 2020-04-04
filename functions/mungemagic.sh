@@ -1,12 +1,13 @@
 # DS - Daily Shells Library
 
 mungemagic () {
-    # Munge descendant bin* and lib* directories to PATH and library variables.
-    # Syn: [-a] {directory}
-    typeset optafter=""
-    if [ "$1" = "-a" ] ; then optafter="-a" ; shift ; fi
-    typeset mungeroot="${1}"
-    [ -d "$mungeroot" ] || return 1
+  # Munge descendant bin* and lib* directories to PATH and library variables.
+  # Syn: [-a] [dir1 [dir2 ...]]
+  typeset optafter=""
+  if [ "$1" = "-a" ] ; then optafter="-a" ; shift ; fi
+
+  for mungeroot in "$@" ; do
+    if [ ! -d "$mungeroot" ] ; then continue
 
     # Make mungeroot path canonical:
     mungeroot="$(cd "${mungeroot}"; echo "$PWD")"
@@ -25,4 +26,5 @@ mungemagic () {
       pathmunge -x $(ls -1d "$mungeroot"/*/ | egrep -v -w 'bin|lib')
       export LD_LIBRARY_PATH="${LIBPATH}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
     fi
+  done
 }
