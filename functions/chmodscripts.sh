@@ -16,5 +16,5 @@ chmodscripts () {
     done
     shift $((OPTIND - 1)) ; OPTIND="${oldind}"
 
-    chmod ${verbose} "${mode}" $(echo $(findscripts.sh "$@"))
+    chmod ${verbose} "${mode}" $(find "$@" -type f))
 }

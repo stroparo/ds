@@ -247,7 +247,7 @@ _dsgetscriptsdirs () {
   ls -1 -d "${DS_HOME}/recipes" "${DS_HOME}/scripts"* 2>/dev/null
 }
 dslistscripts () {
-  findscripts.sh $(_dsgetscriptsdirs)
+  find $(_dsgetscriptsdirs) -type f
 }
 
 
