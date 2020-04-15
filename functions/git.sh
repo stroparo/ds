@@ -195,7 +195,7 @@ gitreinit () {
 gitremotepatternreplace () {
   typeset usage="[-b {branches-to-track-comma-separated}] [-r {remote_name:=origin}] {sed-pattern} {replacement} {repo paths}"
 
-  typeset branches_to_track="master"
+  typeset branches_to_track="master develop"
   typeset remote_name="origin"
 
   typeset pattern
@@ -208,7 +208,7 @@ gitremotepatternreplace () {
   OPTIND=1
   while getopts ':b:hr:st' option ; do
     case "${option}" in
-      b) branches_to_track="${OPTARG:-master}";;
+      b) branches_to_track="${OPTARG:-$branches_to_track}";;
       h) echo "$usage" ; return;;
       r) remote_name="${OPTARG}";;
       s) post_sync=true;;
@@ -231,22 +231,20 @@ gitremotepatternreplace () {
 
       old_remote_value="$(git remote -v | grep "^ *${remote_name}" | head -1 | awk '{print $2;}')"
       new_remote_value="$(echo "${old_remote_value}" | sed -e "s#${pattern}#${replace}#")"
-      if ${tracksetup} || [ "${old_remote_value}" != "${new_remote_value}" ] ; then
-        echo
-        echo "==> Repo: '${repo}'"
-      fi
 
       if [ "${old_remote_value}" != "${new_remote_value}" ] ; then
+        echo
+        echo "==> Repo: '${repo}'"
         echo "Old '$remote_name' remote: ${old_remote_value}"
         echo "New '$remote_name' remote: ${new_remote_value}"
         git remote remove "${remote_name}"
         git remote add "${remote_name}" "${new_remote_value}"
-      fi
 
-      if ${tracksetup} ; then
-        for branch_to_track in $(echo "${branches_to_track}" | sed -e 's/,/ /g'); do
-          gittrackremotebranches -r "${remote_name}" "${PWD}" "${branch_to_track}"
-        done
+        if ${tracksetup} ; then
+          for branch_to_track in $(echo "${branches_to_track}" | sed -e 's/,/ /g'); do
+            gittrackremotebranches -r "${remote_name}" "${PWD}" "${branch_to_track}"
+          done
+        fi
       fi
     )
   done
@@ -347,8 +345,9 @@ gittrackremotebranches () {
     cd "${repo_path}"
 
     for branch_to_track in "$@" ; do
-      git fetch --all --prune
-      git branch --set-upstream-to="${remote_name}/${branch_to_track}" "${branch_to_track}"
+      if git fetch "${remote_name}" "${branch_to_track}" ; then
+        git branch --set-upstream-to="${remote_name}/${branch_to_track}" "${branch_to_track}"
+      fi
     done
   )
 }
