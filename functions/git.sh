@@ -202,17 +202,19 @@ gitremotepatternreplace () {
   typeset replace
 
   typeset tracksetup=false
+  typeset verbose=false
 
   # Options:
   typeset oldind="${OPTIND}"
   OPTIND=1
-  while getopts ':b:hr:st' option ; do
+  while getopts ':b:hr:stv' option ; do
     case "${option}" in
       b) branches_to_track="${OPTARG:-$branches_to_track}";;
       h) echo "$usage" ; return;;
       r) remote_name="${OPTARG}";;
       s) post_sync=true;;
       t) tracksetup=true;;
+      v) verbose=true;;
     esac
   done
   shift $((OPTIND-1)) ; OPTIND="${oldind}"
@@ -245,6 +247,9 @@ gitremotepatternreplace () {
             gittrackremotebranches -r "${remote_name}" "${PWD}" "${branch_to_track}"
           done
         fi
+      elif ${verbose} ; then
+        echo
+        echo "==> Repo: '${repo}' remote '${remote_name}' URL intact as '$(git remote get-url "${remote_name}")'"
       fi
     )
   done
@@ -343,11 +348,14 @@ gittrackremotebranches () {
 
   (
     cd "${repo_path}"
-
-    for branch_to_track in "$@" ; do
-      if git fetch "${remote_name}" "${branch_to_track}" ; then
-        git branch --set-upstream-to="${remote_name}/${branch_to_track}" "${branch_to_track}"
-      fi
-    done
+    if [ "$(basename "${PWD}")" = "$(basename ${repo_path})" ] ; then
+      echo
+      echo "${progname:+$progname: }INFO: ==> Repo '${repo_path}' started" 1>&2
+      for branch_to_track in "$@" ; do
+        if git fetch "${remote_name}" "${branch_to_track}" 2>/dev/null ; then
+          git branch --set-upstream-to="${remote_name}/${branch_to_track}" "${branch_to_track}"
+        fi
+      done
+    fi
   )
 }
