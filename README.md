@@ -11,7 +11,7 @@ The _DS - Daily Shells Library_ is a collection of useful shell routines in the 
 
 Advantages:
 
-* Convention over configuration e.g. all files in "$DS_HOME/functions/" are sourced during 'dsload' (the sourcing of Daily Shells' entry point) and all scripts in recipes*/ or scripts/ are marked executable (chmod +x)
+* Convention over configuration e.g. all files in "$DS_HOME/functions/" are sourced during 'dsload' (the sourcing of Daily Shells' entry point) and all scripts in recipes*/ or scripts/ are marked executable (chmod +x) during the initial setup
 * Modularized: Easy plugin installation & maintenance mechanism
 
 Currently the ___Bash___ and ___Zsh___ shells are supported.
