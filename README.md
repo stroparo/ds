@@ -96,7 +96,7 @@ Plugins
 
 Nowadays lots of software are installed directly from GitHub or other online repositories. In the same spirit, the plugin mechanism for DS aims to be as straightforward as it gets by just cloning a repository and copying it over on top of $DS_HOME, the root Daily Shells directory.
 
-The script that performs this is ```dsplugin.sh``` (also aliased to just ```dsplugin```).
+The script that performs this is ```dsplugin.sh```.
 
 It expects ```user/repo``` as the argument. It will pull that user's repo from ___github.com___ by the default. To use another domain just prepend it with a slash like in ```domain/user/repo``` (exactly as in an HTTPS clone URL).
 
