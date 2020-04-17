@@ -12,6 +12,6 @@ if [ -z "$partimage" -o -z "$partfrom" -o -z "$partto" ] ; then
     exit 1
 fi
 
-/usr/sbin/ocs-sr -e1 auto -e2 -t -r -j2 -k -p choose -f "$partfrom" -c -scr \
+/usr/sbin/ocs-sr -icds -e1 auto -e2 -t -r -j2 -k -p choose -f "$partfrom" -c -scr \
     restoreparts "$partimage" "$partto"
 echo $?
