@@ -7,14 +7,12 @@ License: To be defined; meanwhile it is licensed solely according to the author'
 
 ---
 
-The _DS - Daily Shells Library_ is a collection of useful shell routines in the form of functions and scripts. Several subjects are covered relating but not limited to file manipulation, tech ops, text processing ...
+The _DS - Daily Shells Library_ is a collection of useful shell routines in the form of functions and scripts (or "recipes"). Several subjects are covered relating but not limited to file manipulation, tech ops, text processing etc.
 
 Advantages:
 
-* Automatic chmod +x (mark as executable) all scripts under its root at $DS_HOME
-* Alias all *.sh scripts to aliases without the extension
-* Standardized places for things e.g. all *.sh files in the functions/ dir are sourced during dsload
-* Easy plugin installation & maintenance mechanism
+* Convention over configuration e.g. all files in "$DS_HOME/functions/" are sourced during 'dsload' (the sourcing of Daily Shells' entry point) and all scripts in recipes*/ or scripts/ are marked executable (chmod +x)
+* Modularized: Easy plugin installation & maintenance mechanism
 
 Currently the ___Bash___ and ___Zsh___ shells are supported.
 
