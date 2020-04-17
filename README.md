@@ -98,12 +98,13 @@ Nowadays lots of software are installed directly from GitHub or other online rep
 
 The script that performs this is ```dsplugin.sh``` (also aliased to just ```dsplugin```).
 
-It expects ```user/repo``` as the argument and it will use ___github.com___ as the default. To use another domain just prepend it with a slash like in ```domain/user/repo``` (exactly as in an HTTPS clone URL).
+It expects ```user/repo``` as the argument. It will pull that user's repo from ___github.com___ by the default. To use another domain just prepend it with a slash like in ```domain/user/repo``` (exactly as in an HTTPS clone URL).
 
 ### Examples
 
 ```bash
-dsplugin stroparo/ds-stroparo
+dsplugin stroparo/ds-stroparo # pulls github.com/stroparo/ds-stroparo
+dsplugin bitbucket.org/stroparo/ds-stroparo # pulls from bitbucket.org
 ```
 
 Usage & Examples
