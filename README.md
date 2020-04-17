@@ -103,8 +103,11 @@ It expects ```user/repo``` as the argument. It will pull that user's repo from _
 ### Examples
 
 ```bash
-dsplugin stroparo/ds-stroparo # pulls github.com/stroparo/ds-stroparo
-dsplugin bitbucket.org/stroparo/ds-stroparo # pulls from bitbucket.org
+# This will pull github.com/stroparo/ds-stroparo
+dsplugin stroparo/ds-stroparo
+
+# This will pull bitbucket.org/stroparo/ds-stroparo
+dsplugin bitbucket.org/stroparo/ds-stroparo
 ```
 
 Usage & Examples
