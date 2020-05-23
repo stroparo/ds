@@ -187,7 +187,7 @@ gitreinit () {
 
   if [ -n "${remote_url}" ] ; then
     git remote add origin "${remote_url}"
-    git push -u origin master
+    git push -f -u origin master
   fi
 }
 
