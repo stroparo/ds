@@ -14,9 +14,7 @@ PROGNAME="dsplugin.sh"
 
 _load_ds () {
   typeset DS_CURRENT_HOME="${DS_HOME:-$HOME/.ds}"
-  if [ -z "${DS_VERSION}" ] \
-    && ! . "${DS_CURRENT_HOME}/ds.sh" "${DS_CURRENT_HOME}" >/dev/null 2>&1
-  then
+  if ! . "${DS_CURRENT_HOME}/ds.sh" "${DS_CURRENT_HOME}" >/dev/null 2>&1 ; then
     echo 1>&2
     echo "Daily Shells could not be loaded. Fix it and call this again." 1>&2
     echo "Commands to install Daily Shells:" 1>&2
