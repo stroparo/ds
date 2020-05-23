@@ -180,7 +180,7 @@ EOF
       && echo
 
     if [ $? -ne 0 ] ; then
-      echo "${PROGNAME:+$PROGNAME: }WARN: There was some error for '${plugin}'." 1>&2
+      echo "${PROGNAME:+$PROGNAME: }WARN: There was some error for plugin '${plugin}'." 1>&2
       rm -f -r "${repo}"
       ERRORS=true
     fi
@@ -224,6 +224,7 @@ _main () {
 
   _check_core
   _arg_dispatcher "$@"
+  chmodscriptsds
   if ${ERRORS:-false} ; then
     exit 1
   fi
