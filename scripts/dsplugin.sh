@@ -105,6 +105,7 @@ _install_plugins () {
   typeset protocol
   typeset repo_dir
   typeset repo_url
+  typeset skip
 
   for plugin in "$@" ; do
 
@@ -165,23 +166,23 @@ EOF
     echo "${PROGNAME:+$PROGNAME: }INFO: Cloning '${repo_url}'..."
     echo "${PROGNAME:+$PROGNAME: }INFO: PWD: '$PWD'"
     
-    git clone --depth 1 "${repo_url}" \
-      && rm -f -r "${repo_dir}/.git" \
-      && cp -a "${repo_dir}"/* "${DS_HOME}/" \
-      && (grep -q "${plugin_basename}\$" "${DS_PLUGINS_FILE}" \
-            || echo "${plugin_string}" >> "${DS_PLUGINS_FILE}") \
-      && (grep -q "${plugin_basename}\$" "${DS_PLUGINS_INSTALLED_FILE}" \
-            || echo "${plugin_string}" >> "${DS_PLUGINS_INSTALLED_FILE}") \
-      && rm -f -r "${repo_dir}" \
-      && echo \
-      && echo "${PROGNAME:+$PROGNAME: }INFO: Plugin at '${repo_url}' installed successfully" \
-      && echo
-
-    if [ $? -ne 0 ] ; then
-      echo "${PROGNAME:+$PROGNAME: }WARN: There was some error for plugin '${plugin}'." 1>&2
+    while ! (git clone --depth 1 "${repo_url}" \
+              && rm -f -r "${repo_dir}/.git" \
+              && cp -a "${repo_dir}"/* "${DS_HOME}/" \
+              && (grep -q "${plugin_basename}\$" "${DS_PLUGINS_FILE}" \
+                    || echo "${plugin_string}" >> "${DS_PLUGINS_FILE}") \
+              && (grep -q "${plugin_basename}\$" "${DS_PLUGINS_INSTALLED_FILE}" \
+                    || echo "${plugin_string}" >> "${DS_PLUGINS_INSTALLED_FILE}") \
+              && rm -f -r "${repo_dir}" \
+              && echo \
+              && echo "${PROGNAME:+$PROGNAME: }INFO: Plugin at '${repo_url}' installed successfully" \
+              && echo)
+    do
+      echo "${PROGNAME:+$PROGNAME: }WARN: Plugin '${plugin}' installation failed." 1>&2
+      echo "${PROGNAME:+$PROGNAME: }WARN: Will keep trying..." 1>&2
       rm -f -r "${repo}"
-      ERRORS=true
-    fi
+      sleep 10
+    done
 
     # Safety for next iteration:
     unset domain user repo remainder
