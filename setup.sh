@@ -148,7 +148,7 @@ if [ -n "${DS_LOADED}" ] ; then
   dshashplugins.sh
 
   echo "${PROGNAME} (ds): INFO: Hashing script modes..."
-  chmodscriptsds
+  chmodscriptsds -v
 
   echo "${PROGNAME} (ds): INFO: DS installed." 1>&2
 

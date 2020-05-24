@@ -151,7 +151,7 @@ dshash () {
     sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds10path.sh"
 
     echo "${progname}: INFO: Hashing script modes..."
-    chmodscriptsds
+    chmodscriptsds -v
 
     eval "$loadcmd"
   else
