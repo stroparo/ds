@@ -1,3 +1,3 @@
 chmodscriptsds () {
-  chmodscripts -v $(_dsgetscriptsdirs)
+  chmodscripts "$@" $(_dsgetscriptsdirs)
 }
