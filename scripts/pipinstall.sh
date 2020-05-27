@@ -6,7 +6,7 @@
 # Globals
 
 PROGNAME="pipinstall.sh"
-USAGE="$PROGNAME [-e venv] [{pip package|file containing a list of pip packages}+]
+USAGE="$PROGNAME [-v venv] [{pip package|file containing a list of pip packages}+]
 
 REMARK
 If -e venv option, then use pyenv to activate it (fail on pyenv abscence)
@@ -19,18 +19,18 @@ pipinstall () {
   typeset venv
   typeset oldind="${OPTIND}"
   OPTIND=1
-  while getopts ':e:h' option ; do
+  while getopts ':hv:' option ; do
     case "${option}" in
-      e)
+      h)
+        echo "$USAGE"
+        exit
+        ;;
+      v)
         venv="${OPTARG}"
         if ! which pyenv >/dev/null 2>&1 ; then
           echo "${PROGNAME:+$PROGNAME: }FATAL: a virtualenv was specified but no pyenv is available to activate it." 1>&2
           return 1
         fi
-        ;;
-      h)
-        echo "$USAGE"
-        exit
         ;;
     esac
   done
@@ -41,8 +41,12 @@ pipinstall () {
   if [ -n "${venv}" ] ; then
     : ${WORKON_HOME:=${HOME}/.ve} ; export WORKON_HOME
     : ${PROJECT_HOME:=${HOME}/workspace} ; export PROJECT_HOME
-    export PATH="${HOME}/.pyenv/bin:$PATH"
-    eval "$(pyenv init -)"
+
+    export PATH="${PYENV_ROOT:-$HOME/.pyenv}/bin:${PATH}"
+    if command -v pyenv >/dev/null 2>&1 ; then
+      eval "$(pyenv init -)"
+      eval "$(pyenv virtualenv-init -)"
+    fi
 
     if ! pyenv activate "${venv}" ; then
       echo "${PROGNAME:+$PROGNAME: }FATAL: Could not switch to the '${venv}' virtualenv." 1>&2
