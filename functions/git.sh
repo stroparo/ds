@@ -1,12 +1,14 @@
 # Git routines
 # #############################################################################
 
-# Oneliners
-gcheckedout () { git branch -v "$@" | egrep '^(==|[*]|---)' ; }
-gdd () { git add -A "$@" ; git status -s ; }
-gddd () { git add -A "$@" ; git status -s ; git diff --cached ; } ; ddd () { gddd ; }
-gitbranchactive () { echo "$(git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')" ; }
-isgitbranch () { typeset branch="$1" ; [ "${branch}" = "$(gitbranchactive)" ] ; }
+# Oneliners:
+# Check existence to avoid duplicate of alias recipe in dotfiles vs daily shells:
+if ! type gcheckedout >/dev/null 2>&1 ; then gcheckedout () { git branch -v "$@" | egrep '^(==|[*]|---)' ; } ; fi
+if ! type gitbranchactive >/dev/null 2>&1 ; then gitbranchactive () { echo "$(git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')" ; } ; fi
+if ! type gdd >/dev/null 2>&1 ; then  gdd () { git add -A "$@" ; git status -s ; } ; fi
+if ! type gddd >/dev/null 2>&1 ; then gddd () { git add -A "$@" ; git status -s ; git diff --cached ; } ; fi
+if ! type gee >/dev/null 2>&1 ; then  gee () { git add -A "$@" ; git status -s ; git diff --ignore-space-at-eol --cached ; } ; fi
+if ! type glsd >/dev/null 2>&1 ; then glsd () { git ls-files --deleted ; } ; fi
 
 
 clonegits () {
@@ -95,7 +97,7 @@ gitenforcemyuser () {
 gitpull () {
 
   typeset branch=master
-  typeset header_msg
+  typeset header_msg="Started"
   typeset remote=origin
   typeset PROGNAME="gitpull()"
 
@@ -116,7 +118,7 @@ gitpull () {
   echo
   echo
   echo '###############################################################################'
-  echo "${PROGNAME:+$PROGNAME: }INFO: ==> ${header_msg}" 1>&2
+  echo "${PROGNAME:+$PROGNAME: }INFO: ==> ${header_msg}"
   echo '###############################################################################'
 
   for repo in "$@" ; do
@@ -134,7 +136,7 @@ gitpull () {
 
       if [ "${branch_previously_out}" != "${branch}" ] ; then
         git checkout "${branch}" >/dev/null 2>&1
-        if ! isgitbranch "${branch}" ; then
+        if [ "${branch}" != "$(gitbranchactive)" ] ; then
           echo "${PROGNAME:+$PROGNAME: }WARN: ... failed checking out '${branch}'"
           echo '---'
           continue
@@ -149,7 +151,7 @@ gitpull () {
 
       if [ "${branch_previously_out}" != "${branch}" ] ; then
         git checkout "${branch_previously_out}" >/dev/null 2>&1
-        if isgitbranch "${branch_previously_out}" ; then
+        if [ "${branch_previously_out}" = "$(gitbranchactive)" ] ; then
           echo "${PROGNAME:+$PROGNAME: }INFO: ... checked out previous branch '${branch_previously_out}'"
         else
           echo "${PROGNAME:+$PROGNAME: }WARN: ... failed checking out previous branch '${branch_previously_out}'." 1>&2
