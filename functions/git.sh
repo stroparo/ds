@@ -5,10 +5,10 @@
 # Check existence to avoid duplicate of alias recipe in dotfiles vs daily shells:
 if ! type gcheckedout >/dev/null 2>&1 ; then gcheckedout () { git branch -v "$@" | egrep '^(==|[*]|---)' ; } ; fi
 if ! type gitbranchactive >/dev/null 2>&1 ; then gitbranchactive () { echo "$(git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')" ; } ; fi
-if ! type gdd >/dev/null 2>&1 ; then  gdd () { git add -A "$@" ; git status -s ; } ; fi
-if ! type gddd >/dev/null 2>&1 ; then gddd () { git add -A "$@" ; git status -s ; git diff --cached ; } ; fi
-if ! type gee >/dev/null 2>&1 ; then  gee () { git add -A "$@" ; git status -s ; git diff --ignore-space-at-eol --cached ; } ; fi
-if ! type glsd >/dev/null 2>&1 ; then glsd () { git ls-files --deleted ; } ; fi
+if ! type gdd   >/dev/null 2>&1 ; then gdd () { git add -A "$@" ; git status -s ; } ; fi
+if ! type gddd  >/dev/null 2>&1 ; then gddd () { git add -A "$@" ; git status -s ; git diff --cached ; } ; fi
+if ! type gee   >/dev/null 2>&1 ; then gee () { git add -A "$@" ; git status -s ; git diff --ignore-space-at-eol --cached ; } ; fi
+if ! type glsd  >/dev/null 2>&1 ; then glsd () { git ls-files --deleted ; } ; fi
 
 
 clonegits () {
@@ -164,32 +164,51 @@ gitpull () {
 
 
 gitreinit () {
-  typeset remote_url="$1"
+  declare -A remotes
+
+  echo "gitreinit: INFO: Current dir '${PWD}'..."
 
   if [ -n "$(find . -mindepth 2 -type d -name .git)" ] ; then
     echo "gitreinit: SKIP: Git (sub?)repos found in current tree, which is not supported."
     return
   fi
-  if git status -s ; then
+
+  if ! git status -s >/dev/null 2>&1 ; then
+    echo "${PROGNAME:+$PROGNAME: }SKIP: This dir is not inside a git repository." 1>&2
+    return
+  fi
+
+  if [ -d ./.git ] ; then
+    # Save remotes info:
+    for remote in $(git remote) ; do
+      remotes[$remote]="$(git remote get-url "$remote")"
+    done
+
+    rm -f -r ./.git
     if [ -d ./.git ] ; then
-      rm -f -r ./.git
-      if [ -d ./.git ] ; then
-        echo "gitreinit: FATAL: Could not remove ./.git so cannot continue." 1>&2
-        return 1
-      fi
-    else
-      echo "gitreinit: SKIP: Inside a repo but not at the root."
-      return
+      echo "gitreinit: FATAL: Could not remove ./.git so cannot continue." 1>&2
+      return 1
     fi
+  else
+    echo "gitreinit: SKIP: Inside a repo but not at the root."
+    return
   fi
 
   git init \
-    && git add -A . \
-    && git commit -m 'First commit'
+    && git add -A -f . \
+    && git commit -m 'First commit' \
+    || return $?
 
-  if [ -n "${remote_url}" ] ; then
-    git remote add origin "${remote_url}"
-    git push -f -u origin master
+  if [ $? -eq 0 ] ; then
+    for remote in "${!remotes[@]}" ; do
+      git remote add "$remote" "${remotes[$remote]}"
+      git push -f "$remote" master
+    done
+    if git remote | grep -q origin ; then
+      gittrackremotebranches -r origin "$PWD" master
+    else
+      echo "${PROGNAME:+$PROGNAME: }gitreinit: No remote tracking setup as there is no 'origin' remote." 1>&2
+    fi
   fi
 }
 
@@ -211,7 +230,12 @@ gitremotepatternreplace () {
   OPTIND=1
   while getopts ':b:hr:stv' option ; do
     case "${option}" in
-      b) branches_to_track="${OPTARG:-$branches_to_track}";;
+      b)
+        branches_to_track="${OPTARG:-$branches_to_track}"
+        if [ -n "$OPTARG" ] ; then
+          branches_to_track="$(echo "$branches_to_track" | tr -s ',' ' ')"
+        fi
+        ;;
       h) echo "$usage" ; return;;
       r) remote_name="${OPTARG}";;
       s) post_sync=true;;
