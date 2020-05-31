@@ -42,16 +42,22 @@ pipinstall () {
     : ${WORKON_HOME:=${HOME}/.ve} ; export WORKON_HOME
     : ${PROJECT_HOME:=${HOME}/workspace} ; export PROJECT_HOME
 
+    echo "${PROGNAME:+$PROGNAME: }INFO: Loading pyenv and virtualenvwrapper..."
     export PATH="${PYENV_ROOT:-$HOME/.pyenv}/bin:${PATH}"
     if command -v pyenv >/dev/null 2>&1 ; then
       eval "$(pyenv init -)"
       eval "$(pyenv virtualenv-init -)"
+      eval "$(grep 'VIRTUALENVWRAPPER_PYTHON=' ~/.bashrc)"
+      eval "$(grep '^source.*virtualenvwrapper.sh$' ~/.bashrc)"
     fi
 
     if ! pyenv activate "${venv}" ; then
       echo "${PROGNAME:+$PROGNAME: }FATAL: Could not switch to the '${venv}' virtualenv." 1>&2
       return 1
     fi
+  elif ! pyenv global >/dev/null 2>&1 ; then
+    echo "${PROGNAME:+$PROGNAME: }FATAL: No pyenv global set." 1>&2
+    exit 1
   fi
 
   for pkg in "$@" ; do
