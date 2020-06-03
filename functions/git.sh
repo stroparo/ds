@@ -250,12 +250,13 @@ gitremotepatternreplace () {
   shift 2
 
   for repo in "$@" ; do
+    repo="${repo%/.git}"
+    if ! (cd "${repo}" ; git remote -v | grep -q "^ *${remote_name}") ; then
+      continue
+    fi
     (
       repo="${repo%/.git}"
       cd "${repo}"
-      if ! (git remote -v | grep -q "^ *${remote_name}") ; then
-        continue
-      fi
 
       old_remote_value="$(git remote -v | grep "^ *${remote_name}" | head -1 | awk '{print $2;}')"
       new_remote_value="$(echo "${old_remote_value}" | sed -e "s#${pattern}#${replace}#")"
