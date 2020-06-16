@@ -11,6 +11,6 @@ if [ -z "$IMAGE_FILENAME" -o -z "$DISK_RECEIVING" ] ; then
     exit 1
 fi
 
-/usr/sbin/ocs-sr -g auto -e1 auto -e2 -r -j2 -p true -c -scr \
+/usr/sbin/ocs-sr -icds -g auto -e1 auto -e2 -r -j2 -p true -c -scr \
     restoredisk "${IMAGE_FILENAME}" "${DISK_RECEIVING}"
 echo $?
