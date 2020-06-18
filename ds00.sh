@@ -50,6 +50,14 @@ else
 fi
 
 # #############################################################################
+# Globals - the encryption program (truecrypt/veracrypt)
+
+export CRYPTPROG=truecrypt
+if ! which "${CRYPTPROG}" >/dev/null 2>&1 && which veracrypt >/dev/null 2>&1 ; then
+  export CRYPTPROG=veracrypt
+fi
+
+# #############################################################################
 # Core functions
 
 
