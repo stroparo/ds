@@ -127,37 +127,40 @@ gitpull () {
     echo
     echo
     echo "${PROGNAME:+$PROGNAME: }INFO: ||"
-    echo "${PROGNAME:+$PROGNAME: }INFO: ==> Pulling '${repo}' branch '${branch}' from remote '${remote}'..."
-    (
-      cd $repo
+    if [ -e "${}/.git/refs/remotes/${remote}/${branch}" ] ; then
+      echo "${PROGNAME:+$PROGNAME: }INFO: ==> Pulling '${repo}' branch '${branch}' from remote '${remote}'..."
+    else
+      echo "${PROGNAME:+$PROGNAME: }SKIP: ==> Repo '${repo}' missing remote/branch '${remote}/${branch}'..."
+      continue
+    fi
 
-      branch_previously_out="$(gitbranchactive)"
-      echo "${PROGNAME:+$PROGNAME: }INFO: ... current branch: ${branch_previously_out}"
+    branch_previously_out="$(cd $repo; gitbranchactive)"
+    echo "${PROGNAME:+$PROGNAME: }INFO: ... current branch: ${branch_previously_out}"
 
-      if [ "${branch_previously_out}" != "${branch}" ] ; then
-        git checkout "${branch}" >/dev/null 2>&1
-        if [ "${branch}" != "$(gitbranchactive)" ] ; then
-          echo "${PROGNAME:+$PROGNAME: }WARN: ... failed checking out '${branch}'"
-          echo '---'
-          continue
-        fi
+    if [ "${branch_previously_out}" != "${branch}" ] ; then
+      (cd $repo; git checkout "${branch}" >/dev/null 2>&1)
+      if [ "${branch}" != "$(cd $repo; gitbranchactive)" ] ; then
+        echo "${PROGNAME:+$PROGNAME: }WARN: ... failed checking out '${branch}'"
+        echo '---'
+        continue
       fi
+    fi
 
-      # git branch --set-upstream-to="${remote}/${branch}" "${branch}"
-      if git pull "${remote}" "${branch}" ; then
-        echo "${PROGNAME:+$PROGNAME: }INFO: ... git status at '${PWD}':"
-        git status -s
-      fi
+    # git branch --set-upstream-to="${remote}/${branch}" "${branch}"
+    if (cd $repo; git pull "${remote}" "${branch}") ; then
+      echo "${PROGNAME:+$PROGNAME: }INFO: ... git status at '${PWD}':"
+      (cd $repo; git status -s)
+    fi
 
-      if [ "${branch_previously_out}" != "${branch}" ] ; then
-        git checkout "${branch_previously_out}" >/dev/null 2>&1
-        if [ "${branch_previously_out}" = "$(gitbranchactive)" ] ; then
-          echo "${PROGNAME:+$PROGNAME: }INFO: ... checked out previous branch '${branch_previously_out}'"
-        else
-          echo "${PROGNAME:+$PROGNAME: }WARN: ... failed checking out previous branch '${branch_previously_out}'." 1>&2
-        fi
+    if [ "${branch_previously_out}" != "${branch}" ] ; then
+      (cd $repo; git checkout "${branch_previously_out}" >/dev/null 2>&1)
+      if [ "${branch_previously_out}" = "$(cd $repo; gitbranchactive)" ] ; then
+        echo "${PROGNAME:+$PROGNAME: }INFO: ... checked out previous branch '${branch_previously_out}'"
+      else
+        echo "${PROGNAME:+$PROGNAME: }WARN: ... failed checking out previous branch '${branch_previously_out}'." 1>&2
       fi
-    )
+    fi
+
     echo '---'
   done
 }
