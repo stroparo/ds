@@ -127,7 +127,7 @@ gitpull () {
     echo
     echo
     echo "${PROGNAME:+$PROGNAME: }INFO: ||"
-    if [ -e "${}/.git/refs/remotes/${remote}/${branch}" ] ; then
+    if [ -e "${repo}/.git/refs/remotes/${remote}/${branch}" ] ; then
       echo "${PROGNAME:+$PROGNAME: }INFO: ==> Pulling '${repo}' branch '${branch}' from remote '${remote}'..."
     else
       echo "${PROGNAME:+$PROGNAME: }SKIP: ==> Repo '${repo}' missing remote/branch '${remote}/${branch}'..."
