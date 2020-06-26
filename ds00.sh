@@ -252,7 +252,11 @@ dslistfunctions () {
 
 
 _dsgetscriptsdirs () {
-  ls -1 -d "${DS_HOME}/recipes" "${DS_HOME}/scripts"* 2>/dev/null
+  ls -1 -d \
+    "${DS_HOME}/installers"* \
+    "${DS_HOME}/recipes"* \
+    "${DS_HOME}/scripts"* \
+    2>/dev/null
 }
 dslistscripts () {
   find $(_dsgetscriptsdirs) -type f
