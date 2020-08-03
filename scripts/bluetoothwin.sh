@@ -51,3 +51,5 @@ EOF
   echo
 done
 # #############################################################################
+
+echo "Run 'sudo systemctl restart bluetooth'..."
