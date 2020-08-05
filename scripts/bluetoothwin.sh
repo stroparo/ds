@@ -4,6 +4,12 @@ PROGNAME="bluetoothwin.sh"
 
 WINDIR="$1"
 
+if ! which chntpw >/dev/null 2>&1 ; then
+  echo "${PROGNAME:+$PROGNAME: }FATAL: Install chntpw utility program first. On Debian/Ubuntu-based distros:" 1>&2
+  echo "${PROGNAME:+$PROGNAME: }FATAL: sudo apt-get update && sudo apt-get install chntpw" 1>&2
+  exit 1
+fi
+
 cd "${WINDIR:=/mnt/c/Windows}/System32/config"
 if [ "$PWD" != "${WINDIR}/System32/config" ] ; then
   echo "${PROGNAME:+$PROGNAME: }FATAL: Could not cd to '${WINDIR}/System32/config'." 1>&2
