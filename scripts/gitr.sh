@@ -58,6 +58,10 @@ shift $((OPTIND-1))
 export GITCMD="$1"
 shift
 
+if [ "$GITCMD" = pull ] || [ "$GITCMD" = merge ] ; then
+  export PARALLEL=false
+fi
+
 export GITREPOS="$(
 if [ -z "$GGIGNORE" ] || ${FULL:-false} ; then
     find . -type d -name ".git"
