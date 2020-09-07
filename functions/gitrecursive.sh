@@ -19,6 +19,12 @@ rss     ()  { gitr.sh -f -- status -s "$@" ; }
 # Compound commands
 rpushcurrent () { rpush origin HEAD ; rpushmirror HEAD ; rss ; }
 rpushmatching () { rpush origin ':' ; rpushmirror ':' ; rss ; }
+rpullremotes () {
+  rfetch --all origin
+  rfetch --all mirror
+  rpull origin HEAD
+  rpull mirror HEAD
+}
 
 
 # DEV/workspace pulling:
@@ -33,14 +39,18 @@ vpull () {
 
 
 # Shortcuts
-rfap () { rfetchallprune ; }
-rpuc () { rpushcurrent ; }
-rpul () { rpull ; }
-rpum () { rpushmatching ; }
-rpus () { rpush ; }
-vfap () { v ; rfetchallprune ; }
-vpuc () { v ; rpushcurrent ; }
-vpul () { vpull ; }
-vpum () { v ; rpushmatching ; }
-vpus () { v ; rpush ; }
-vss  () { v ; rss ; }
+rfap () { rfetchallprune "$@" ; }
+rp () { rpull "$@" ; }
+rpr ()  { rpullremotes "$@" ; }
+rpuc () { rpushcurrent "$@" ; }
+rpul () { rpull "$@" ; }
+rpum () { rpushmatching "$@" ; }
+rpus () { rpush "$@" ; }
+vfap () { v ; rfetchallprune "$@" ; }
+vp () { vpull "$@" ; }
+vpr ()  { v ; rpullremotes "$@" ; }
+vpuc () { v ; rpushcurrent "$@" ; }
+vpul () { vpull "$@" ; }
+vpum () { v ; rpushmatching "$@" ; }
+vpus () { v ; rpush "$@" ; }
+vss  () { v ; rss "$@" ; }
