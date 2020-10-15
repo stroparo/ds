@@ -17,6 +17,9 @@ _ssh_agent_start () {
 
 _ssh_agent_test () {
 
+    typeset key_added="${1}"
+    typeset key_added_basename="$(basename "${1}")"
+
     ssh-add -l > /dev/null 2>&1
 
     if [ $? -eq 2 ]; then
@@ -24,7 +27,7 @@ _ssh_agent_test () {
         return 1
     else
 
-        if ssh-add -l | grep -q "The agent has no identities" ; then
+        if ssh-add -l | grep -q "${key_added_basename:-The agent has no identities}" ; then
             ssh-add "$@"
 
             # $SSH_AUTH_SOCK broken so we start a new proper agent:
