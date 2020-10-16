@@ -26,8 +26,8 @@ _ssh_agent_test () {
         echo 'Failure: Another login session is already using the ssh-agent.' 1>&2
         return 1
     else
-
-        if ssh-add -l | grep -q "${key_added_basename:-The agent has no identities}" ; then
+        if (ssh-add -l | grep -q "The agent has no identities") \
+          || ! (ssh-add -l | grep -q "${key_added_basename}") ; then
             ssh-add "$@"
 
             # $SSH_AUTH_SOCK broken so we start a new proper agent:
