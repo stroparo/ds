@@ -38,8 +38,7 @@ shift "$((OPTIND-1))"
 # in the directory, so it goes in the "load code" variable
 # which will be appended to the shell profiles as is:
 DS_INSTALL_DIR="$(echo "${1:-\${HOME\}/.ds}" | tr -s /)"
-DS_LOAD_CODE="[ -r \"${DS_INSTALL_DIR}/ds.sh\" ] && source \"${DS_INSTALL_DIR}/ds.sh\" \"${DS_INSTALL_DIR}\" 1>&2
-"
+DS_LOAD_CODE="[ -r \"${DS_INSTALL_DIR}/ds.sh\" ] && source \"${DS_INSTALL_DIR}/ds.sh\" \"${DS_INSTALL_DIR}\" 1>&2"
 
 # After having that "load code" for shell profiles,
 #   finally eval the installation dir to proceed:
