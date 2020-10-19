@@ -9,6 +9,7 @@ export APTPROG=apt-get
 
 if ! (ls -d /etc/apt/sources.list.d/* | fgrep -q "$(echo "${PPA}" | sed -e 's/[/-].*$//')") ; then
   sudo add-apt-repository -y "ppa:${PPA}"
+  sudo apt-get update
 fi
 
 if ! dpkg -s "${PKG}" ; then
