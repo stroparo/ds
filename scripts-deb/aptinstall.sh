@@ -53,6 +53,11 @@ _add_ppa_repo () {
 
 _install_packages () {
   for package in "$@" ; do
+    if dpkg -s "${package}" ; then
+      echo "${PROGNAME:+$PROGNAME: }SKIP: Package '${package}' already installed." 1>&2
+      continue
+    fi
+
     echo "Installing '$package'..."
     if ! sudo $INSTPROG install -y "$package" >/tmp/pkg-install-${package}.log 2>&1 ; then
       echo "${PROGNAME:+$PROGNAME: }WARN: There was an error installing package '$package' - see '/tmp/pkg-install-${package}.log'." 1>&2
