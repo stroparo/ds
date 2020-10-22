@@ -47,6 +47,7 @@ _add_ppa_repo () {
 
   if ! eval ls -l "/etc/apt/sources.list.d/${ppa%/*}*.list" 2>/dev/null ; then
     sudo add-apt-repository -y "ppa:$ppa"
+    sudo apt-get update
   fi
 }
 
