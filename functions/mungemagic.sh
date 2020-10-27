@@ -16,8 +16,8 @@ mungemagic () {
       pathmunge ${optafter} -x $(ls -1d "$mungeroot"/*/ | egrep -v -w 'bin|lib')
     fi
 
-    pathmunge ${optafter} -x $(echo $(find "$mungeroot" -type d -maxdepth 2 -name bin))
-    pathmunge ${optafter} -x -v LIBPATH $(echo $(find "$mungeroot" -type d -maxdepth 2 -name lib))
+    pathmunge ${optafter} -x $(echo $(find "$mungeroot" -maxdepth 2 -type d -name bin))
+    pathmunge ${optafter} -x -v LIBPATH $(echo $(find "$mungeroot" -maxdepth 2 -type d -name lib))
 
     # Mirror LIBPATH into LD_LIBRARY_PATH:
     if [ -n "${optafter}" ] ; then
