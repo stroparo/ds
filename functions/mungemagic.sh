@@ -10,7 +10,7 @@ mungemagic () {
     if [ ! -d "$mungeroot" ] ; then continue ; fi
 
     # Make mungeroot path canonical:
-    mungeroot="$(cd "${mungeroot}"; echo "$PWD")"
+    mungeroot="$(readlink -f "$(cd "${mungeroot}"; echo "$PWD")")"
 
     if [ -n "${optafter}" ] ; then
       pathmunge ${optafter} -x $(ls -1d "$mungeroot"/*/ | egrep -v -w 'bin|lib')
