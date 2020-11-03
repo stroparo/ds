@@ -13,7 +13,7 @@ mungemagic () {
     mungeroot="$(readlink -f "$(cd "${mungeroot}"; echo "$PWD")")"
 
     if [ -n "${optafter}" ] ; then
-      pathmunge ${optafter} -x $(ls -1d "$mungeroot"/*/ | egrep -v -w 'bin|lib')
+      pathmunge ${optafter} -x $(ls -1d "$mungeroot"/* | egrep -v -w 'bin|lib')
     fi
 
     pathmunge ${optafter} -x $(echo $(find "$mungeroot" -maxdepth 2 -type d -name bin))
@@ -23,7 +23,7 @@ mungemagic () {
     if [ -n "${optafter}" ] ; then
       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+${LD_LIBRARY_PATH}:}${LIBPATH}"
     else
-      pathmunge -x $(ls -1d "$mungeroot"/*/ | egrep -v -w 'bin|lib')
+      pathmunge -x $(ls -1d "$mungeroot"/* | egrep -v -w 'bin|lib')
       export LD_LIBRARY_PATH="${LIBPATH}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
     fi
   done
