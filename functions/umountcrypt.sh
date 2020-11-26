@@ -3,7 +3,7 @@
 
 
 umountcrypt () {
-  typeset crypt_prog="${CRYPTPROG:-truecrypt}"
+  typeset crypt_prog="${CRYPT_PROG:-truecrypt}"
 
   if ! which "${crypt_prog}" ; then
     echo "haltsafe: FATAL: No encryption program found, aborting safe halt.."
