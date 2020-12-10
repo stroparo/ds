@@ -1,4 +1,7 @@
 rmfd () {
+  # Truncates file descriptors of processes writing to the files in arguments.
+  # If this does not work, truncate the file instead (e.g. with '> filename').
+
   for expr in "$@" ; do
     pids="$(lsof +L1 | grep "${expr}" | fgrep '(deleted)' | awk '{ print $2; }')"
     for pid in $(echo ${pids}) ; do
