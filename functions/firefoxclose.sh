@@ -21,10 +21,13 @@ firefoxclose () {
   if [ $? -ne 0 ] && ! pidof firefox >/dev/null 2>&1; then
     return 0
   fi
-  xdotool windowactivate --sync $CWID
-  xdotool key --clearmodifiers Return
-  sleep ${timeout}
+  if [ -n "$CWID" ] ; then
+    xdotool windowactivate --sync $CWID
+    xdotool key --clearmodifiers Return
+    sleep ${timeout}
+  fi
 
   ! pidof firefox >/dev/null 2>&1
   return $?
 }
+
