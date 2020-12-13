@@ -1,32 +1,31 @@
+# firefoxclose () - similar to stroparo/ds' windowclose (), adapted to Firefox.
 firefoxclose () {
-  typeset timeout=2
+  typeset process_expr="firefox"
+  typeset window_expr="Mozilla Firefox"
+  typeset close_shortcut="ctrl+q"
 
   if ! which xdotool >/dev/null 2>&1; then
-    killall -HUP firefox
-    sleep ${timeout}
-    ! pidof firefox >/dev/null 2>&1
+    killall -HUP "${process_expr}"
+    timeoutprocessclose.sh "${process_expr}"
     return $?
   fi
 
-  FFWID="$(xdotool search --name "Mozilla Firefox" | head -1)"
-  xdotool windowactivate --sync $FFWID
-
-  # https://support.mozilla.org/en-US/kb/keyboard-shortcuts-perform-firefox-tasks-quickly
-  xdotool key --clearmodifiers ctrl+q
-  sleep ${timeout}
+  WINDOW_ID="$(xdotool search --name "${window_expr}" | head -1)"
+  xdotool windowactivate --sync "${WINDOW_ID}"
+  xdotool key --clearmodifiers "${close_shortcut}"
 
   # Confirmation window, if any:
+  sleep 2
   CWID="$(xdotool search --name "close tabs")"
-  if [ $? -ne 0 ] && ! pidof firefox >/dev/null 2>&1; then
+  if [ $? -ne 0 ] && ! pidof "${process_expr}" >/dev/null 2>&1; then
     return 0
   fi
   if [ -n "$CWID" ] ; then
-    xdotool windowactivate --sync $CWID
+    xdotool windowactivate --sync "${CWID}"
     xdotool key --clearmodifiers Return
-    sleep ${timeout}
+    sleep "${timeout}"
   fi
 
-  ! pidof firefox >/dev/null 2>&1
+  timeoutprocessclose.sh "${process_expr}"
   return $?
 }
-
