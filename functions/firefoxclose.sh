@@ -1,6 +1,5 @@
 firefoxclose () {
   typeset timeout=2
-  typeset timeoutsmall=0.5
 
   if ! which xdotool >/dev/null 2>&1; then
     killall -HUP firefox
@@ -14,7 +13,7 @@ firefoxclose () {
 
   # https://support.mozilla.org/en-US/kb/keyboard-shortcuts-perform-firefox-tasks-quickly
   xdotool key --clearmodifiers ctrl+q
-  sleep ${timeoutsmall}
+  sleep ${timeout}
 
   # Confirmation window, if any:
   CWID="$(xdotool search --name "close tabs")"
