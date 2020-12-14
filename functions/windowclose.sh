@@ -4,6 +4,8 @@ windowclose () {
   typeset window_expr="${2:-$1}"
   typeset close_shortcut="${3:-ctrl+q}"
 
+  echo "windowclose: closing '${process_expr}'..."
+
   if ! which xdotool >/dev/null 2>&1; then
     killall -HUP "${process_expr}"
     timeoutprocessclose.sh "${process_expr}"

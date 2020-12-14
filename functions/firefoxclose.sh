@@ -4,6 +4,8 @@ firefoxclose () {
   typeset window_expr="Mozilla Firefox"
   typeset close_shortcut="ctrl+q"
 
+  echo "firefoxclose: closing..."
+
   if ! which xdotool >/dev/null 2>&1; then
     killall -HUP "${process_expr}"
     timeoutprocessclose.sh "${process_expr}"
