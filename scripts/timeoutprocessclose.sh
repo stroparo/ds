@@ -14,7 +14,7 @@ sleep "${TIMEOUT}"
 passed="${TIMEOUT}"
 while pidof "${PROCESS_EXPR}" >/dev/null 2>&1 && [ "${passed}" -lt "${TIMEOUT_MAX}" ] ; do
   sleep "${TIMEOUT}"
-  passed=((passed+TIMEOUT))
+  passed=$((passed+TIMEOUT))
 done
 ! pidof "${PROCESS_EXPR}" >/dev/null 2>&1
 exit $?
