@@ -1,4 +1,5 @@
 haltsafe () {
+  cd ~
   if umountcrypt ; then
     sudo shutdown -h now
   else
@@ -7,6 +8,7 @@ haltsafe () {
 }
 
 rebootsafe () {
+  cd ~
   if umountcrypt ; then
     sudo reboot
   else
