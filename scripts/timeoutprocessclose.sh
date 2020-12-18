@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Timeout testing whether a process (by pidof command-like expression) is still running.
+
+PROGNAME="timeoutprocessclose.sh"
+
 PROCESS_EXPR="$1"
 TIMEOUT=2
 TIMEOUT_MAX=12
