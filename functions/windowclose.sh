@@ -13,6 +13,10 @@ windowclose () {
   fi
 
   WINDOW_ID="$(xdotool search --name "${window_expr}" | head -1)"
+  if [ -z "${WINDOW_ID}" ] ; then
+    echo "windowclose(): SKIP: No window found for window expression '${window_expr}'." 1>&2
+    return 0
+  fi
   xdotool windowactivate --sync "${WINDOW_ID}"
   xdotool key --clearmodifiers "${close_shortcut}"
 
