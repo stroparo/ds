@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-# Update system packages, with APT for Debian based distros,
-# RPM for Enterprise Linux distros etc.
+# Update system packages for both Debian/Ubuntu and Enterprise Linux distros.
 
 PROGNAME="pkgupdate.sh"
 
@@ -18,17 +17,17 @@ while getopts ':f' option ; do
 done
 shift "$((OPTIND-1))"
 
-# System installers
-export APTPROG=apt-get; which apt >/dev/null 2>&1 && export APTPROG=apt
-export RPMPROG=yum; which dnf >/dev/null 2>&1 && export RPMPROG=dnf
-export RPMGROUP="yum groupinstall"; which dnf >/dev/null 2>&1 && export RPMGROUP="dnf group install"
-export INSTPROG="$APTPROG"; which "$RPMPROG" >/dev/null 2>&1 && export INSTPROG="$RPMPROG"
-
-# Check Linux:
-if !(uname -a | grep -i -q linux) ; then
-  echo "${PROGNAME:+$PROGNAME: }SKIP: Only Linux is supported." 1>&2
-  exit
+# Enforce Daily Shells dependency:
+if [ ! -e ~/.ds/ds.sh ] ; then
+  FORCE=true bash -c "$(curl -LSf -k -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')"
 fi
+. ~/.ds/ds.sh
+if [ -z "$DS_HOME" ] ; then
+  echo "${PROGNAME:+$PROGNAME: }FATAL: Could not load Daily Shells." 1>&2
+  exit 1
+fi
+
+linuxordie
 
 # Check if system update is needed:
 updated_more_than_a_day_ago=false
@@ -44,10 +43,10 @@ if ! ${FORCE} && ! ${updated_more_than_a_day_ago} ; then
 fi
 
 update_result=1
-if egrep -i -q -r 'debian|ubuntu' /etc/*release ; then
+if _is_debian_family ; then
   sudo ${INSTPROG} update && sudo ${INSTPROG} upgrade -y
   update_result=$?
-elif egrep -i -q -r 'centos|fedora|oracle|red *hat' /etc/*release ; then
+elif _is_el_family ; then
   sudo ${INSTPROG} check-update && sudo ${INSTPROG} update
   update_result=$?
 fi
