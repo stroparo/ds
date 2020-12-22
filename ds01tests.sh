@@ -59,8 +59,8 @@ _any_null () {
 # Operating System tests
 
 _is_debian_family () { egrep -i -q -r 'debian|ubuntu' /etc/*release ; }
-_is_el_family () { egrep -i -q -r '(cent ?os|oracle|red ?hat|fedora)' /etc/*release ; }
-_is_el () { egrep -i -q -r '(cent ?os|oracle|red ?hat)' /etc/*release ; }
-_is_el6 () { egrep -i -q -r '(cent ?os|oracle|red ?hat).* 6' /etc/*release ; }
-_is_el7 () { egrep -i -q -r '(cent ?os|oracle|red ?hat).* 7' /etc/*release ; }
+_is_el_family () { egrep -i -q -r '(cent.?os|oracle|red.?hat|enterprise|rhel|fedora)' /etc/*release ; }
+_is_el () { egrep -i -q -r '(cent.?os|oracle|red.?hat|enterprise|rhel)' /etc/*release ; }
+_is_el6 () { egrep -i -q -r '(cent.?os|oracle|red.?hat|enterprise|rhel).* 6' /etc/*release ; }
+_is_el7 () { egrep -i -q -r '(cent.?os|oracle|red.?hat|enterprise|rhel).* 7' /etc/*release ; }
 _is_fedora () { egrep -i -q -r 'fedora' /etc/*release ; }
