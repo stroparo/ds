@@ -10,6 +10,15 @@ aptcleanup () {
 }
 
 
+aptflatpak () {
+  if ! type flatpak >/dev/null 2>&1 ; then
+    sudo apt-get update \
+    && sudo apt-get install flatpak \
+    && flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+  fi
+}
+
+
 aptpkgstat () {
   # Info: Displays installation status of given package names
   # Syn: {pkg1} {pkg2} ... {pkgN}
