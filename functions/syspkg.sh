@@ -2,7 +2,7 @@ installpkgs () {
   typeset timestamp="$(date '+%Y%m%d-%OH%OM%OS')"
 
   echo "${PROGNAME:-installpkgs()}: INFO: Installing packages..."
-  if ! (sudo "${INSTPROG}" install -y "$@" 2>&1 | tee "/tmp/pkg-install-${timestamp}.log") ; then
+  if ! (sudo "${INSTPROG}" install "$@" 2>&1 | tee "/tmp/pkg-install-${timestamp}.log") ; then
     echo "${PROGNAME:-installpkgs()}: WARN: There was an error installing packages - see '/tmp/pkg-install-${timestamp}.log'." 1>&2
   fi
 }
@@ -14,7 +14,7 @@ installpkgsepel () {
   typeset timestamp="$(date '+%Y%m%d-%OH%OM%OS')"
 
   echo "${PROGNAME:-installpkgsepel()}: INFO: Installing EPEL packages..."
-  if ! (sudo "${INSTPROG}" install -y --enablerepo=epel "$@" 2>&1 | tee "/tmp/pkg-install-epel-${timestamp}.log") ; then
+  if ! (sudo "${INSTPROG}" install --enablerepo=epel "$@" 2>&1 | tee "/tmp/pkg-install-epel-${timestamp}.log") ; then
     echo "${PROGNAME:-installpkgsepel()}: WARN: There was an error installing packages - see '/tmp/pkg-install-epel-${timestamp}.log'." 1>&2
   fi
 }
