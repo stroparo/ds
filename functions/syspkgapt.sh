@@ -4,7 +4,7 @@
 
 
 aptcleanup () {
-  echo "${PROGNAME:+${PROGNAME}: INFO: APT repository clean up (autoremove & clean)...}"
+  echo "${PROGNAME:-aptcleanup()}: INFO: APT repository clean up (autoremove & clean)..."
   sudo "$APTPROG" autoremove -y
   sudo "$APTPROG" clean -y
 }
