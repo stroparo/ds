@@ -1,6 +1,6 @@
 # DS - Daily Shells Library
 
-loadjava () {
+javaload () {
     # Info: Loads environment variables based on JAVA_HOME path.
     # Syn: [-v] [JAVA_HOME override]
     # -v displays JAVA_HOME.
