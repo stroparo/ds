@@ -4,6 +4,7 @@
 
 PROGNAME="pkgupdate.sh"
 
+CONTROL_FILE="${HOME}/.ds_pkgupdate_date"
 FORCE=false
 USAGE="${PROGNAME} [-f] [-h]"
 
@@ -31,7 +32,7 @@ linuxordie
 
 # Check if system update is needed:
 updated_more_than_a_day_ago=false
-updated_on="$(cat ~/.ds_pkgupdate_date 2>/dev/null)"
+updated_on="$(cat "${CONTROL_FILE}" 2>/dev/null)"
 : ${updated_on:=00000000}
 if [ "$(date '+%Y%m%d')" -gt "${updated_on}" ] ; then
   updated_more_than_a_day_ago=true
@@ -51,7 +52,9 @@ elif _is_el_family ; then
   update_result=$?
 fi
 
-if [ ${update_result:-1} -ne 0 ] ; then
+if [ ${update_result:-1} -eq 0 ] ; then
+  date '+%Y%m%d' > "${CONTROL_FILE}"
+else
   echo "${PROGNAME:+$PROGNAME: }FATAL: There was an error updating the system packages." 1>&2
   exit ${update_result}
 fi
