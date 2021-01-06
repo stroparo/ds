@@ -49,7 +49,7 @@ pipinstall () {
   shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
   _pyenv_load
-  pip --version > /dev/null || return $?
+  python -m pip --version > /dev/null || return $?
 
   if [ -n "${venv}" ] ; then
     : ${WORKON_HOME:=${HOME}/.ve} ; export WORKON_HOME
@@ -67,12 +67,12 @@ pipinstall () {
   for pkg in "$@" ; do
     if [ -f "${pkg}" ] ; then
       for readpkg in $(cat "${pkg}") ; do
-        echo ${BASH_VERSION:+-e} "\n==> pip install '$readpkg'..."
-        pip install "$readpkg"
+        echo ${BASH_VERSION:+-e} "\n==> python -m pip install '$readpkg'..."
+        python -m pip install "$readpkg"
       done
     else
-      echo ${BASH_VERSION:+-e} "\n==> pip install '${pkg}'..."
-      pip install "${pkg}"
+      echo ${BASH_VERSION:+-e} "\n==> python -m pip install '${pkg}'..."
+      python -m pip install "${pkg}"
     fi
   done
 }
