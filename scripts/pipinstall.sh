@@ -48,8 +48,8 @@ pipinstall () {
   done
   shift $((OPTIND-1)) ; OPTIND="${oldind}"
 
-  pip --version > /dev/null || return $?
   _pyenv_load
+  pip --version > /dev/null || return $?
 
   if [ -n "${venv}" ] ; then
     : ${WORKON_HOME:=${HOME}/.ve} ; export WORKON_HOME
