@@ -6,7 +6,7 @@
 # Globals
 
 PROGNAME="pipinstall.sh"
-USAGE="$PROGNAME [-v venv] [{pip package|file containing a list of pip packages}+]
+USAGE="$PROGNAME [-v venv] [pip package|file containing a list of pip packages]+
 
 REMARK
 If -e venv option, then use pyenv to activate it (fail on pyenv abscence)
