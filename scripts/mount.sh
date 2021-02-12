@@ -2,7 +2,7 @@
 
 PROGNAME="mount.sh"
 
-mount () {
+_mount () {
   typeset result=0
 
   for mount_point in "$@" ; do
@@ -28,4 +28,4 @@ mount () {
   return ${result}
 }
 
-mount "$@"
+_mount "$@"
