@@ -13,10 +13,10 @@ mount () {
     fi
 
     if ! grep -q "${mount_point}" /etc/fstab ; then
-      echo "${PROGNAME}: SKIP: mount point '${mount_point}' not in fstab." 1>&2
+      echo "${PROGNAME}: SKIP: Mount point '${mount_point}' not in fstab." 1>&2
       return
     elif grep -q "${mount_point}" /etc/mtab ; then
-      echo "${PROGNAME}: SKIP: Already mounted." 1>&2
+      echo "${PROGNAME}: SKIP: Already mounted '${mount_point}'." 1>&2
       return
     else
       if ! sudo mount "${mount_point}" ; then
