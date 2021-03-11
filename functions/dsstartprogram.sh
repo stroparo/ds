@@ -21,5 +21,5 @@ startonfalse () {
       return 1
     fi
   done
-  "$@"
+  "$@" & disown
 }
