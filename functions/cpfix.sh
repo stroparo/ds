@@ -28,6 +28,6 @@ cpfix () {
 
   cp -f -v "${target_filename}" "${target_backup_filename}"
   if [ -e "${target_backup_filename}" ] ; then
-    cp -f -v "${filename_fixed}" "$(dirname "${target_filename}")/"
+    cp -f -v "${filename_fixed}" "${target_filename}"
   fi
 }
