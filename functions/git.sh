@@ -116,22 +116,24 @@ gitpull () {
 
   : ${header_msg:=git repositories starting with '$1'}
 
-  echo
-  echo
-  echo '###############################################################################'
-  echo "${PROGNAME:+$PROGNAME: }INFO: ==> ${header_msg}"
-  echo '###############################################################################'
-
   if [ $# -eq 0 ] ; then
     gitpull -b "${branch}" -h "${header_msg}" -r "${remote}" "${PWD}"
     return
   fi
 
+  echo
+  echo
+  echo '###############################################################################'
+  echo "${PROGNAME:+$PROGNAME: }INFO: ==> ${header_msg}"
+  echo "${PROGNAME:+$PROGNAME: }INFO: ... Args:"
+  realpath "$@" | sed -e 's# /#\n/#g' | sed -e 's#/[.]git$##'
+  echo '###############################################################################'
+
   for repo in "$@" ; do
     repo=${repo%/.git}
 
     if [ ! -d "${repo}/.git" ] ; then
-      for repo_found in $(find "${repo}" -type d -name .git) ; do
+      for repo_found in $(find "$(realpath "${repo}")" -type d -name .git) ; do
         gitpull -b "${branch}" -h "${header_msg}" -r "${remote}" "${repo_found}"
       done
       continue
