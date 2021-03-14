@@ -100,6 +100,7 @@ gitpull () {
   typeset header_msg="Started"
   typeset remote=origin
   typeset PROGNAME="gitpull()"
+  typeset repo
 
   # Options:
   typeset oldind="${OPTIND}"
@@ -123,6 +124,13 @@ gitpull () {
 
   for repo in "$@" ; do
     repo=${repo%/.git}
+
+    if [ ! -d "${repo}/.git" ] ; then
+      for repo_found in $(find "${repo}" -type d -name .git) ; do
+        gitpull -b "${branch}" -h "${header_msg}" -r "${remote}" "${repo_found}"
+      done
+      continue
+    fi
 
     echo
     echo
