@@ -6,28 +6,28 @@ cpfix () {
 
   # TODO test
 
-  typeset usage="{fixed-filename} {tree-path} [launcher-path-relative-to-tree=bin/start.bat]"
+  typeset usage="{fixed-filename} {target-tree-path} [target-filename-relative-to-tree=bin/start.bat]"
 
-  typeset file_fixed="${1}"
-  typeset tree_path="${1:-${HOME}/opt/dummy_tree_path}"
-  typeset file_rel_path="${2:-bin/start.bat}"
-  typeset file_filename="${tree_path}/${file_rel_path}"
-  typeset file_backup="${file_filename}.original-$(%Y-%m-%d-%OH-%OM-%OS)"
+  typeset filename_fixed="${1}"
+  typeset target_tree_path="${2:-${HOME}/opt/dummy_target_tree_path}"
+  typeset target_rel_filename="${3:-bin/start.bat}"
+  typeset target_filename="${target_tree_path}/${target_rel_filename}"
+  typeset target_backup_filename="${target_filename}.original-$(%Y-%m-%d-%OH-%OM-%OS)"
 
-  if [ ! -f "${file_fixed}" ] ; then
+  if [ ! -f "${filename_fixed}" ] ; then
     echo "${PROGNAME:+$PROGNAME: }INFO: Usage: ${usage}" 1>&2
     echo "${PROGNAME:+$PROGNAME: }FATAL: No fixed file path." 1>&2
     return 1
   fi
 
-  if [ ! -d "${tree_path}" ] ; then
+  if [ ! -d "${target_tree_path}" ] ; then
     echo "${PROGNAME:+$PROGNAME: }INFO: Usage: ${usage}" 1>&2
-    echo "${PROGNAME:+$PROGNAME: }FATAL: No tree_path (${tree_path}) available." 1>&2
+    echo "${PROGNAME:+$PROGNAME: }FATAL: No target_tree_path (${target_tree_path}) available." 1>&2
     return 1
   fi
 
-  cp -f -v "${file_filename}" "${file_backup}"
-  if [ -e "${file_backup}" ] ; then
-    cp -f -v "${file_fixed}" "$(dirname "${file_filename}")/"
+  cp -f -v "${target_filename}" "${target_backup_filename}"
+  if [ -e "${target_backup_filename}" ] ; then
+    cp -f -v "${filename_fixed}" "$(dirname "${target_filename}")/"
   fi
 }
