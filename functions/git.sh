@@ -122,6 +122,11 @@ gitpull () {
   echo "${PROGNAME:+$PROGNAME: }INFO: ==> ${header_msg}"
   echo '###############################################################################'
 
+  if [ $# -eq 0 ] ; then
+    gitpull -b "${branch}" -h "${header_msg}" -r "${remote}" "${PWD}"
+    return
+  fi
+
   for repo in "$@" ; do
     repo=${repo%/.git}
 
