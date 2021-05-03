@@ -19,7 +19,7 @@ _runr () {
       return 1
     fi
     if ! rm -f -r "${HOME}/.runr" || ! cp -r -v "${DEV}/runr" "${HOME}/.runr" ; then
-      echo "${PROGNAME:+$PROGNAME: }FATAL: Could copy '${DEV}/runr' to '${HOME}/.runr'." 1>&2
+      echo "${PROGNAME:+$PROGNAME: }FATAL: Could not copy '${DEV}/runr' to '${HOME}/.runr'." 1>&2
       return 1
     fi
   fi
