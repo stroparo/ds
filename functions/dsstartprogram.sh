@@ -4,9 +4,9 @@ startifnone () {
   fi
 }
 
-startonfalse () {
+startoncommandoutput () {
   if [ $# -lt 2 ] ; then
-    echo "startoncenonempty: FATAL: At least 2 args needed (expr command)." 1>&2
+    echo "startoncommandoutput: FATAL: At least 2 args needed (expr command)." 1>&2
     return 1
   fi
 
@@ -14,7 +14,7 @@ startonfalse () {
   typeset elapsed=0
   typeset expr="$1" ; shift
 
-  while [ -z "eval $(expr)" ] ; do
+  while [ -z "$(eval "$(echo "${expr}")")" ] ; do
     sleep 1
     elapsed=$((elapsed+1))
     if [ ${elapsed} -gt ${DS_START_TIMEOUT} ] ; then
