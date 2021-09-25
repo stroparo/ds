@@ -1,6 +1,7 @@
 # Arch
-_is_arch () { egrep -i -q -r 'arch' /etc/*release ; }
-_is_arch_family () { egrep -i -q -r 'arch|manjaro' /etc/*release ; }
+_is_arch () { egrep -i -q -r 'id[^=]*arch' /etc/*release ; }
+_is_arch_family () { egrep -i -q -r 'id[^=]*arch|endeavour|manjaro' /etc/*release ; }
+_is_eos () { egrep -i -q -r 'endeavour' /etc/*release ; }
 _is_manjaro () { egrep -i -q -r 'manjaro' /etc/*release ; }
 
 # Debian
