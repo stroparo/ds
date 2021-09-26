@@ -332,7 +332,6 @@ gittrackremotebranches () {
 
   if [ -d "${1%/.git}/.git" ] ; then
     repo_path="${1%/.git}"
-    echo "${progname:+$progname: }INFO: Started for repo '${repo_path}'; setting branches up to track from remote '${remote_name}'..." 1>&2
   else
     echo "${progname:+$progname: }WARN: No repository directory '${1}' (1st arg.), falling back to default '${repo_path}'." 1>&2
     # TODO code for user to confirm: 'Do you wish to proceed with that default diretory?'
@@ -348,16 +347,19 @@ gittrackremotebranches () {
     cd "${repo_path}"
     if [ "$(basename "${PWD}")" = "$(basename ${repo_path})" ] ; then
       echo
-      echo "${progname:+$progname: }INFO: ==> Repo '${repo_path}' started" 1>&2
+      echo "${progname:+$progname: }INFO: ==> Repo '${repo_path}' started; Target remote: '${remote_name}'..." 1>&2
       for branch_to_track in "$@" ; do
         
         unset remote_already_tracked
         remote_already_tracked="$(git config --local "branch.${branch_to_track}.remote")"
         if [ -n "${remote_already_tracked}" ] ; then
-          echo "${progname:+$progname: }SKIP: Branch '${branch_to_track}' already tracking from remote '${remote_already_tracked}' in repo '${repo_path}'." 1>&2
+          echo "${progname:+$progname: }INFO: Branch '${branch_to_track}' tracking remote '${remote_already_tracked}' already (target: '${remote_name}')." 1>&2
+          # TODO code for user to confirm: 'Do you wish to proceed and override with the new remote '${remote_name}'?'
           continue
+        fi
         
-        elif [ ! -e "${repo_path}/.git/refs/remotes/${remote_name}/${branch_to_track}" ] ; then
+        # "Local remote" branch check:
+        if [ ! -e "${repo_path}/.git/refs/remotes/${remote_name}/${branch_to_track}" ] ; then
           echo "${progname:+$progname: }WARN: Branch '${branch_to_track}' missing for remote '${remote_name}'. Trying to fetch it..." 1>&2
           git fetch "${remote_name}" "${branch_to_track}"
           if [ ! -e "${repo_path}/.git/refs/remotes/${remote_name}/${branch_to_track}" ] ; then
@@ -366,7 +368,18 @@ gittrackremotebranches () {
           fi
         fi
 
-        git branch --set-upstream-to="${remote_name}/${branch_to_track}" "${branch_to_track}"
+        # Local branch check:
+        if [ ! -e "${repo_path}/.git/refs/heads/${branch_to_track}" ] ; then
+          git checkout "${branch_to_track}"  # Git will create the local one if not present already.
+          if [ ! -e "${repo_path}/.git/refs/heads/${branch_to_track}" ] ; then
+            echo "${progname:+$progname: }SKIP: Local branch '${branch_to_track}' unavailable, even after trying to create it." 1>&2
+            continue
+          fi
+        fi
+
+        if git branch --set-upstream-to="${remote_name}/${branch_to_track}" "${branch_to_track}" ; then
+          echo "${progname:+$progname: }INFO: Branch '${branch_to_track}' tracking remote '${remote_already_tracked}' now." 1>&2
+        fi
       done
     fi
   )
