@@ -61,6 +61,13 @@ validpkgsapt () {
 }
 
 
+validpkgspacman () {
+  typeset pkg_list_filename="${1}"
+  typeset cmd="true"
+  validpkgshelper "${pkg_list_filename}" "${cmd}"
+}
+
+
 validpkgsrpm () {
   typeset pkg_list_filename="${1}"
   typeset cmd="yum info"
@@ -69,7 +76,9 @@ validpkgsrpm () {
 
 
 validpkgs () {
-  if _is_debian_family ; then
+  if _is_arch_family ; then
+    validpkgspacman "$@"
+  elif _is_debian_family ; then
     validpkgsapt "$@"
   elif _is_el_family ; then
     validpkgsrpm "$@"
