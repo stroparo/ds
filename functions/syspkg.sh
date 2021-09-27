@@ -6,7 +6,9 @@ installpkgs () {
     subcommand="-S"
   fi
 
-  echo "${PROGNAME:-installpkgs()}: INFO: Installing packages..."
+  echo "${PROGNAME:-installpkgs()}: INFO: Installing packages:"
+  echo "$@" | sed -e 's/ /\n/g'
+  echo sudo "${INSTPROG}" "${subcommand}" "$@"
   if ! (sudo "${INSTPROG}" "${subcommand}" "$@" 2>&1 | tee "/tmp/pkg-install-${timestamp}.log") ; then
     echo "${PROGNAME:-installpkgs()}: WARN: There was an error installing packages - see '/tmp/pkg-install-${timestamp}.log'." 1>&2
   fi
@@ -63,7 +65,7 @@ validpkgsapt () {
 
 validpkgspacman () {
   typeset pkg_list_filename="${1}"
-  typeset cmd="true"
+  typeset cmd="pacman -Si"
   validpkgshelper "${pkg_list_filename}" "${cmd}"
 }
 
