@@ -8,7 +8,7 @@ dsplug () {
       was_already_installed=true
     fi
 
-    if dsplugin.sh "${plugin}" && ! ${was_already_installed} ; then
+    if ! ${was_already_installed} && dsplugin.sh "${plugin}" ; then
       dsload
     fi
   done
