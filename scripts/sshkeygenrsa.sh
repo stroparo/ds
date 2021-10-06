@@ -55,9 +55,16 @@ sshkeygenrsa () {
 }
 
 sshsetfiles () {
+
+  typeset keyfile="$1"
+
   chmod 700 "$HOME/.ssh"
   [ -e "$HOME"/.ssh/authorized_keys ] && chmod 600 "$HOME"/.ssh/authorized_keys
   chmod 600 "$HOME"/.ssh/id*
+
+  if [ -f "${keyfile}" ] ; then
+    chmod 600 "${keyfile}"
+  fi
 }
 
 # #############################################################################
@@ -67,4 +74,4 @@ echo "##########################################################################
 echo sshkeygenrsa
 
 sshkeygenrsa "$@" || exit $?
-sshsetfiles
+sshsetfiles "$2"
