@@ -1,6 +1,3 @@
-# DS - DRYSL (DRY Scripting Library)
-
-# #############################################################################
 # Executables and PATH
 
 ignore_expr="$DS_HOME/(conf|functions|templates)"
