@@ -1,4 +1,4 @@
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 checkargs () {
     # Info: Checks number of arguments, closed slice.

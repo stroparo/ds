@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 # Generate RSA ssh key
 
 PROGNAME="sshkeygenrsa.sh"

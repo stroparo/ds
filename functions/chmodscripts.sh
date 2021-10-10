@@ -1,4 +1,4 @@
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 chmodscripts () {
     # Info: Sets mode for scripts inside the specified directories.

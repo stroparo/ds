@@ -1,4 +1,4 @@
-# Wrappers for gitr script from the Daily Shells library (stroparo/ds)
+# Wrappers for gitr script from the DRYSL (DRY Scripting Library) (stroparo/ds)
 # #############################################################################
 
 # Branch

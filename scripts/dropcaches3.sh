@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 sudo cat > /proc/sys/vm/drop_caches <<EOF
 3

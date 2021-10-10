@@ -7,7 +7,7 @@ License: To be defined; meanwhile it is licensed solely according to the author'
 
 ---
 
-The _DS - Don't Repeat Yourself Scripting Library_ (formerly "Daily Shells Library") is a collection of useful scripts in the form of functions and scripts (or "recipes", as in Chef lingo, although this library does not relate to Chef at all). Several subjects are covered relating but not limited to file manipulation, tech ops, text processing etc.
+The _DS - Don't Repeat Yourself Scripting Library_ (formerly "DRYSL (DRY Scripting Library)") is a collection of useful scripts in the form of functions and scripts (or "recipes", as in Chef lingo, although this library does not relate to Chef at all). Several subjects are covered relating but not limited to file manipulation, tech ops, text processing etc.
 
 Advantages:
 

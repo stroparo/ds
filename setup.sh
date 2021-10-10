@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Daily Shells Library
+# DRYSL (DRY Scripting Library)
 
 PROGNAME="setup.sh"
 

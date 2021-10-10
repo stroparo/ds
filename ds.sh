@@ -1,4 +1,4 @@
-# Daily Shells Library
+# DRYSL (DRY Scripting Library)
 
 # #############################################################################
 # Globals

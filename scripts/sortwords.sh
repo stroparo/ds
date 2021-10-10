@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 # License:
 #   See README.md document in projects page at
 #   https://github.com/stroparo/ds

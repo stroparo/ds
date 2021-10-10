@@ -1,4 +1,4 @@
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 # #############################################################################
 # Globals
@@ -262,7 +262,7 @@ dslistscripts () {
 
 
 dshelp () {
-  echo "DS - Daily Shells Library - Help
+  echo "DS - DRYSL (DRY Scripting Library) - Help
 
 d - handy dir navigation function
 dshelp - display this help messsage

@@ -1,4 +1,4 @@
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 mungemagic () {
   # Munge descendant bin* and lib* directories to PATH and library variables.

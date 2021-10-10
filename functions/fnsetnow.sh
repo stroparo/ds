@@ -1,4 +1,4 @@
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 setnow () {
     # Info: Setup NOW* environment variables based on the system's date.

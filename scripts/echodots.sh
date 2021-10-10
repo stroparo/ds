@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 # Info: Echoes dots every 4 seconds or number of seconds in arg1.
 

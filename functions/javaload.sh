@@ -1,4 +1,4 @@
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 javaload () {
     # Info: Loads environment variables based on JAVA_HOME path.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 # Info: Tail multiple files.
 # Syntax: mutail [-n lines] file1[ file2[ file3 ...]]

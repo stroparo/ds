@@ -1,3 +1,3 @@
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 lskb () { setxkbmap -query ; } ; lskeyb () { lskb ; }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Daily Shells Library
+# DRYSL (DRY Scripting Library)
 
 export PNAME="$(basename "$0")"
 export USAGE="

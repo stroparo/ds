@@ -1,4 +1,4 @@
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 mountvboxsf () {
     # Info: Mount virtualbox shared folder.

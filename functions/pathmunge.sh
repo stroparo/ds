@@ -1,4 +1,4 @@
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 pathmunge () {
     # Info: prepend (-a causes to append) directory to PATH global.

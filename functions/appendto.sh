@@ -1,4 +1,4 @@
-# DS - Daily Shells Library
+# DS - DRYSL (DRY Scripting Library)
 
 appendto () {
     # Info: Append to variable (arg1), the given text (arg2).

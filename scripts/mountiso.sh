@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Daily Shells Library
+# DRYSL (DRY Scripting Library)
 
 mountiso () { sudo mount -o loop -t iso9660 "$@" ; }
 
