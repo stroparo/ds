@@ -1,4 +1,3 @@
-# DRYSL (DRY Scripting Library)
 # More instructions and licensing at:
 # https://github.com/stroparo/ds
 

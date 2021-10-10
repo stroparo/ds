@@ -1,5 +1,3 @@
-# DS - DRYSL (DRY Scripting Library)
-
 pathmunge () {
     # Info: prepend (-a causes to append) directory to PATH global.
     # Syn: [-v varname] [-x] {path}1+

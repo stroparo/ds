@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# DS - DRYSL (DRY Scripting Library)
 # Generate RSA ssh key
 
 PROGNAME="sshkeygenrsa.sh"

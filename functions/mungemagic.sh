@@ -1,5 +1,3 @@
-# DS - DRYSL (DRY Scripting Library)
-
 mungemagic () {
   # Munge descendant bin* and lib* directories to PATH and library variables.
   # Syn: [-a] [dir1 [dir2 ...]]

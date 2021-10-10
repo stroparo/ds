@@ -1,4 +1,4 @@
-# Wrappers for gitr script from the DRYSL (DRY Scripting Library) (stroparo/ds)
+# Wrappers for gitr script from https://github.com/stroparo/ds
 # #############################################################################
 
 # Branch

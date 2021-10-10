@@ -1,5 +1,3 @@
-# DS - DRYSL (DRY Scripting Library)
-
 mountvboxsf () {
     # Info: Mount virtualbox shared folder.
     # Syntax: path-to-dir (sharing will be named as its basename)

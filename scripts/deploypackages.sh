@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# DS - DRYSL (DRY Scripting Library)
 # License:
 #   See README.md document in projects page at
 #   https://github.com/stroparo/ds

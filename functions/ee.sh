@@ -1,5 +1,3 @@
-# DS - DRYSL (DRY Scripting Library)
-
 # #############################################################################
 # EE - Enter-Environment routines for ssh and scp operations
 

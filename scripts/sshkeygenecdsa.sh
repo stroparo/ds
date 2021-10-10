@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# DS - DRYSL (DRY Scripting Library)
 # Generate ECDSA ssh key
 
 PROGNAME="sshkeygenecdsa.sh"
