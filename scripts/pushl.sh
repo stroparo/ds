@@ -210,8 +210,6 @@ EOF
 # Main
 
 checkEnv
-
-# Load DS:
 sourceds || exit "$?"
 
 if [ -n "${ENVREGEX}" ] ; then
