@@ -1,7 +1,5 @@
-# DRYSL (DRY Scripting Library)
-
-# #############################################################################
-# Post file
+# Post env profile - execute after all other env/profiles have been loaded
+# Execute code in the DS_POST_CALLS global environment variable.
 
 DS_LOADED=true
 
