@@ -5,7 +5,7 @@
 #   See README.md document in projects page at
 #   https://github.com/stroparo/ds
 
-# Plugin installer for Daily Shells
+# Plugin installer for DRYSL (DRY Scripting Library)
 
 PROGNAME="dsplugin.sh"
 
@@ -16,8 +16,8 @@ _load_ds () {
   typeset DS_CURRENT_HOME="${DS_HOME:-$HOME/.ds}"
   if ! . "${DS_CURRENT_HOME}/ds.sh" "${DS_CURRENT_HOME}" >/dev/null 2>&1 ; then
     echo 1>&2
-    echo "Daily Shells could not be loaded. Fix it and call this again." 1>&2
-    echo "Commands to install Daily Shells:" 1>&2
+    echo "DRYSL (DRY Scripting Library) could not be loaded. Fix it and call this again." 1>&2
+    echo "Commands to install DRYSL (DRY Scripting Library):" 1>&2
     echo "sh -c \"\$(curl -LSfs 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')\"" 1>&2
     echo "sh -c \"\$(wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')\"" 1>&2
     echo 1>&2
@@ -41,7 +41,7 @@ export PNAME="$(basename "$0")"
 
 export USAGE="
 NAME
-  ${PNAME} - Installs Daily Shells plugins
+  ${PNAME} - Installs DRYSL (DRY Scripting Library) plugins
 
 SYNOPSIS
   ${PNAME} [domain/]user/repo [[d/]u/r [[d/]u/r ...]]

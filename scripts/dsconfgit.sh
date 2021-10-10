@@ -3,7 +3,7 @@
 PROGNAME="dsconfgit.sh"
 
 echo
-echo "${PROGNAME:+$PROGNAME: }INFO: Applying Daily Shells config recipes for Git..." 1>&2
+echo "${PROGNAME:+$PROGNAME: }INFO: Applying DRYSL (DRY Scripting Library) config recipes for Git..." 1>&2
 echo
 
 if . "${DS_HOME:-$HOME/.ds}/functions/git.sh" ; then

@@ -86,7 +86,7 @@ prep () {
     typeset oldpwd="$PWD"
 
     if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1 || [ -z "${DS_LOADED}" ] ; then
-        echo "${PNAME}: FATAL: Could not load DS - Daily Shells." 1>&2
+        echo "${PNAME}: FATAL: Could not load DS - DRYSL (DRY Scripting Library)." 1>&2
         exit 1
     fi
 

@@ -20,7 +20,7 @@ Options:
 # Prep dependencies
 
 if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1 || [ -z "${DS_LOADED}" ] ; then
-  echo "$(basename "$0"): FATAL: Could not load DS - Daily Shells." 1>&2
+  echo "$(basename "$0"): FATAL: Could not load DS - DRYSL (DRY Scripting Library)." 1>&2
   exit 1
 fi
 

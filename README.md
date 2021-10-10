@@ -26,9 +26,9 @@ The dshelp function is the help system entry point. It will output something lik
 ```
 dshelp - display this help messsage
 dsinfo - display environment information
-dslistfunctions - list daily shells' functions
-dslistscripts - list daily shells' scripts
-dsversion - display the version of this Daily Shells instance
+dslistfunctions - list DRYSL (DRY Scripting Library)' functions
+dslistscripts - list DRYSL (DRY Scripting Library)' scripts
+dsversion - display the version of this DRYSL (DRY Scripting Library) instance
 ```
 
 __Important__

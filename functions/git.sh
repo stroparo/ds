@@ -2,7 +2,7 @@
 # #############################################################################
 
 # Oneliners:
-# Check existence to avoid duplicate of alias recipe in dotfiles vs daily shells:
+# Check existence to avoid duplicate of alias recipe in dotfiles vs DRYSL (DRY Scripting Library):
 if ! type gcheckedout >/dev/null 2>&1 ; then function gcheckedout () { git branch -v "$@" | egrep '^(==|[*]|---)' ; } ; fi
 if ! type gitbranchactive >/dev/null 2>&1 ; then function gitbranchactive () { echo "$(git branch 2>/dev/null | grep -e '\* ' | sed 's/^..\(.*\)/\1/')" ; } ; fi
 if ! type gdd   >/dev/null 2>&1 ; then function gdd () { git add -A "$@" ; git status -s ; } ; fi
@@ -61,7 +61,7 @@ clonemygits () {
   fi
 
   if [ -d "${devdir}" ] ; then
-    # Using the clonegits function from Daily Shells at stroparo.github.io/ds:
+    # Using the clonegits function from DRYSL (DRY Scripting Library) at stroparo.github.io/ds:
     (cd "${devdir}" \
       && [ "$(basename "$(pwd)")" = "$(basename "$devdir")" ] \
       && clonegits "$mygits")
