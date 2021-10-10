@@ -4,7 +4,7 @@
 
 PROGNAME="pkgupdate.sh"
 
-CONTROL_FILE="${HOME}/.ds_pkgupdate_date"
+CONTROL_FILE="${HOME}/.pkgupdate_date"
 FORCE=false
 USAGE="${PROGNAME} [-f] [-h]"
 
