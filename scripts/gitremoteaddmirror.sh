@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PROGNAME="dsgitremoteaddmirror.sh"
+PROGNAME="gitremoteaddmirror.sh"
 
 export MIRROR_DIRNAME_URL="${1:-https://bitbucket.org/usuario1n2o3n4eczistente}"
 shift
