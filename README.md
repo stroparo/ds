@@ -1,4 +1,4 @@
-Daily Shells - Commonly needed scripts
+Don't Repeat Yourself Scripting Library - Commonly needed scripts
 ======================================
 
 Author: Cristian Stroparo
@@ -7,16 +7,16 @@ License: To be defined; meanwhile it is licensed solely according to the author'
 
 ---
 
-The _DS - Daily Shells Library_ is a collection of useful shell routines in the form of functions and scripts (or "recipes"). Several subjects are covered relating but not limited to file manipulation, tech ops, text processing etc.
+The _DS - Don't Repeat Yourself Scripting Library_ (formerly "Daily Shells Library") is a collection of useful scripts in the form of functions and scripts (or "recipes", as in Chef lingo, although this library does not relate to Chef at all). Several subjects are covered relating but not limited to file manipulation, tech ops, text processing etc.
 
 Advantages:
 
-* Convention over configuration e.g. all files in "$DS_HOME/functions/" are sourced during 'dsload' (the sourcing of Daily Shells' entry point) and all scripts in recipes*/ or scripts/ are marked executable (chmod +x) during the initial setup
+* Convention over configuration e.g. all files in "$DS_HOME/functions/" are sourced during 'dsload' (the entry point of this library, sourced in your shell profile) and all scripts in recipes\*/ or scripts\*/ directories are marked executable (chmod +x) during the initial setup (how many times in your life did you have to chmod before calling a script? not anymore...)
 * Modularized: Easy plugin installation & maintenance mechanism
 
 Currently the ___Bash___ and ___Zsh___ shells are supported.
 
-Some features of this project replicate GNU tools features and those were intentional as to have this possibilities in a non-GNU environment. (Perhaps you are on IBM AIX where policies or sysadmins do not allow for the GNU toolbox for AIX to be installed etc.)
+Some features of this project replicate GNU tools features and those were intentional as to have this possibilities in a non-GNU environment. (Perhaps you are on IBM AIX where policies or sysadmins do not allow for the 'GNU toolbox for AIX' to be installed etc.)
 
 Help
 ----
@@ -50,19 +50,7 @@ type dsload >/dev/null 2>&1 && dsload || . ~/.ds/ds.sh
 
 ERROR curl not found: If you do not have curl, substitute the 'curl [options]' call for ```wget -O -```.
 
-Archive download (insecure SSL with curl -k option), and then call the setup script:
-
-```bash
-curl -LSf -k -o /tmp/ds.zip \
-  https://github.com/stroparo/ds/archive/master.zip \
-  && unzip /tmp/ds.zip -d "$HOME" \
-  && cd "$HOME"/ds-master \
-  && [ "$(basename "$PWD")" = 'ds-master' ] \
-  && ./setup.sh -f \
-  && . ~/.ds/ds.sh \
-  && ${DS_LOADED:-false} \
-  && rm -rf /tmp/ds.zip
-```
+If behind a proxy try disabling SSL by adding curl's -k option to the installation command above.
 
 ### Manual
 
@@ -94,7 +82,7 @@ source {dir}/ds.sh {dir}
 Plugins
 -------
 
-Nowadays lots of software are installed directly from GitHub or other online repositories. In the same spirit, the plugin mechanism for DS aims to be as straightforward as it gets by just cloning a repository and copying it over on top of $DS_HOME, the root Daily Shells directory.
+Nowadays lots of software are modular and allow for plugability via Git repositories etc. In this same spirit, the plugin mechanism for DS aims to be as straightforward as it gets by just cloning a repository and copying it over on top of $DS_HOME, this library's root installation directory.
 
 The script that performs this is ```dsplugin.sh```.
 
