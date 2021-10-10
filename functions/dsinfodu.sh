@@ -1,6 +1,3 @@
-# DS - DRYSL (DRY Scripting Library)
-
-# #############################################################################
 # Disk usage routines
 
 # Function dubulk - Displays disk usage of filenames read from stdin.

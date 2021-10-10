@@ -1,5 +1,5 @@
 # Git routines
-# #############################################################################
+
 
 # Oneliners:
 # Check existence to avoid duplicate of alias recipe in dotfiles vs DRYSL (DRY Scripting Library):

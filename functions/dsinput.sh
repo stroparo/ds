@@ -1,7 +1,4 @@
-# DS - DRYSL (DRY Scripting Library)
-
-# ##############################################################################
-# User interactive routines
+# User interactive input handling routines
 
 readmyemail () {
   # Info: read user input for the MYEMAIL environment variable.

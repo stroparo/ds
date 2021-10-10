@@ -1,5 +1,3 @@
-# DS - DRYSL (DRY Scripting Library)
-
 # Process management routines
 
 pgr () { ps -ef | egrep -i "$1" | egrep -v "grep.*(${1})" ; }

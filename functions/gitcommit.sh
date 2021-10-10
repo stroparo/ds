@@ -1,5 +1,3 @@
-# DRYSL (DRY Scripting Library) Stroparo
-
 gci () { typeset msg="$1"; shift; git commit -m "$msg" "$@" ; }
 gciadd () { typeset msg="$1"; shift; git commit -m "Add $msg" "$@" ; }
 gcicom () { typeset msg="$1"; shift; git commit -m "Comment $msg" "$@" ; }

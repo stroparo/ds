@@ -1,6 +1,3 @@
-# DS - DRYSL (DRY Scripting Library)
-
-# #############################################################################
 # File handling routines
 
 # Function archive - backup a set of directories which can also be given as variable names.

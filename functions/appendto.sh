@@ -1,5 +1,3 @@
-# DS - DRYSL (DRY Scripting Library)
-
 appendto () {
     # Info: Append to variable (arg1), the given text (arg2).
     # Todo: Option to replace the default separator which is a newline character.
