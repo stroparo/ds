@@ -1,6 +1,3 @@
-# DS - DRYSL (DRY Scripting Library)
-
-# #############################################################################
 # Globals
 
 DS_SETUP_URL="https://bitbucket.org/stroparo/ds/raw/master/setup.sh"
@@ -220,13 +217,6 @@ d () {
     echo ; git branch -vv
     echo ; git status -s
   fi
-}
-
-
-cdenforce () {
-  mkdir -p "$1"
-  cd "$1"
-  [[ $PWD = */${1} ]]
 }
 
 
