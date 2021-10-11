@@ -11,12 +11,13 @@ License: May be used for commercial and non-commercial purposes, maintaining ori
 
 ---
 
-The _DS - Don't Repeat Yourself Scripting Library_ (formerly "DRYSL (DRY Scripting Library)") is a collection of useful scripts in the form of functions and scripts (or "recipes", as in Chef lingo, although this library does not relate to Chef at all). Several subjects are covered relating but not limited to file manipulation, tech ops, text processing etc.
+The _DRYSL (short 'DS') - Don't Repeat Yourself Scripting Library_ is a collection of useful scripts in the form of functions and scripts (or "recipes", as in Chef lingo, although this library does not relate to Chef at all). Several subjects are covered relating but not limited to file manipulation, tech ops, text processing etc.
 
-Advantages:
+Key advantages of using it in your project / environment:
 
-* Convention over configuration e.g. all files in "$DS_HOME/functions/" are sourced during 'dsload' (the entry point of this library, sourced in your shell profile) and all scripts in recipes\*/ or scripts\*/ directories are marked executable (chmod +x) during the initial setup (how many times in your life did you have to chmod before calling a script? not anymore...)
-* Modularized: Easy plugin installation & maintenance mechanism
+* Convention over configuration e.g. all files in "$DS_HOME/functions/" are sourced during 'dsload' (the entry point of this library, sourced in your shell profile).
+* chmod automagic: all scripts in recipes\*/ or scripts\*/ directories are marked executable (chmod +x) during profile sourcing (how many times in your life did you have to chmod before calling a script? not anymore...).
+* Plugability i.e. modularized: Easy plugin installation & maintenance mechanism.
 
 Currently the ___Bash___ and ___Zsh___ shells are supported.
 
