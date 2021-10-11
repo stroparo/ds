@@ -1,7 +1,7 @@
 # Unmount encrypted partition.
 
 umountcrypt () {
-  typeset crypt_prog="${CRYPT_PROG:-truecrypt}"
+  typeset crypt_prog="${CRYPT_PROG:-veracrypt}"
 
   if ! which "${crypt_prog}" ; then
     echo "haltsafe: FATAL: No encryption program found, aborting safe halt.."
