@@ -7,7 +7,7 @@ This is to be discontinued and the new library replacing this will be https://gi
 
 Author: Cristian Stroparo
 
-License: May be used for commercial and non-commercial purposes, maintaining original source code intact and original credits of the author included in new / forked versions derived from this one.
+License: May be used for commercial and non-commercial purposes, maintaining original source code comments with project title and original credits intact, and also state the author as such in the list of authors of any new / forked versions derived from this one.
 
 ---
 
