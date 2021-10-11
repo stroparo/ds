@@ -1,9 +1,13 @@
 Don't Repeat Yourself Scripting Library - Commonly needed scripts
 ======================================
 
+## Important
+
+This is to be discontinued and the new library replacing this will be https://github.com/stroparo/sidra
+
 Author: Cristian Stroparo
 
-License: To be defined; meanwhile it is licensed solely according to the author's rules.
+License: May be used for commercial and non-commercial purposes, maintaining original source code intact and original credits of the author included in new / forked versions derived from this one.
 
 ---
 
