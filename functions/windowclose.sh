@@ -1,3 +1,6 @@
+# TODO add test for GUI env, if false then return
+
+
 # windowclose args: {process_expr} [window_expr:=process_expr] [close_shortcut:=ctrl+q]
 windowclose () {
   typeset process_expr="${1}"
