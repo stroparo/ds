@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Purpose: Rehash DRYSL - DRY Scripting Library plugins
+# Purpose: Rehash this scripting library's plugins
 
 typeset PROGNAME="dshashplugins.sh"
 

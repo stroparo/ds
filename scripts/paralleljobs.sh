@@ -2,7 +2,6 @@
 
 # Project / License at https://github.com/stroparo/ds
 
-# #############################################################################
 # Globals
 
 export PROGNAME="paralleljobs.sh"

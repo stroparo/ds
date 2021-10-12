@@ -1,9 +1,11 @@
-# DRYSL - DRY Scripting Library
+# Scripting Development and Runtime Library
+
+# Project / License at https://github.com/stroparo/ds
 
 # #############################################################################
 # Globals
 
-# DS_HOME
+# Main project global 'DS_HOME':
 DS_HOME="${1:-${HOME%/}/.ds}"
 # Squeeze slashes
 if which tr >/dev/null 2>&1 ; then

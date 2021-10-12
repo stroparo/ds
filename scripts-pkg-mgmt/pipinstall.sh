@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-# DRYSL - DRY Scripting Library
+# Project / License at https://github.com/stroparo/ds
 
-# #############################################################################
 # Globals
 
 PROGNAME="pipinstall.sh"

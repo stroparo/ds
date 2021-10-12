@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# DRYSL - DRY Scripting Library setup / installation routine
+# Scripting Library setup / installation routine
 
 PROGNAME="setup.sh"
 
