@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
+# Project / License at https://github.com/stroparo/ds
+
 PROGNAME="cb2imagefile.sh"
+
 TIMESTAMP="$(date '+%Y-%m-%dT%H-%M-%S')"
 
 if ! (xclip -selection clipboard -t TARGETS -o | grep -i -q 'image/png') ; then

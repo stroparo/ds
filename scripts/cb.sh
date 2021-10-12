@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-# License:
-#   See README.md document in projects page at
-#   https://github.com/stroparo/ds
+# Project / License at https://github.com/stroparo/ds
 
 # cb function forked from original at:
 #   http://madebynathan.com/2011/10/04/a-nicer-way-to-use-xclip/

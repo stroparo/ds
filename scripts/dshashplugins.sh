@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Project / License at https://github.com/stroparo/ds
+
 # Purpose: Rehash this scripting library's plugins
 
 typeset PROGNAME="dshashplugins.sh"

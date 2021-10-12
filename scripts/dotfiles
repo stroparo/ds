@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
+# Project / License at https://github.com/stroparo/ds
+
 PROGNAME="dotfiles"
+
 export DOTFILES_SELECTS="${DOTFILES_SELECTS} alias dotfiles git sshmodes vim"
 
 echo
