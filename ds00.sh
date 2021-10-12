@@ -259,8 +259,8 @@ dshelp () {
 d - handy dir navigation function
 dshelp - display this help messsage
 dsinfo - display environment information
-dslistfunctions - list DRYSL - DRY Scripting Library' functions
-dslistscripts - list DRYSL - DRY Scripting Library' scripts
+dslistfunctions - list DRYSL - DRY Scripting Library's functions
+dslistscripts - list DRYSL - DRY Scripting Library's scripts
 dsversion - display the version of this DRYSL - DRY Scripting Library instance
 " 1>&2
 }
