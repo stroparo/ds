@@ -11,7 +11,7 @@ License: May be used for commercial and non-commercial purposes, maintaining ori
 
 ---
 
-The _DRYSL (short 'DS') - Don't Repeat Yourself Scripting Library_ is a collection of useful scripts in the form of functions and scripts (or "recipes", as in Chef lingo, although this library does not relate to Chef at all). Several subjects are covered relating but not limited to file manipulation, tech ops, text processing etc.
+The _DRYSL - DRY Scripting Library_ (abbrev. 'DS' in source code) is a collection of useful scripts in the form of functions and scripts (or "recipes", as in Chef lingo, although this library does not relate to Chef at all). Several subjects are covered relating but not limited to file manipulation, tech ops, text processing etc.
 
 Key advantages of using it in your project / environment:
 
@@ -31,9 +31,9 @@ The dshelp function is the help system entry point. It will output something lik
 ```
 dshelp - display this help messsage
 dsinfo - display environment information
-dslistfunctions - list DRYSL (DRY Scripting Library)' functions
-dslistscripts - list DRYSL (DRY Scripting Library)' scripts
-dsversion - display the version of this DRYSL (DRY Scripting Library) instance
+dslistfunctions - list DRYSL - DRY Scripting Library's functions
+dslistscripts - list DRYSL - DRY Scripting Library's scripts
+dsversion - display the version of this DRYSL - DRY Scripting Library instance
 ```
 
 __Important__
