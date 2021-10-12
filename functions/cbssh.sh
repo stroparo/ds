@@ -1,5 +1,5 @@
 cbssh () {
-    # Info: Copies ~/.ssh/id_rsa.pub contents to the clipboard via the DRYSL (DRY Scripting Library) 'cb' script
+    # Info: Copies ~/.ssh/id_rsa.pub contents to the clipboard via the DRYSL - DRY Scripting Library 'cb' script
 
     typeset sshpubkey="${1:-${HOME}/.ssh/id_rsa.pub}"
 

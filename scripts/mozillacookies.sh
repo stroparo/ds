@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# DS - DRYSL (DRY Scripting Library)
+# Project / License at https://github.com/stroparo/ds
 
 # Info: Get firefox cookies & write them to a file in old netscape (or wget) format.
 # Syntax: {mozilla's cookies sqlite db} {target cookies filename} {domain pattern/regex}

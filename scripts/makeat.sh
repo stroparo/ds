@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# DRYSL (DRY Scripting Library)
+# DRYSL - DRY Scripting Library
 
 # Info: Call configure, make & makeinstall for custom dir/prefix.
 # Rmk: Default prefix is ~/opt/root

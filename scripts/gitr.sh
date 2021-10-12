@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# DRYSL (DRY Scripting Library)
+# Project / License at https://github.com/stroparo/ds
 
 export PNAME="$(basename "$0")"
 export USAGE="
@@ -78,7 +78,7 @@ prep () {
     typeset oldpwd="$PWD"
 
     if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1 || [ -z "${DS_LOADED}" ] ; then
-        echo "${PNAME}: FATAL: Could not load DS - DRYSL (DRY Scripting Library)." 1>&2
+        echo "${PNAME}: FATAL: Could not load DRYSL - DRY Scripting Library." 1>&2
         echo "DS_HOME='${DS_HOME}'" 1>&2
         exit 1
     fi

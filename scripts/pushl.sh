@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-# DS - DRYSL (DRY Scripting Library)
-# License:
-#   See README.md document in projects page at
-#   https://github.com/stroparo/ds
+# Project / License at https://github.com/stroparo/ds
 
 # #############################################################################
 # Globals
@@ -19,7 +16,7 @@ SYNOPSIS
 DESCRIPTION
 
     The environment list containing all possible sites lie in ee.txt files
-    inside directory trees whose roots are specified by the DRYSL (DRY Scripting Library)'
+    inside directory trees whose roots are specified by the DRYSL - DRY Scripting Library'
     EEPATH environment variable (all this environment logic is in ee.sh).
 
     -e env-regex
@@ -90,7 +87,7 @@ sourceds () {
     typeset dshome="${1:-${DS_HOME}}"
 
     if ! . "${dshome}/ds.sh" "${dshome}" 1>&2 2>/dev/null || [ -z "${DS_LOADED}" ] ; then
-        echo "${PNAME:+${PNAME}: }FATAL: Could not load DS - DRYSL (DRY Scripting Library)." 1>&2
+        echo "${PNAME:+${PNAME}: }FATAL: Could not load DRYSL - DRY Scripting Library." 1>&2
         return 1
     fi
 

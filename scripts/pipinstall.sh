@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# DRYSL (DRY Scripting Library)
+# DRYSL - DRY Scripting Library
 
 # #############################################################################
 # Globals

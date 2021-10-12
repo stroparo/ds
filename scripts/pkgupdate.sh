@@ -18,13 +18,13 @@ while getopts ':f' option ; do
 done
 shift "$((OPTIND-1))"
 
-# Enforce DRYSL (DRY Scripting Library) dependency:
+# Enforce DRYSL - DRY Scripting Library dependency:
 if [ ! -e ~/.ds/ds.sh ] ; then
   FORCE=true bash -c "$(curl -LSf -k -o - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')"
 fi
 . ~/.ds/ds.sh
 if [ -z "$DS_HOME" ] ; then
-  echo "${PROGNAME:+$PROGNAME: }FATAL: Could not load DRYSL (DRY Scripting Library)." 1>&2
+  echo "${PROGNAME:+$PROGNAME: }FATAL: Could not load DRYSL - DRY Scripting Library." 1>&2
   exit 1
 fi
 

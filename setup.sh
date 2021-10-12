@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# DRYSL (DRY Scripting Library) setup / installation routine
+# DRYSL - DRY Scripting Library setup / installation routine
 
 PROGNAME="setup.sh"
 
@@ -80,13 +80,13 @@ fi
 # Install
 
 if [ -e ./ds.sh ] && [ "${PWD}" != "${DS_INSTALL_DIR}" ] ; then
-  echo "DRYSL (DRY Scripting Library) setup from local dir '${PWD}'..." 1>&2
+  echo "DRYSL - DRY Scripting Library setup from local dir '${PWD}'..." 1>&2
   mkdir "${DS_INSTALL_DIR}" \
     && cp -f -R -v "${PWD}"/* "${DS_INSTALL_DIR}"/
   INST_RESULT=$?
-  echo "${PROGNAME} (ds): INFO: DRYSL (DRY Scripting Library) setup dir used was '${PWD}'"
+  echo "${PROGNAME} (ds): INFO: DRYSL - DRY Scripting Library setup dir used was '${PWD}'"
 else
-  echo "DRYSL (DRY Scripting Library) setup: downloading and installing..." 1>&2
+  echo "DRYSL - DRY Scripting Library setup: downloading and installing..." 1>&2
   ("${DLPROG}" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${DS_INSTALL_DIR}.zip" "${DS_PKG_URL}" \
     || "${DLPROG}" ${DLOPT} ${DLOPTEXTRA} ${DLOUT} "${DS_INSTALL_DIR}.zip" "${DS_PKG_URL_ALT}") \
     && unzip "${DS_INSTALL_DIR}.zip" -d "$TEMP_DIR"
@@ -123,7 +123,7 @@ echo "${PROGNAME} (ds): INFO: Plugins installed file: '${DS_PLUGINS_INSTALLED_FI
 rm -f -v "${DS_PLUGINS_INSTALLED_FILE}" 2>/dev/null
 
 # #############################################################################
-echo "${PROGNAME} (ds): INFO: Loading DRYSL (DRY Scripting Library)..."
+echo "${PROGNAME} (ds): INFO: Loading DRYSL - DRY Scripting Library..."
 
 . "${DS_INSTALL_DIR}/ds.sh" "${DS_INSTALL_DIR}"
 

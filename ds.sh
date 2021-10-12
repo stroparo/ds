@@ -1,4 +1,4 @@
-# DRYSL (DRY Scripting Library)
+# DRYSL - DRY Scripting Library
 
 # #############################################################################
 # Globals

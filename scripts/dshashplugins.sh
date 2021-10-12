@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Purpose: Rehash DRYSL (DRY Scripting Library) plugins
+# Purpose: Rehash DRYSL - DRY Scripting Library plugins
 
 typeset PROGNAME="dshashplugins.sh"
 
@@ -11,8 +11,8 @@ _load_ds () {
     && ! . "${DS_CURRENT_HOME}/ds.sh" "${DS_CURRENT_HOME}" >/dev/null 2>&1
   then
     echo 1>&2
-    echo "DRYSL (DRY Scripting Library) could not be loaded. Fix it and call this again." 1>&2
-    echo "Commands to install DRYSL (DRY Scripting Library):" 1>&2
+    echo "DRYSL - DRY Scripting Library could not be loaded. Fix it and call this again." 1>&2
+    echo "Commands to install DRYSL - DRY Scripting Library:" 1>&2
     echo "sh -c \"\$(curl -LSfs 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')\"" 1>&2
     echo "sh -c \"\$(wget -O - 'https://raw.githubusercontent.com/stroparo/ds/master/setup.sh')\"" 1>&2
     echo 1>&2
@@ -34,7 +34,7 @@ _set_global_defaults () {
 
 
 _skip_if_no_plugins_file () {
-  # Although DRYSL (DRY Scripting Library) enforces the existence of this file this is
+  # Although DRYSL - DRY Scripting Library enforces the existence of this file this is
   # just to inform in case this ever occurs eg the plugins file had
   # not been created because of some permission issue etc.
   if [ ! -f "${DS_PLUGINS_FILE}" ] ; then
@@ -55,7 +55,7 @@ _hash_ds_plugins_locally () {
 
     for plugin_root in "$@" ; do
       echo
-      echo "==> DRYSL (DRY Scripting Library) plugin '${plugin_string}' hashing from local dir: '${plugin_root}'..."
+      echo "==> DRYSL - DRY Scripting Library plugin '${plugin_string}' hashing from local dir: '${plugin_root}'..."
       echo
       if ls -1 -d "${plugin_root}/${plugin_barename}" >/dev/null 2>&1 ; then
         cp -a -v "${plugin_root}/${plugin_barename}"/*.sh "$DS_HOME/" 1>&2 || failures=true
@@ -89,7 +89,7 @@ _hash_ds_plugins () {
   fi
 
   echo
-  echo "==> DRYSL (DRY Scripting Library) plugin hashing from '${DS_PLUGINS_FILE}'..."
+  echo "==> DRYSL - DRY Scripting Library plugin hashing from '${DS_PLUGINS_FILE}'..."
   echo
   dsplugin.sh -f "${DS_PLUGINS_FILE}" || failures=true
 

@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-# DS - DRYSL (DRY Scripting Library)
-# License:
-#   See README.md document in projects page at
-#   https://github.com/stroparo/ds
+# Project / License at https://github.com/stroparo/ds
 
 # Purpose:
 # This script sorts all words in the file and puts

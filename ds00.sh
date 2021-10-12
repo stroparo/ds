@@ -1,3 +1,5 @@
+# Project / License at https://github.com/stroparo/ds
+
 # Globals
 
 DS_SETUP_URL="https://bitbucket.org/stroparo/ds/raw/master/setup.sh"
@@ -60,7 +62,7 @@ fi
 
 # Oneliners
 dsh () { dshash -r ; }
-dsversion () { echo "==> DRYSL (DRY Scripting Library) - ${DS_VERSION}" ; }
+dsversion () { echo "==> DRYSL - DRY Scripting Library - ${DS_VERSION}" ; }
 
 
 dsbackup () {
@@ -94,7 +96,7 @@ dsrestorebackup () {
   fi
 
   if [ -d "${DS_LAST_BACKUP}" ] ; then
-    echo "${progname}: INFO: Restoring DRYSL (DRY Scripting Library) backup at '${DS_LAST_BACKUP}'..." 1>&2
+    echo "${progname}: INFO: Restoring DRYSL - DRY Scripting Library backup at '${DS_LAST_BACKUP}'..." 1>&2
     rm -f -r "${DS_HOME}";  mkdir "${DS_HOME}"
     if [ -d "${DS_HOME}" ] \
       && [ ! -f "${DS_HOME}/ds.sh" ] \
@@ -116,7 +118,7 @@ dsrestorebackup () {
 dshash () {
   # Purpose: rehashing of ds and plugins from local source codebases.
   # Syntax: [-r] [ds-sources-dir:${DEV}/ds]
-  #   -r will reload DRYSL (DRY Scripting Library) in the current shell session
+  #   -r will reload DRYSL - DRY Scripting Library in the current shell session
 
   typeset progname="dshash()"
 
@@ -130,7 +132,7 @@ dshash () {
 
   # Requirements
   if [ ! -f "${dssrc}/ds.sh" ] ; then
-    echo "${progname}: FATAL: No DRYSL (DRY Scripting Library) sources found in '${dssrc}'." 1>&2
+    echo "${progname}: FATAL: No DRYSL - DRY Scripting Library sources found in '${dssrc}'." 1>&2
     return 1
   fi
   if ! dsbackup ; then
@@ -139,7 +141,7 @@ dshash () {
   fi
 
   echo
-  echo "==> DRYSL (DRY Scripting Library) rehash started..."
+  echo "==> DRYSL - DRY Scripting Library rehash started..."
   rm -f -r "${dshome}" \
     && : > "${DS_PLUGINS_INSTALLED_FILE}" \
     && mkdir "${dshome}" \
@@ -148,7 +150,7 @@ dshash () {
 
   if ! ${errors:-false} ; then
     echo
-    echo "==> DRYSL (DRY Scripting Library) rehash complete"
+    echo "==> DRYSL - DRY Scripting Library rehash complete"
 
     echo "${progname}: INFO: Hashing plugins..."
     sourcefiles ${DS_VERBOSE:+-v} -t "${DS_HOME}/ds10path.sh"
@@ -160,7 +162,7 @@ dshash () {
 
     eval "$loadcmd"
   else
-    echo "${progname}: ERROR: DRYSL (DRY Scripting Library) rehashing failed." 1>&2
+    echo "${progname}: ERROR: DRYSL - DRY Scripting Library rehashing failed." 1>&2
     dsrestorebackup
   fi
 }
@@ -252,14 +254,14 @@ dslistscripts () {
 
 
 dshelp () {
-  echo "DS - DRYSL (DRY Scripting Library) - Help
+  echo "DRYSL - DRY Scripting Library - Help
 
 d - handy dir navigation function
 dshelp - display this help messsage
 dsinfo - display environment information
-dslistfunctions - list DRYSL (DRY Scripting Library)' functions
-dslistscripts - list DRYSL (DRY Scripting Library)' scripts
-dsversion - display the version of this DRYSL (DRY Scripting Library) instance
+dslistfunctions - list DRYSL - DRY Scripting Library' functions
+dslistscripts - list DRYSL - DRY Scripting Library' scripts
+dsversion - display the version of this DRYSL - DRY Scripting Library instance
 " 1>&2
 }
 
@@ -290,7 +292,7 @@ dsload () {
   unset DS_LOADED
   bash -c "$(${DLPROG} ${DLOPT} ${DLOPTEXTRA} ${DLOUT} - "${DS_SETUP_URL}")" setup.sh "${ds_install_dir}"
   if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" 1>&2 || [ -z "${DS_LOADED}" ] ; then
-    echo "${progname}: FATAL: Could not load DS - DRYSL (DRY Scripting Library)." 1>&2
+    echo "${progname}: FATAL: Could not load DRYSL - DRY Scripting Library." 1>&2
     return 1
   else
     return 0

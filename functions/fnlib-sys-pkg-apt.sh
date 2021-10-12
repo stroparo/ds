@@ -1,20 +1,7 @@
-# More instructions and licensing at:
-# https://github.com/stroparo/ds
-
-
 aptcleanup () {
   echo "${PROGNAME:-aptcleanup()}: INFO: APT repository clean up (autoremove & clean)..."
   sudo "$APTPROG" autoremove -y
   sudo "$APTPROG" clean -y
-}
-
-
-aptflatpak () {
-  if ! type flatpak >/dev/null 2>&1 ; then
-    sudo apt-get update \
-    && sudo apt-get install flatpak \
-    && flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-  fi
 }
 
 

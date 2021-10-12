@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# DS - DRYSL (DRY Scripting Library)
+# Project / License at https://github.com/stroparo/ds
 
 # Info: Tail multiple files.
 # Syntax: mutail [-n lines] file1[ file2[ file3 ...]]

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# DS - DRYSL (DRY Scripting Library)
+# Project / License at https://github.com/stroparo/ds
 
 # Info: Echoes dots every 4 seconds or number of seconds in arg1.
 

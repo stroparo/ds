@@ -1,4 +1,4 @@
-# DS - DRYSL (DRY Scripting Library)
+# Project / License at https://github.com/stroparo/ds
 
 dspush () {
     # Info:

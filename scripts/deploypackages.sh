@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-# License:
-#   See README.md document in projects page at
-#   https://github.com/stroparo/ds
+# Project / License at https://github.com/stroparo/ds
 
-# #############################################################################
 # Globals
 
 USAGE="deploypackages - Deploy packages from-to the given directories.
@@ -19,7 +16,7 @@ Options:
 # Prep dependencies
 
 if ! . "${DS_HOME}/ds.sh" "${DS_HOME}" >/dev/null 2>&1 || [ -z "${DS_LOADED}" ] ; then
-  echo "$(basename "$0"): FATAL: Could not load DS - DRYSL (DRY Scripting Library)." 1>&2
+  echo "$(basename "$0"): FATAL: Could not load DRYSL - DRY Scripting Library." 1>&2
   exit 1
 fi
 
