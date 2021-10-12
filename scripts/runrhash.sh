@@ -3,9 +3,11 @@
 PROGNAME="runrhash.sh"
 
 # Purpose:
-# Rehash runr repository from the workspace and
-# seize the moment to also run any recipes in
-# arguments, if any.
+# Rehash runr repository from the workspace ($DEV i.e. $DEV/runr) and
+# seize the moment also to run any recipes in arguments, if any.
+
+
+# Globals:
 
 : ${DEV:=$HOME/workspace}
 
@@ -14,6 +16,8 @@ if ${IGNORE_SSL:-false} ; then
   ignore_ssl_option='-k'
 fi
 
+
+# Main:
 
 if [ -d ~/.runr ] && ! mv -v ~/.runr ~/.runr.$(date '+%Y%m%d-%OH%OM%OS') ; then
   echo "${PROGNAME:+$PROGNAME: }FATAL: Could not backup '${HOME}/.runr'." 1>&2
